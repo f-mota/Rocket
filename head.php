@@ -7,8 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
     <link rel="icon" href="assets/img/favicon.png" type="image/x-icon" />
-
-    <meta charset="UTF-8">
+    <meta charset="utf-8" />
 
     <!-- Fonts and icons -->
     <script src="assets/js/plugin/webfont/webfont.min.js"></script>

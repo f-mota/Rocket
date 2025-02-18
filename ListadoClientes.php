@@ -40,7 +40,7 @@ function Listar_Clientes($MiConexion, $filtros = []) {
 
     $stmt = $MiConexion->prepare($query);
     if ($types) {
-        $stmt->bind_param($types, ...$params);
+        $stmt->bind_param($types, $params);
     }
     $stmt->execute();
     $result = $stmt->get_result();

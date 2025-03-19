@@ -1,50 +1,53 @@
 <?php
 
 session_start();
-require_once 'funciones/corroborar_usuario.php'; 
+require_once 'funciones/corroborar_usuario.php';
 Corroborar_Usuario(); // No se puede ingresar a la página php a menos que se haya iniciado sesión
-
 
 require_once "conn/conexion.php";
 $conexion = ConexionBD();
 
+if (isset($_POST['BotonCancelar'])) {
+    $_POST = array(); // Cuando recibo el BotonCancelar vacío el array para evitar conflictos en el modo del formulario
+}
+
+// Incluyo el script con la funcion que genera mi listado
+require_once "funciones/FuncionesVehiculos.php";
+
+
+
+
+
+
+
+
+
+
+
+
+
+//                                                  ACA--------------------------
+
 
 // Filtrado de vehículos
-
-$matricula = isset($_POST['Matricula']) ? $_POST['Matricula'] : '';
-$modelo = isset($_POST['Modelo']) ? $_POST['Modelo'] : '';
-$grupo = isset($_POST['Grupo']) ? $_POST['Grupo'] : '';
-
-    // Incluyo el script con la funcion que genera mi listado
-require_once 'funciones/vehiculos listado.php';
-
-$ListadoVehiculos = Listar_Vehiculos($conexion);
-$CantidadVehiculos = count($ListadoVehiculos);
-
-
 // Consulta por medio de formulario de Filtro
 if (!empty($_POST['BotonFiltro'])) {
 
-    require_once 'funciones/vehiculo consulta.php';
     Procesar_Consulta();
 
     $ListadoVehiculos = array();
-    $CantidadVehiculos = '';
-    $ListadoVehiculos = Consulta_Vehiculo($_POST['Matricula'], $_POST['Modelo'], $_POST['Grupo'], $conexion);
-    $CantidadVehiculos = count($ListadoVehiculos);
-}
-else {
+    $ListadoVehiculos = Consulta_Vehiculo($_POST['Matricula'], $_POST['Modelo'], $_POST['Grupo'], $_POST['Disponible'], $conexion);
+} else {
 
-    // Listo la totalidad de los registros en la tabla "vehiculos". 
+    // Listo la totalidad de los registros en la tabla "vehiculos".
     $ListadoVehiculos = Listar_Vehiculos($conexion);
-    $CantidadVehiculos = count($ListadoVehiculos);
 }
 
 if (!empty($_POST['BotonDesfiltrar'])) {
 
-        // Listo la totalidad de los registros en la tabla "vehiculos" 
-        $ListadoVehiculos = Listar_Vehiculos($conexion);
-        $CantidadVehiculos = count($ListadoVehiculos);
+    // Listo la totalidad de los registros en la tabla "vehiculos"
+    $ListadoVehiculos = Listar_Vehiculos($conexion);
+    $CantidadVehiculos = count($ListadoVehiculos);
 }
 
 
@@ -57,58 +60,23 @@ $combus = '';
 $sucurs = '';
 
 
-// Registrar nuevo vehiculo
-require_once 'funciones/RegistrarVehiculo.php';
-
-if (!empty($_POST['BotonRegistrarVehiculo'])) {
-
-    // Capturo los datos
-    $matri = $_POST['MatriculaREG'];
-    $matri = "$matri";
-    $model = $_POST['ModeloREG'];
-    $grup = $_POST['GrupoREG'];
-    $dispo = $_POST['DisponibilidadREG'];
-
-    Registrar_Vehiculo($matri, $model, $grup, $dispo, $conexion);
-
-    $_POST = array();
-    header('Location: OpVehiculos.php');
-    die();
-}
-
-
-// Modificacion de vehiculo
-require_once 'funciones/ModificarVehiculo.php';
-
-if (!empty($_POST['BotonModificarVehiculo'])) {
-
-    $matri = $_POST['MatriculaMOD'];
-    $dispo = $_POST['DisponibilidadMOD'];
-    $model = $_POST['ModeloMOD'];
-    $grup = $_POST['GrupoMOD'];
-    $combus = $_POST['CombustibleMOD'];
-
-    $MensajeModificacion = Corroborar_Modificacion($matri, $dispo, $model, $grup, $combus);
-
-    Modificar_Vehiculo($matri, $dispo, $model, $grup, $combus, $conexion);
-
-    $_POST = array();
-    header('Location: OpVehiculos.php');
-    die();
-}
-
-
 // SELECCIONES para combo boxes
 require_once 'funciones/Select_Tablas.php';
 
-$ListadoGrupo = Listar_Grupo($conexion);
-$CantidadGrupo = count($ListadoGrupo);
+// $ListadoGrupo = Listar_Grupo($conexion);
+// $CantidadGrupo = count($ListadoGrupo);
 
-$ListadoModelo = Listar_Modelo($conexion);
-$CantidadModelo = count($ListadoModelo);
+// $ListadoModelo = Listar_Modelo($conexion);
+// $CantidadModelo = count($ListadoModelo);
 
-$ListadoCombustible = Listar_Combustible($conexion);
-$CantidadCombustible = count($ListadoCombustible);
+// $ListadoCombustible = Listar_Combustible($conexion);
+// $CantidadCombustible = count($ListadoCombustible);
+
+
+
+
+//                                      ------------------------- ACA -----------------
+
 
 
 require_once "head.php";
@@ -117,9 +85,9 @@ require_once "head.php";
 <body>
 
     <?php
-require_once "topNavBar.php";
-require_once "sidebarGop.php";
-?>
+    require_once "topNavBar.php";
+    require_once "sidebarGop.php";
+    ?>
 
     <div style="margin-top: 8%; margin-bottom: 8%; min-height: 100%; ">
 
@@ -131,26 +99,68 @@ require_once "sidebarGop.php";
                 <form method="post">
                     <div class="row">
 
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <label for="matricula" class="form-label">Matrícula</label>
                             <input type="text" class="form-control" id="matricula" name="Matricula"
                                 value="<?php echo !empty($_POST['Matricula']) ? $_POST['Matricula'] : ''; ?> ">
                         </div>
+
+
                         <div class="col-md-4 mb-3">
                             <label for="grupo" class="form-label">Grupo</label>
-                            <input type="text" class="form-control" id="grupo" name="Grupo"
-                                value="<?php echo !empty($_POST['Grupo']) ? $_POST['Grupo'] : ''; ?>">
+                            <select class="form-select" name="IdGrupo">
+                                <option value=""></option>
+
+                                <?php
+                                $ListadoGrupos = ListarGrupos($conexion);
+                                for ($i = 0; $i < count($ListadoGrupos); $i++) {
+                                ?>
+
+                                    <option value="<?php echo $ListadoGrupos[$i]['ID']; ?>">
+                                        <?php echo $ListadoGrupos[$i]['ID'] . " - " . $ListadoGrupos[$i]['NOMBRE'] . " " . $ListadoGrupos[$i]['DESCRIPCION']  ?>
+                                    </option>
+                                <?php
+                                }
+                                ?>
+
+                            </select>
+
                         </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label for="disponible" class="form-label">Activo</label>
+                            <select class="form-select" name="Disponible">
+                                <option value="S">Solo activos</option>
+                                <option value="N">Solo no activos</option>
+                                <option value="T">Todos</option>
+                            </select>
+
+                        </div>
+
                         <div class="col-md-4 mb-3">
                             <label for="modelo" class="form-label">Modelo</label>
-                            <input type="text" class="form-control" id="modelo" name="Modelo"
-                                value="<?php echo !empty($_POST['Modelo']) ? $_POST['Modelo'] : ''; ?>">
+                            <select class="form-select" name="IdModelo">
+                                <option value=""></option>
+
+                                <?php
+                                $ListadoModelos = ListarModelos($conexion);
+                                for ($i = 0; $i < count($ListadoModelos); $i++) {
+                                ?>
+
+                                    <option value="<?php echo $ListadoModelos[$i]['ID_MODELO']; ?>">
+                                        <?php echo $ListadoModelos[$i]['DESCRIPCION']; ?>
+                                    </option>
+                                <?php
+                                }
+                                ?>
+
+                            </select>
                         </div>
                     </div>
-                    <br>
-                    <button type="submit" class="btn btn-primary" name="BotonFiltro" value="Filtrando">Filtrar</button>
-                    <button type="submit" class="btn btn-primary btn-danger" name="BotonDesfiltrar" value="Desfiltrando"
-                        style="margin-left: 4%;">Limpiar Filtros</button>
+                    <div class="mt-4 d-flex d-flex justify-content-around">
+                        <button type="submit" class="btn btn-primary" name="BotonFiltro" value="Filtrando">Filtrar</button>
+                        <button type="submit" class="btn btn-primary btn-danger" name="BotonDesfiltrar" value="Desfiltrando">Limpiar Filtros</button>
+                    </div>
                 </form>
 
             </div>
@@ -158,37 +168,39 @@ require_once "sidebarGop.php";
             <div class="card col-8 bg-white p-4 rounded shadow mb-4">
                 <h4 class="text-center mb-3">Lista de Vehículos</h4>
                 <div class="table-responsive">
-
-                    <table class="table table-bordered table-hover" id="vehicleTable">
+                    <table class="table table-bordered table-hover align-middle" id="vehicleTable">
                         <thead class="table-dark">
                             <tr>
+                                <th scope="col"></th>
                                 <th scope="col">Matrícula</th>
                                 <th scope="col">Modelo</th>
                                 <th scope="col">Grupo</th>
                                 <th scope="col">Combustible</th>
-                                
-                                <th scope="col">Disponible</th>
-                                <th scope="col">Mod/Eliminar</th>
+                                <th scope="col">Activo</th>
+                                <th scope="col"></th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <?php 
-                        for ($i=0; $i < $CantidadVehiculos; $i++) { ?>
-
-                            <td> <?php echo $ListadoVehiculos[$i]['vMatricula']; ?> </td>
-                            <td> <?php echo $ListadoVehiculos[$i]['vModelo']; ?> </td>
-                            <td> <?php echo $ListadoVehiculos[$i]['vGrupo']; ?> </td>
-                            <td> <?php echo $ListadoVehiculos[$i]['vCombustible']; ?> </td>
-                            <td> <?php echo $ListadoVehiculos[$i]['vDisponibilidad']; ?> </td>
-                            <td> <button type="button" class="btn btn-primary"  ><i class="icon-magnifier"></i></button>
-                                <button type="button" class="btn btn-warning" name="BotonModificarVehiculo"><i class="icon-note"></i></button>
-                                <button type="button" class="btn btn-danger"><i class="icon-trash"></i></button>
-                            </td>
-                            </tr>
-                            <?php 
-                        } 
-                        ?>
+                            <?php for ($i = 0; $i < count($ListadoVehiculos); $i++) { ?>
+                                <td>
+                                    <form method="post" action="formularioVehiculos.php">
+                                        <input type="hidden" name="ConsultarVehiculo" value="<?php echo $ListadoVehiculos[$i]['MATRICULA']; ?>">
+                                        <button type="submit" class="btn btn-primary btn-sm"><i class="icon-magnifier"></i></button>
+                                    </form>
+                                </td>
+                                <td> <?php echo $ListadoVehiculos[$i]['MATRICULA']; ?> </td>
+                                <td> <?php echo $ListadoVehiculos[$i]['MODELO']; ?> </td>
+                                <td> <?php echo $ListadoVehiculos[$i]['GRUPO']; ?> </td>
+                                <td> <?php echo $ListadoVehiculos[$i]['COMBUSTIBLE']; ?> </td>
+                                <td> <?php echo $ListadoVehiculos[$i]['DISPONIBLE']; ?> </td>
+                                <td> <button type="button" class="btn btn-warning btn-sm mx-3" name="BotonModificarVehiculo"><i class="icon-note"></i></button>
+                                    <button type="button" class="btn btn-danger btn-sm"><i class="icon-trash"></i></button>
+                                </td>
+                                </tr>
+                            <?php
+                            }
+                            ?>
 
                         </tbody>
 
@@ -197,293 +209,41 @@ require_once "sidebarGop.php";
             </div>
 
             <div class="d-flex justify-content-between col-8">
-                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                    data-bs-target="#nuevoVehiculo">Nuevo</button>
-                <button type="button" class="btn btn-primary" onclick="modificarVehiculo()">Modificar</button>
-                <button type="button" class="btn btn-warning" onclick="renovarVehiculo()">Eliminar</button>
+                <form method="post" action="formularioVehiculos.php">
+                    <input type="hidden" name="RegistrarVehiculo" value="Registrar">
+                    <button type="submit" class="btn btn-success">Nuevo</button>
+                </form>
+
+
+
+
+                <!-- Esto hay que cambiarlo porque van a cada boton individual!!! -->
+                <form method="post" action="formularioVehiculos.php">
+                    <input type="hidden" name="ConsultarVehiculo" value="Registrar">
+                    <button type="submit" class="btn btn-success">Consultar</button>
+                </form>
+
+                <form method="post" action="formularioVehiculos.php">
+                    <input type="hidden" name="ModificarVehiculo" value="Registrar">
+                    <button type="submit" class="btn btn-success">Modificar</button>
+                </form>
+
+                <form method="post" action="formularioVehiculos.php">
+                    <input type="hidden" name="EliminarVehiculo" value="Registrar">
+                    <button type="submit" class="btn btn-success">Eliminar</button>
+                </form>
+
+                <!-- Esto hay que cambiarlo porque van a cada boton individual!!! -->
+
             </div>
 
         </main>
     </div>
 
-    <!-- Modal para nuevo vehículo -->
-    <div class="modal fade" id="nuevoVehiculo" tabindex="-1" aria-labelledby="nuevoVehiculoLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="nuevoVehiculoLabel">Agregar Nuevo Vehículo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <!-- Form para agregar vehículo -->
-                    <form method="post">
-
-                        <div class="mb-3">
-                            <label for="matricula" class="form-label">Matrícula</label>
-                            <input type="text" class="form-control" name="MatriculaREG" value="" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="modelo" class="form-label">Modelo</label>
-                            <select class="form-select" aria-label="Selector" id="selector" name="ModeloREG" required>
-                                <option value="" selected>Selecciona una opción</option>
-
-                                <?php 
-                            // Asegúrate de que $ListadoModelo contiene datos antes de procesarlo
-                            if (!empty($ListadoModelo)) {
-                                $selected = '';
-                                for ($i = 0; $i < $CantidadModelo; $i++) {
-                                    // Lógica para verificar si el grupo debe estar seleccionado
-                                    $selected = (!empty($_POST['ModeloREG']) && $_POST['ModeloREG'] == $ListadoModelo[$i]['IdModelo']) ? 'selected' : '';
-                                    echo "<option value='{$ListadoModelo[$i]['IdModelo']}' $selected>{$ListadoModelo[$i]['NombreModelo']}</option>";
-                                }
-                            } 
-                            else {
-                                echo "<option value=''>No se encontraron grupos</option>";
-                            }
-                            ?>
-                            </select>
-
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="grupo" class="form-label">Grupo</label>
-                            <select class="form-select" aria-label="Selector" id="selector" name="GrupoREG" required>
-                                <option value="" selected>Selecciona una opción</option>
-
-                                <?php 
-                            // Asegúrate de que $ListadoGrupo contiene datos antes de procesarlo
-                            if (!empty($ListadoGrupo)) {
-                                $selected = '';
-                                for ($i = 0; $i < $CantidadGrupo; $i++) {
-                                    // Lógica para verificar si el grupo debe estar seleccionado
-                                    $selected = (!empty($_POST['GrupoREG']) && $_POST['GrupoREG'] == $ListadoGrupo[$i]['IdGrupo']) ? 'selected' : '';
-                                    echo "<option value='{$ListadoGrupo[$i]['IdGrupo']}' $selected>{$ListadoGrupo[$i]['NombreGrupo']}</option>";
-                                }
-                            } 
-                            else {
-                                echo "<option value=''>No se encontraron grupos</option>";
-                            }
-                            ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="disponible" class="form-label">Disponible</label>
-                            <select class="form-select" name="DisponibilidadREG" required>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" name="BotonRegistrarVehiculo"
-                            value="RegistrandoVehiculo">Agregar</button>
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para modificar vehículo -->
-    <div class="modal fade" id="modificarVehiculoModal" tabindex="-1" aria-labelledby="modificarVehiculoModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modificarVehiculoModalLabel">Modificar Vehículo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <!-- Form para modificar -->
-                    <form id="modificarVehiculoForm" method="post">
-
-                        <input type="hidden" id="modificarMatricula" name="MatriculaMOD">
-
-                        <div class="mb-3">
-                            <label for="modificarModelo" class="form-label">Modelo</label>
-                            <select class="form-select" aria-label="Selector" id="modificarModelo" name="ModeloMOD"
-                                required>
-                                <option value="" selected>Selecciona una opción</option>
-
-                                <?php 
-                            // Asegúrate de que $ListadoModelo contiene datos antes de procesarlo
-                            if (!empty($ListadoModelo)) {
-                                $selected = '';
-                                for ($i = 0; $i < $CantidadModelo; $i++) {
-                                    // Lógica para verificar si el grupo debe estar seleccionado
-                                    $selected = (!empty($_POST['ModeloMOD']) && $_POST['ModeloMOD'] == $ListadoModelo[$i]['IdModelo']) ? 'selected' : '';
-                                    echo "<option value='{$ListadoModelo[$i]['IdModelo']}' $selected>{$ListadoModelo[$i]['NombreModelo']}</option>";
-                                }
-                            } 
-                            else {
-                                echo "<option value=''>No se encontraron grupos</option>";
-                            }
-                            ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="modificarGrupo" class="form-label">Grupo</label>
-                            <select class="form-select" aria-label="Selector" id="modificarGrupo" name="GrupoMOD"
-                                required>
-                                <option value="" selected>Selecciona una opción</option>
-
-                                <?php 
-                            // Asegúrate de que $ListadoGrupo contiene datos antes de procesarlo
-                            if (!empty($ListadoGrupo)) {
-                                $selected = '';
-                                for ($i = 0; $i < $CantidadGrupo; $i++) {
-                                    // Lógica para verificar si el grupo debe estar seleccionado
-                                    $selected = (!empty($_POST['GrupoMOD']) && $_POST['GrupoMOD'] == $ListadoGrupo[$i]['IdGrupo']) ? 'selected' : '';
-                                    echo "<option value='{$ListadoGrupo[$i]['IdGrupo']}' $selected>{$ListadoGrupo[$i]['NombreGrupo']}</option>";
-                                }
-                            } 
-                            else {
-                                echo "<option value=''>No se encontraron grupos</option>";
-                            }
-                            ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="modificarCombustible" class="form-label">Combustible</label>
-                            <select class="form-select" aria-label="Selector" id="modificarCombustible"
-                                name="CombustibleMOD" required>
-                                <option value="" selected>Selecciona una opción</option>
-
-                                <?php 
-                            // Asegúrate de que $ListadoCombustible contiene datos antes de procesarlo
-                            if (!empty($ListadoCombustible)) {
-                                $selected = '';
-                                for ($i = 0; $i < $CantidadCombustible; $i++) {
-                                    // Lógica para verificar si el grupo debe estar seleccionado
-                                    $selected = (!empty($_POST['CombustibleMOD']) && $_POST['CombustibleMOD'] == $ListadoCombustible[$i]['IdCombustible']) ? 'selected' : '';
-                                    echo "<option value='{$ListadoCombustible[$i]['IdCombustible']}' $selected>{$ListadoCombustible[$i]['TipoCombustible']}</option>";
-                                }
-                            } 
-                            else {
-                                echo "<option value=''>No se encontraron grupos</option>";
-                            }
-                            ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="modificarSucursal" class="form-label">Sucursal</label>
-                            <select class="form-select" aria-label="Selector" id="modificarSucursal" name="SucursalMOD"
-                                required>
-                                <option value="" selected>Selecciona una opción</option>
-
-                                <?php 
-                            // Asegúrate de que $ListadoSucursal contiene datos antes de procesarlo
-                            if (!empty($ListadoSucursal)) {
-                                $selected = '';
-                                for ($i = 0; $i < $CantidadSucursal; $i++) {
-                                    // Lógica para verificar si el grupo debe estar seleccionado
-                                    $selected = (!empty($_POST['SucursalMOD']) && $_POST['SucursalMOD'] == $ListadoSucursal[$i]['IdSucursal']) ? 'selected' : '';
-                                    echo "<option value='{$ListadoSucursal[$i]['IdSucursal']}' $selected> {$ListadoSucursal[$i]['DireccionSucursal']}, {$ListadoSucursal[$i]['CiudadSucursal']} </option>";
-                                }
-                            } 
-                            else {
-                                echo "<option value=''>No se encontraron grupos</option>";
-                            }
-                            ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="modificarDisponible" class="form-label">Disponible</label>
-                            <select class="form-select" id="modificarDisponible" name="DisponibilidadMOD" required>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" name="BotonModificarVehiculo"
-                            value="ModificandoVeh">Modificar</button>
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <script>
-    let selectedRow = null;
-
-    function selectRow(row, matricula) {
-        if (selectedRow) {
-            selectedRow.classList.remove('selected-row');
-        }
-        selectedRow = row;
-        selectedRow.classList.add('selected-row');
-
-        // Guardar matrícula del vehículo seleccionado
-        document.getElementById('modificarMatricula').value = matricula;
-    }
-
-    function modificarVehiculo() {
-        if (!selectedRow) {
-            alert("Por favor, selecciona un vehículo.");
-            return;
-        }
-
-        // Obtener datos de la fila seleccionada
-        const matricula = selectedRow.cells[0].innerText;
-        const modelo = selectedRow.cells[1].innerText;
-        const grupo = selectedRow.cells[2].innerText;
-        const combustible = selectedRow.cells[3].innerText;
-        const sucursal = selectedRow.cells[4].innerText;
-        const disponible = selectedRow.cells[5].innerText;
-
-        // Cargar datos en el formulario del modal
-        document.getElementById('modificarMatricula').value = matricula;
-        document.getElementById('modificarModelo').value = modelo;
-        document.getElementById('modificarGrupo').value = grupo;
-        document.getElementById('modificarCombustible').value = combustible;
-        document.getElementById('modificarSucursal').value = sucursal;
-        document.getElementById('modificarDisponible').value = disponible;
-
-        // Mostrar el modal
-        const modificarModal = new bootstrap.Modal(document.getElementById('modificarVehiculoModal'));
-        modificarModal.show();
-    }
-
-    function renovarVehiculo() {
-        if (!selectedRow) {
-            alert("Por favor, selecciona un vehículo.");
-            return;
-        }
-
-        const matricula = selectedRow.cells[0].innerText; // Obtener matrícula de la fila seleccionada
-        if (confirm(`¿Estás seguro de que deseas eliminar el vehículo con matrícula ${matricula}?`)) {
-            // Realizar llamada AJAX para eliminar el vehículo
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "funciones/EliminarVehiculo.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    alert("Vehículo eliminado exitosamente.");
-                    selectedRow.remove(); // Eliminar la fila de la tabla
-                    selectedRow = null; // Resetear la selección
-                } else {
-                    alert("Error al eliminar el vehículo: " + xhr.responseText);
-                }
-            };
-            xhr.send("matricula=" + encodeURIComponent(matricula));
-        }
-    }
-    </script>
-
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <div>
-        <?php require_once "foot.php"; ?>
-    </div>
+
+    <?php require_once "foot.php"; ?>
 
 </body>
 

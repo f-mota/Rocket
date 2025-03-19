@@ -30,6 +30,34 @@ function ListarModelos($vConexion)
     return $Listado;
 }
 
+function ListarGrupos($vConexion)
+{
+
+    $Listado = array();
+
+    //1) genero la consulta que deseo
+    $SQL = "SELECT id, descripcion, nombre
+        FROM gruposvehiculos
+        ORDER BY id";
+
+    //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
+    $rs = mysqli_query($vConexion, $SQL);
+
+    //3) el resultado deberá organizarse en una matriz, entonces lo recorro
+    $i = 0;
+    while ($data = mysqli_fetch_array($rs)) {
+        $Listado[$i]['ID'] = $data['id'];
+        $Listado[$i]['DESCRIPCION'] = $data['descripcion'];
+        $Listado[$i]['NOMBRE'] = $data['nombre'];
+
+        $i++;
+    }
+
+
+    //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
+    return $Listado;
+}
+
 function ListarCombustibles($vConexion)
 {
 
@@ -97,10 +125,14 @@ function Validar_Datos()
         $vMensaje .= 'Debes ingresar el año de fabricación. <br />';
     }
     if (strlen($_POST['anio']) != 4) {
-        $vMensaje .= 'Debes el año de fabricación debe tener 4 digitos. <br />';
+        $vMensaje .= 'El año de fabricación debe tener 4 digitos. <br />';
     }
     if (empty($_POST['color'])) {
         $vMensaje .= 'Debes ingresar el color. <br />';
+    }
+
+    if (!is_string($_POST['color'])) {
+        $vMensaje .= 'Debes ingresar un color válido. <br />';
     }
 
     if (empty($_POST['tipoCombustible'])) {
@@ -124,7 +156,7 @@ function InsertarVehiculo($vConexion)
     $aireAcondicionado = isset($_POST['Aire']);
     $direccionHidraulica = isset($_POST['Direccion']);
 
-        $SQL_Insert = "INSERT INTO vehiculos (matricula, 
+    $SQL_Insert = "INSERT INTO vehiculos (matricula, 
                                         color, 
                                         fecha_compra, 
                                         fecha_venta, 
@@ -162,15 +194,16 @@ function InsertarVehiculo($vConexion)
                         '" . $_POST['tipoCombustible'] . "', 
                         '" . $_POST['Observaciones'] . "')";
 
-        if (!mysqli_query($vConexion, $SQL_Insert)) {
-            //si surge un error, finalizo la ejecucion del script con un mensaje
-            die('<h4>Error al intentar insertar el registro.</h4>');
-        }
-
-        return true;
+    if (!mysqli_query($vConexion, $SQL_Insert)) {
+        //si surge un error, finalizo la ejecucion del script con un mensaje
+        die('<h4>Error al intentar insertar el registro.</h4>');
     }
 
-function VerificarVehiculoExiste($vConexion){
+    return true;
+}
+
+function VerificarVehiculoExiste($vConexion)
+{
     //1) Genero la consulta
     $SQL = "SELECT COUNT(*) AS total FROM vehiculos WHERE matricula = '" . $_POST['Matricula'] . "'";
 
@@ -184,6 +217,152 @@ function VerificarVehiculoExiste($vConexion){
     return $row['total'] == 0;
 }
 
+function Listar_Vehiculos($conexion)
+{
+
+    $Listado = array();
+
+    // Genero la consulta que deseo
+    $SQL = "SELECT V.matricula, V.id_modelo, V.id_combustible, V.disponible, M.id, M.descripcion AS modelo, M.idGrupo, C.id, C.descripcion AS combustible
+
+            FROM vehiculos V, modelos M, combustibles C
+            WHERE V.id_modelo = M.id 
+            AND V.id_combustible = c.id 
+            ORDER BY V.matricula, M.descripcion; ";
+
+    $rs = mysqli_query($conexion, $SQL);
+
+    // El resultado debe organizarse en una matriz, entonces lo recorro:
+
+    $i = 0;
+
+    while ($data = mysqli_fetch_array($rs)) {
+        $Listado[$i]['MATRICULA'] = $data['matricula'];
+        $Listado[$i]['DISPONIBLE'] = $data['disponible'];
+        $Listado[$i]['MODELO'] = $data['modelo'];
+        $Listado[$i]['GRUPO'] = $data['idGrupo'];
+        $Listado[$i]['COMBUSTIBLE'] = $data['combustible'];
+
+        $i++;
+    }
+
+    // Devuelvo el listado (puede salir vacio o con datos)
+    return $Listado;
+}
+
+function Procesar_Consulta()
+{
+
+    $_POST['Matricula'] = trim($_POST['Matricula']);
+    $_POST['Modelo'] = trim($_POST['Modelo']);
+    $_POST['Grupo'] = trim($_POST['Grupo']);
+    $_POST['Matricula'] = strip_tags($_POST['Matricula']);
+    $_POST['Modelo'] = strip_tags($_POST['Modelo']);
+    $_POST['Grupo'] = strip_tags($_POST['Grupo']);
+}
+
+function Consulta_Vehiculo($matricula, $modelo, $grupo, $activo, $conexion)
+{
+
+    $MATRICULA = "";
+    $MODELO = "";
+    $GRUPO = "";
+    $ACTIVO = "";
+
+    if (isset($matricula)) {
+        $MATRICULA = "AND V.matricula = " . $matricula . " ";
+    }
+
+    if (isset($modelo)) {
+        $MODELO = "AND V.id_modelo = " . $modelo . " ";
+    }
+
+    if (isset($grupo)) {
+        $GRUPO = "AND M.idGrupo = " . $grupo . " ";
+    }
+
+    if ($activo == "S") {
+        $ACTIVO = "AND V.disponible = 1 ";
+    } elseif ($activo == "N") {
+        $ACTIVO = "AND V.disponible = 0 ";
+    }
+
+    $Listado = array();
+
+    // Genero la consulta que deseo
+    $SQL = "SELECT V.matricula, V.id_modelo, V.id_combustible, V.disponible, M.id, M.descripcion AS modelo, M.idGrupo, C.id, C.descripcion AS combustible
+
+            FROM vehiculos V, modelos M, combustibles C
+            WHERE V.id_modelo = M.id 
+            AND V.id_combustible = c.idCombustible
+            " . $MATRICULA . $MODELO . $GRUPO . $ACTIVO . "
+            ORDER BY V.matricula, M.descripcion; ";
+
+    $rs = mysqli_query($conexion, $SQL);
+
+    // El resultado debe organizarse en una matriz, entonces lo recorro:
+
+    $i = 0;
+
+    while ($data = mysqli_fetch_array($rs)) {
+        $Listado[$i]['MATRICULA'] = $data['matricula'];
+        $Listado[$i]['DISPONIBLE'] = $data['disponible'];
+        $Listado[$i]['MODELO'] = $data['modelo'];
+        $Listado[$i]['GRUPO'] = $data['idGrupo'];
+        $Listado[$i]['COMBUSTIBLE'] = $data['combustible'];
 
 
-?>
+        $i++;
+    }
+
+    // Devuelvo el listado (puede salir vacio o con datos)
+    return $Listado;
+}
+
+function Consultar_Vehiculo($matricula, $conexion){
+
+    $Listado = array();
+
+    // Genero la consulta que deseo
+    $SQL = "SELECT V.matricula, V.id_modelo, V.anio, V.color, V.fecha_compra, V.fecha_venta, V.numero_motor, V.numero_chasis, M.idGrupo, V.id_combustible, V.disponible, 
+                    V.kilometraje, V.es_automatico, V.aire_acondicionado, V.dir_hidraulica, V.observaciones, M.id, M.puertas, M.asientos,
+                    M.descripcion AS modelo, C.id, C.descripcion AS combustible
+            FROM vehiculos V, modelos M, combustibles C
+            WHERE V.id_modelo = M.id 
+            AND V.id_combustible = c.id
+            AND V.matricula = $matricula";
+
+    $rs = mysqli_query($conexion, $SQL);
+
+    // El resultado debe organizarse en una matriz, entonces lo recorro:
+
+    $i = 0;
+
+    while ($data = mysqli_fetch_array($rs)) {
+        $Listado[$i]['MATRICULA'] = $data['matricula'];
+        $Listado[$i]['DISPONIBLE'] = $data['disponible'];
+        $Listado[$i]['ID_MODELO'] = $data['id_modelo'];
+        $Listado[$i]['MODELO'] = $data['modelo'];
+        $Listado[$i]['GRUPO'] = $data['idGrupo'];
+        $Listado[$i]['ID_COMBUSTIBLE'] = $data['id'];
+        $Listado[$i]['COMBUSTIBLE'] = $data['combustible'];
+        $Listado[$i]['ANIO'] = $data['anio'];
+        $Listado[$i]['COLOR'] = $data['color'];
+        $Listado[$i]['FECHA_COMPRA'] = $data['fecha_compra'];
+        $Listado[$i]['FECHA_VENTA'] = $data['fecha_venta'];
+        $Listado[$i]['NUMERO_MOTOR'] = $data['numero_motor'];
+        $Listado[$i]['NUMERO_CHASIS'] = $data['numero_chasis'];
+        $Listado[$i]['PUERTAS'] = $data['puertas'];
+        $Listado[$i]['ASIENTOS'] = $data['asientos'];
+        $Listado[$i]['KILOMETRAJE'] = $data['kilometraje'];
+        $Listado[$i]['AUTOMATICO'] = $data['es_automatico'];
+        $Listado[$i]['AIRE'] = $data['aire_acondicionado'];
+        $Listado[$i]['DIRECCION'] = $data['dir_hidraulica'];
+        $Listado[$i]['OBSERVACIONES'] = $data['observaciones'];
+
+        $i++;
+    }
+
+    // Devuelvo el listado (puede salir vacio o con datos)
+    return $Listado;
+}

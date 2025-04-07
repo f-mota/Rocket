@@ -228,6 +228,7 @@ function Listar_Vehiculos($conexion)
             FROM vehiculos V, modelos M, combustibles C
             WHERE V.id_modelo = M.id 
             AND V.id_combustible = c.id 
+            AND V.disponible = 1
             ORDER BY V.matricula, M.descripcion; ";
 
     $rs = mysqli_query($conexion, $SQL);
@@ -253,39 +254,12 @@ function Listar_Vehiculos($conexion)
 function Procesar_Consulta()
 {
 
-    $_POST['Matricula'] = trim($_POST['Matricula']);
-    $_POST['Modelo'] = trim($_POST['Modelo']);
-    $_POST['Grupo'] = trim($_POST['Grupo']);
-    $_POST['Matricula'] = strip_tags($_POST['Matricula']);
-    $_POST['Modelo'] = strip_tags($_POST['Modelo']);
-    $_POST['Grupo'] = strip_tags($_POST['Grupo']);
+    isset($_POST['Matricula']) ? $_POST['Matricula'] = strip_tags(trim($_POST['Matricula'])) : "";
+    isset($_POST['Modelo']) ? $_POST['Modelo'] = strip_tags(trim($_POST['Modelo'])) : "";
+    isset($_POST['Grupo']) ? $_POST['Grupo'] = strip_tags(trim($_POST['Grupo'])) : "";
 }
-
 function Consulta_Vehiculo($matricula, $modelo, $grupo, $activo, $conexion)
 {
-
-    $MATRICULA = "";
-    $MODELO = "";
-    $GRUPO = "";
-    $ACTIVO = "";
-
-    if (isset($matricula)) {
-        $MATRICULA = "AND V.matricula = " . $matricula . " ";
-    }
-
-    if (isset($modelo)) {
-        $MODELO = "AND V.id_modelo = " . $modelo . " ";
-    }
-
-    if (isset($grupo)) {
-        $GRUPO = "AND M.idGrupo = " . $grupo . " ";
-    }
-
-    if ($activo == "S") {
-        $ACTIVO = "AND V.disponible = 1 ";
-    } elseif ($activo == "N") {
-        $ACTIVO = "AND V.disponible = 0 ";
-    }
 
     $Listado = array();
 
@@ -294,9 +268,27 @@ function Consulta_Vehiculo($matricula, $modelo, $grupo, $activo, $conexion)
 
             FROM vehiculos V, modelos M, combustibles C
             WHERE V.id_modelo = M.id 
-            AND V.id_combustible = c.idCombustible
-            " . $MATRICULA . $MODELO . $GRUPO . $ACTIVO . "
-            ORDER BY V.matricula, M.descripcion; ";
+            AND V.id_combustible = c.id";
+
+    if (!empty($matricula)) {
+        $SQL .= " AND V.matricula = '" . $matricula . "' ";
+    }
+
+    if (!empty($modelo)) {
+        $SQL .= " AND V.id_modelo = '" . $modelo . "' ";
+    }
+
+    if (!empty($grupo)) {
+        $SQL .= "AND M.idGrupo = '" . $grupo . "' ";
+    }
+
+    if ($activo == "S") {
+        $SQL .= " AND V.disponible = 1 ";
+    } elseif ($activo == "N") {
+        $SQL .= " AND V.disponible = 0 ";
+    }
+
+    $SQL .= " ORDER BY V.matricula";
 
     $rs = mysqli_query($conexion, $SQL);
 
@@ -319,7 +311,8 @@ function Consulta_Vehiculo($matricula, $modelo, $grupo, $activo, $conexion)
     return $Listado;
 }
 
-function Consultar_Vehiculo($matricula, $conexion){
+function Consultar_Vehiculo($matricula, $conexion)
+{
 
     $Listado = array();
 
@@ -339,30 +332,33 @@ function Consultar_Vehiculo($matricula, $conexion){
     $i = 0;
 
     while ($data = mysqli_fetch_array($rs)) {
-        $Listado[$i]['MATRICULA'] = $data['matricula'];
-        $Listado[$i]['DISPONIBLE'] = $data['disponible'];
-        $Listado[$i]['ID_MODELO'] = $data['id_modelo'];
-        $Listado[$i]['MODELO'] = $data['modelo'];
-        $Listado[$i]['GRUPO'] = $data['idGrupo'];
-        $Listado[$i]['ID_COMBUSTIBLE'] = $data['id'];
-        $Listado[$i]['COMBUSTIBLE'] = $data['combustible'];
-        $Listado[$i]['ANIO'] = $data['anio'];
-        $Listado[$i]['COLOR'] = $data['color'];
-        $Listado[$i]['FECHA_COMPRA'] = $data['fecha_compra'];
-        $Listado[$i]['FECHA_VENTA'] = $data['fecha_venta'];
-        $Listado[$i]['NUMERO_MOTOR'] = $data['numero_motor'];
-        $Listado[$i]['NUMERO_CHASIS'] = $data['numero_chasis'];
-        $Listado[$i]['PUERTAS'] = $data['puertas'];
-        $Listado[$i]['ASIENTOS'] = $data['asientos'];
-        $Listado[$i]['KILOMETRAJE'] = $data['kilometraje'];
-        $Listado[$i]['AUTOMATICO'] = $data['es_automatico'];
-        $Listado[$i]['AIRE'] = $data['aire_acondicionado'];
-        $Listado[$i]['DIRECCION'] = $data['dir_hidraulica'];
-        $Listado[$i]['OBSERVACIONES'] = $data['observaciones'];
+
+        $auto = [
+            "Matricula" => $data['matricula'],
+            "Modelo" => $data['modelo'],
+            "IdModelo" => $data['id_modelo'],
+            "Grupo" => $data['idGrupo'],
+            "Anio" => $data['anio'],
+            "Color" => $data['color'],
+            "FechaCompra" => $data['fecha_compra'],
+            "FechaVenta" => $data['fecha_venta'],
+            "Motor" => $data['numero_motor'] == "" ?  "-" : $data['numero_motor'],
+            "Chasis" => $data['numero_chasis'] == "" ? "-" : $data['numero_chasis'],
+            "Combustible" => $data['combustible'],
+            "idCombustible" => $data['id'],
+            "Puertas" => $data['puertas'],
+            "Asientos" => $data['asientos'],
+            "Activo" => $data['disponible'],
+            "Kilometraje" => $data['kilometraje'],
+            "Automatico" => $data['es_automatico'],
+            "Aire" => $data['aire_acondicionado'],
+            "Direccion" => $data['dir_hidraulica'],
+            "Observaciones" => $data['observaciones'] == "" ? "-" : $data['observaciones']
+        ];
 
         $i++;
     }
 
     // Devuelvo el listado (puede salir vacio o con datos)
-    return $Listado;
+    return $auto;
 }

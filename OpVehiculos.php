@@ -14,21 +14,6 @@ if (isset($_POST['BotonCancelar'])) {
 // Incluyo el script con la funcion que genera mi listado
 require_once "funciones/FuncionesVehiculos.php";
 
-
-
-
-
-
-
-
-
-
-
-
-
-//                                                  ACA--------------------------
-
-
 // Filtrado de vehículos
 // Consulta por medio de formulario de Filtro
 if (!empty($_POST['BotonFiltro'])) {
@@ -36,10 +21,20 @@ if (!empty($_POST['BotonFiltro'])) {
     Procesar_Consulta();
 
     $ListadoVehiculos = array();
-    $ListadoVehiculos = Consulta_Vehiculo($_POST['Matricula'], $_POST['Modelo'], $_POST['Grupo'], $_POST['Disponible'], $conexion);
+    $matri = '';
+    $model = '';
+    $grup = '';
+    $dispo = '';
+
+    !empty($_POST['Matricula']) ? $matri = $_POST['Matricula'] : "";
+    !empty($_POST['Modelo']) ? $model = $_POST['Modelo'] : "";
+    !empty($_POST['Grupo']) ? $grup = $_POST['Grupo'] : "";
+    !empty($_POST['Disponible']) ? $dispo = $_POST['Disponible'] : "";
+
+    $ListadoVehiculos = Consulta_Vehiculo($matri, $model, $grup, $dispo, $conexion);
 } else {
 
-    // Listo la totalidad de los registros en la tabla "vehiculos".
+    // Listo la totalidad de los vehículos activos en la tabla "vehiculos".
     $ListadoVehiculos = Listar_Vehiculos($conexion);
 }
 
@@ -52,12 +47,7 @@ if (!empty($_POST['BotonDesfiltrar'])) {
 
 
 // Variables usadas en Registros, Modificaciones, etc.
-$matri = '';
-$dispo = '';
-$model = '';
-$grup = '';
-$combus = '';
-$sucurs = '';
+
 
 
 // SELECCIONES para combo boxes
@@ -97,16 +87,16 @@ require_once "head.php";
                 <h4 class="text-center mb-4">Filtrar Vehículos</h4>
 
                 <form method="post">
-                    <div class="row">
+                    <div class="row  d-flex align-items-center justify-content-around">
 
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-2 mb-3">
                             <label for="matricula" class="form-label">Matrícula</label>
                             <input type="text" class="form-control" id="matricula" name="Matricula"
                                 value="<?php echo !empty($_POST['Matricula']) ? $_POST['Matricula'] : ''; ?> ">
                         </div>
 
 
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <label for="grupo" class="form-label">Grupo</label>
                             <select class="form-select" name="IdGrupo">
                                 <option value=""></option>
@@ -127,17 +117,10 @@ require_once "head.php";
 
                         </div>
 
-                        <div class="col-md-3 mb-3">
-                            <label for="disponible" class="form-label">Activo</label>
-                            <select class="form-select" name="Disponible">
-                                <option value="S">Solo activos</option>
-                                <option value="N">Solo no activos</option>
-                                <option value="T">Todos</option>
-                            </select>
 
-                        </div>
 
-                        <div class="col-md-4 mb-3">
+
+                        <div class="col-md-2 mb-3">
                             <label for="modelo" class="form-label">Modelo</label>
                             <select class="form-select" name="IdModelo">
                                 <option value=""></option>
@@ -156,6 +139,16 @@ require_once "head.php";
 
                             </select>
                         </div>
+
+                        <div class="col-md-2 mb-3">
+                            <label for="disponible" class="form-label">Activo</label>
+                            <select class="form-select" name="Disponible">
+                                <option value="S" <?= (isset($_POST['Disponible']) && $_POST['Disponible'] == "S") ? "selected" : "" ?>>Solo activos</option>
+                                <option value="N" <?= (isset($_POST['Disponible']) && $_POST['Disponible'] == "N") ? "selected" : "" ?>>Solo no activos</option>
+                                <option value="T" <?= (isset($_POST['Disponible']) && $_POST['Disponible'] == "T") ? "selected" : "" ?>>Todos</option>
+                            </select>
+                        </div>
+
                     </div>
                     <div class="mt-4 d-flex d-flex justify-content-around">
                         <button type="submit" class="btn btn-primary" name="BotonFiltro" value="Filtrando">Filtrar</button>
@@ -186,7 +179,7 @@ require_once "head.php";
                                 <td>
                                     <form method="post" action="formularioVehiculos.php">
                                         <input type="hidden" name="ConsultarVehiculo" value="<?php echo $ListadoVehiculos[$i]['MATRICULA']; ?>">
-                                        <button type="submit" class="btn btn-primary btn-sm"><i class="icon-magnifier"></i></button>
+                                        <button type="submit" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Consultar vehículo"><i class="icon-magnifier"></i></button>
                                     </form>
                                 </td>
                                 <td> <?php echo $ListadoVehiculos[$i]['MATRICULA']; ?> </td>
@@ -194,8 +187,19 @@ require_once "head.php";
                                 <td> <?php echo $ListadoVehiculos[$i]['GRUPO']; ?> </td>
                                 <td> <?php echo $ListadoVehiculos[$i]['COMBUSTIBLE']; ?> </td>
                                 <td> <?php echo $ListadoVehiculos[$i]['DISPONIBLE']; ?> </td>
-                                <td> <button type="button" class="btn btn-warning btn-sm mx-3" name="BotonModificarVehiculo"><i class="icon-note"></i></button>
-                                    <button type="button" class="btn btn-danger btn-sm"><i class="icon-trash"></i></button>
+                                <td>
+
+                                    <form method="post" action="formularioVehiculos.php">
+                                        <input type="hidden" name="ModificarVehiculo" value="<?php echo $ListadoVehiculos[$i]['MATRICULA']; ?>">
+                                        <button type="submit" class="btn btn-warning btn-sm mx-3" name="BotonModificarVehiculo" data-toggle="tooltip" data-placement="top" title="Modificar vehículo"><i class="icon-note"></i></button>
+                                    </form>
+
+                                    <form method="post" action="formularioVehiculos.php">
+                                        <input type="hidden" name="EliminarVehiculo" value="<?php echo $ListadoVehiculos[$i]['MATRICULA']; ?>">
+                                        <button type="submit" class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Eliminar vehículo"><i class="icon-trash"></i></button>
+                                    </form>
+
+                                    
                                 </td>
                                 </tr>
                             <?php

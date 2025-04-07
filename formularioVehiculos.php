@@ -13,14 +13,41 @@ $Mensaje = '';
 $Estilo = 'warning';
 $titulo = "";
 $disabled = "";
+$disabledMatricula = "disabled";
+$auto = [
+    "Matricula" => "",
+    "Modelo" => "",
+    "IdModelo" => "",
+    "Grupo" => "",
+    "Anio" => "",
+    "Color" => "",
+    "FechaCompra" => "",
+    "FechaVenta" => "",
+    "Motor" => "",
+    "Chasis" => "",
+    "Combustible" => "",
+    "idCombustible" => "",
+    "Puertas" => "",
+    "Asientos" => "",
+    "Activo" => "",
+    "Kilometraje" => "",
+    "Automatico" => "",
+    "Aire" => "",
+    "Direccion" => "",
+    "Observaciones" => ""
+];
+
 
 if (isset($_POST['RegistrarVehiculo'])) {
     $titulo = "Registro de Vehículo";
+    $disabledMatricula = "";
 } elseif (isset($_POST['ModificarVehiculo'])) {
     $titulo = "Modificar Vehículo";
+    $auto = Consultar_Vehiculo($_POST["ModificarVehiculo"], $conexion);
 } elseif (isset($_POST['ConsultarVehiculo'])) {
     $titulo = "Consultar Vehículo";
     $disabled = "disabled";
+    $auto = Consultar_Vehiculo($_POST["ConsultarVehiculo"], $conexion);
 } elseif (isset($_POST['ConsultarVehiculo'])) {
     $titulo = "Eliminar Vehículo";
     $disabled = "disabled";
@@ -31,6 +58,26 @@ if (isset($_POST['RegistrarVehiculo'])) {
 
 
 if (isset($_POST['BotonRegistrar'])) {
+
+    $auto = [
+        "Matricula" => $_POST["Matricula"],
+        "IdModelo" => $_POST["IdModelo"],
+        "Anio" => $_POST["anio"],
+        "Color" => $_POST["color"],
+        "FechaCompra" => $_POST["fechaCompra"],
+        "FechaVenta" => $_POST["fechaVenta"],
+        "Motor" => $_POST["numeroMotor"],
+        "Chasis" =>  $_POST["numeroChasis"],
+        "idCombustible" => $_POST["tipoCombustible"],
+        "Activo" => $_POST["disponible"],
+        "Kilometraje" => $_POST["kilometraje"],
+        "Automatico" => $_POST["Automatico"],
+        "Aire" => $_POST["Aire"],
+        "Direccion" => $_POST["Direccion"],
+        "Observaciones" => $_POST["Observaciones"]
+    ];
+
+
     if (isset($_POST['RegistrarVehiculo']) || isset($_POST['ModificarVehiculo'])) {
         $Mensaje = Validar_Datos(); // Valido los datos
         if (empty($Mensaje)) {
@@ -56,10 +103,6 @@ if (isset($_POST['BotonRegistrar'])) {
     }
 }
 
-if (isset($_POST["ConsultarVehiculo"])) {
-
-    $consultarVehiculo = Consultar_Vehiculo($_POST["ConsultarVehiculo"], $conexion);
-}
 ?>
 
 
@@ -78,10 +121,10 @@ if (isset($_POST["ConsultarVehiculo"])) {
             <div class="card-body ">
                 <form role="form" method="post" action="">
                     <div class="row ">
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <label class="form-label">Matrícula</label>
-                            <input type="text" class="form-control" placeholder="Ingrese matrícula" name="Matricula" <?php echo $disabled ?>
-                                value="<?php echo isset($_POST['BotonRegistrar']) ? $_POST["Matricula"] : ""; ?><?php echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["MATRICULA"] : ""; ?>">
+                            <input type="text" class="form-control" placeholder="Ingrese matrícula" name="Matricula" <?php echo $disabledMatricula ?>
+                                value="<?php echo !empty($auto["Matricula"]) ? $auto["Matricula"] : ""; ?>">
                         </div>
 
                         <div class="col-md-3">
@@ -93,8 +136,8 @@ if (isset($_POST["ConsultarVehiculo"])) {
                                 $ListadoModelos = ListarModelos($conexion);
                                 if (isset($_POST["ConsultarVehiculo"])) {
                                 ?>
-                                    <option value="<?php echo $consultarVehiculo[0]['ID_MODELO']; ?>" selected>
-                                        <?php echo $consultarVehiculo[0]['MODELO']; ?>
+                                    <option value="<?php echo $auto["IdModelo"]; ?>" selected>
+                                        <?php echo $auto['Modelo']; ?>
                                     </option>
                                     <?php
                                 } else {
@@ -102,7 +145,7 @@ if (isset($_POST["ConsultarVehiculo"])) {
                                     ?>
 
                                         <option value="<?php echo $ListadoModelos[$i]['ID_MODELO']; ?>"
-                                            <?php echo $ListadoModelos[$i]['ID_MODELO'] == $_POST["IdModelo"] ? "selected" : "" ?>>
+                                            <?php echo $ListadoModelos[$i]['ID_MODELO'] == $auto["IdModelo"] ? "selected" : "" ?>>
                                             <?php echo $ListadoModelos[$i]['DESCRIPCION']; ?>
                                         </option>
                                 <?php
@@ -113,27 +156,24 @@ if (isset($_POST["ConsultarVehiculo"])) {
                             </select>
                         </div>
 
-                        <?php if (!isset($_POST['RegistrarVehiculo']) || !isset($_POST['ModificarVehiculo'])) { ?>
+                        <?php if (isset($_POST['ConsultarVehiculo']) || isset($_POST['EliminarVehiculo'])) { ?>
 
                             <div class="col-md-1">
                                 <label class="form-label">Grupo</label>
-                                <input class="form-control" disabled value="<?php echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["GRUPO"] : ""; ?>"></input>
+                                <input class="form-control" disabled value="<?php echo !empty($auto["Grupo"]) ? $auto["Grupo"] : ""; ?>"></input>
                             </div>
 
                         <?php } ?>
 
-                        <div class="col-md-1">
+                        <div class="col-md-2">
                             <label class="form-label">Año</label>
                             <input type="text" class="form-control" placeholder="Año" name="anio" <?php echo $disabled ?>
-                                value="<?php echo isset($_POST['BotonRegistrar']) ? $_POST["anio"] : "";
-                                        echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["ANIO"] : ""; ?>
-                                ">
+                                value="<?php echo !empty($auto["Anio"]) ? $auto["Anio"] : ""; ?>">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Color</label>
                             <input type="text" class="form-control" placeholder="Color del vehículo" name="color" <?php echo $disabled ?>
-                                value="<?php echo isset($_POST['BotonRegistrar']) ? $_POST["color"] : "";
-                                        echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["COLOR"] : ""; ?>">
+                                value="<?php echo !empty($auto["Color"]) ? $auto["Color"] : ""; ?>">
                         </div>
                     </div>
 
@@ -141,14 +181,12 @@ if (isset($_POST["ConsultarVehiculo"])) {
                         <div class="col-md-3">
                             <label class="form-label">Fecha de Compra</label>
                             <input type="date" class="form-control" name="fechaCompra" <?php echo $disabled ?>
-                                value="<?php echo isset($_POST['BotonRegistrar']) ? $_POST["fechaCompra"] : "";
-                                        echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["FECHA_COMPRA"] : ""; ?>">
+                                value="<?php echo !empty($auto["FechaCompra"]) ? $auto["FechaCompra"] : ""; ?>">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Fecha de Venta</label>
                             <input type="date" class="form-control" name="fechaVenta" <?php echo $disabled ?>
-                                value="<?php echo isset($_POST['BotonRegistrar']) ? $_POST["fechaVenta"] : "";
-                                        echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["FECHA_VENTA"] : ""; ?>">
+                                value="<?php echo !empty($auto["FechaVenta"]) ? $auto["FechaVenta"] : ""; ?>">
                         </div>
                     </div>
 
@@ -156,14 +194,12 @@ if (isset($_POST["ConsultarVehiculo"])) {
                         <div class="col-md-4">
                             <label class="form-label">Número de Motor</label>
                             <input type="text" class="form-control" placeholder="Ingrese número de motor" <?php echo $disabled ?>
-                                name="numeroMotor" value="<?php echo isset($_POST['BotonRegistrar']) ? $_POST["numeroMotor"] : "";
-                                                            echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["NUMERO_MOTOR"] : ""; ?>">
+                                name="numeroMotor" value="<?php echo !empty($auto["Motor"]) ? $auto["Motor"] : ""; ?>">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Número de Chasis</label>
                             <input type="text" class="form-control" placeholder="Ingrese número de chasis" <?php echo $disabled ?>
-                                name="numeroChasis" value="<?php echo isset($_POST['BotonRegistrar']) ? $_POST["numeroChasis"] : "";
-                                                            echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["NUMERO_CHASIS"] : ""; ?>">
+                                name="numeroChasis" value="<?php echo !empty($auto["Chasis"]) ? $auto["Chasis"] : ""; ?>">
                         </div>
 
                     </div>
@@ -176,10 +212,10 @@ if (isset($_POST["ConsultarVehiculo"])) {
 
                                 <?php
                                 $ListadoCombustibles = ListarCombustibles($conexion);
-                                if (isset($_POST["ConsultarVehiculo"])) {
+                                if (isset($_POST["ConsultarVehiculo"]) || isset($_POST["EliminarVehiculo"])) {
                                 ?>
-                                    <option value="<?php echo $consultarVehiculo[0]['ID_COMBUSTIBLE']; ?>" selected>
-                                        <?php echo $consultarVehiculo[0]['COMBUSTIBLE']; ?>
+                                    <option value="<?php echo $auto['idCombustible']; ?>" selected>
+                                        <?php echo $auto['Combustible']; ?>
                                     </option>
                                     <?php
                                 } else {
@@ -188,7 +224,7 @@ if (isset($_POST["ConsultarVehiculo"])) {
                                     ?>
 
                                         <option value="<?php echo $ListadoCombustibles[$i]['ID']; ?>"
-                                            <?php echo $ListadoCombustibles[$i]['ID'] == $_POST["tipoCombustible"] ? "selected" : "" ?>>
+                                            <?php echo $ListadoCombustibles[$i]['ID'] == $auto["idCombustible"] ? "selected" : "" ?>>
                                             <?php echo $ListadoCombustibles[$i]['DESCRIPCION']; ?>
                                         </option>
                                 <?php
@@ -199,33 +235,32 @@ if (isset($_POST["ConsultarVehiculo"])) {
                             </select>
                         </div>
 
-                        <?php if (!isset($_POST['RegistrarVehiculo']) || !isset($_POST['ModificarVehiculo'])) { ?>
+                        <?php if (isset($_POST['ConsultarVehiculo']) || isset($_POST['EliminarVehiculo'])) { ?>
 
                             <div class="col-md-1">
                                 <label class="form-label">Puertas</label>
-                                <input type="text" class="form-control" disabled value="<?php echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["PUERTAS"] : ""; ?>">
+                                <input type="text" class="form-control" disabled value="<?php echo !empty($auto["Puertas"]) ? $auto["Puertas"] : ""; ?>">
                             </div>
                             <div class="col-md-1">
                                 <label class="form-label">Asientos</label>
-                                <input type="text" class="form-control" disabled value="<?php echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["ASIENTOS"] : ""; ?>">
+                                <input type="text" class="form-control" disabled value="<?php echo !empty($auto["Asientos"]) ? $auto["Asientos"] : ""; ?>">
                             </div>
 
                         <?php } ?>
 
 
-                        <div class="col-md-1">
+                        <div class="col-md-2">
                             <label class="form-label">Activo</label>
                             <select class="form-select" name="disponible" <?php echo $disabled ?>>
-                            
-                                <option value="1" <?php echo $consultarVehiculo[0]["DISPONIBLE"] == 1 ? "selected" : "" ?>>Sí</option>
-                                <option value="0"<?php echo $consultarVehiculo[0]["DISPONIBLE"] == 0 ? "selected" : "" ?>>No</option>
+
+                                <option value="1" <?php echo $auto["Activo"] == 1 ? "selected" : "" ?>>Sí</option>
+                                <option value="0" <?php echo $auto["Activo"] == 0 ? "selected" : "" ?>>No</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Kilometraje</label>
                             <input type="number" class="form-control" placeholder="Kilometraje actual" <?php echo $disabled ?>
-                                name="kilometraje" value="<?php echo isset($_POST['BotonRegistrar']) ? $_POST["kilometraje"] : "";
-                                                            echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["KILOMETRAJE"] : ""; ?>">
+                                name="kilometraje" value="<?php echo !empty($auto["Kilometraje"]) ? $auto["Kilometraje"] : ""; ?>">
                         </div>
                     </div>
 
@@ -238,24 +273,21 @@ if (isset($_POST["ConsultarVehiculo"])) {
                         <div class="col-md-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="automatico" name="Automatico" <?php echo $disabled ?>
-                                    <?php echo isset($_POST["Automatico"]) ? "checked" : ""; 
-                                    echo $consultarVehiculo[0]["AUTOMATICO"] == 1 ? "checked" : ""; ?>>
+                                    <?php echo !empty($auto["Automatico"]) ? "checked" : ""; ?>>
                                 <label class="form-check-label" for="automatico">Automático</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="aire" name="Aire" <?php echo $disabled ?>
-                                    <?php echo isset($_POST["Aire"]) ? "checked" : "";
-                                    echo $consultarVehiculo[0]["AIRE"] == 1 ? "checked" : ""; ?>>
+                                    <?php echo !empty($auto["Aire"]) ? "checked" : ""; ?>>
                                 <label class="form-check-label" for="aire">Aire Acondicionado</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="direccion" name="Direccion" <?php echo $disabled ?>
-                                    <?php echo isset($_POST["Direccion"]) ? "checked" : ""; 
-                                    echo $consultarVehiculo[0]["DIRECCION"] == 1 ? "checked" : "";?>>
+                                    <?php echo !empty($auto["Direccion"]) ? "checked" : ""; ?>>
                                 <label class="form-check-label" for="direccion">Dirección Hidráulica</label>
                             </div>
                         </div>
@@ -265,8 +297,7 @@ if (isset($_POST["ConsultarVehiculo"])) {
                         <div class="col-md-12">
                             <label class="form-label">Observaciones</label>
                             <textarea class="form-control" rows="3" placeholder="Notas adicionales" <?php echo $disabled ?>
-                                name="Observaciones"><?php echo isset($_POST['BotonRegistrar']) ? $_POST["Observaciones"] : "";
-                                                        echo isset($_POST["ConsultarVehiculo"]) ? $consultarVehiculo[0]["OBSERVACIONES"] : ""; ?></textarea>
+                                name="Observaciones"><?php echo !empty($auto["Observaciones"]) ? $auto["Observaciones"] : ""; ?></textarea>
                         </div>
                     </div>
 

@@ -112,7 +112,7 @@ include('head.php');
     </div>
 
     <!-- Botón de acción -->
-    <div style="margin-top: 5%; margin-bottom: 5%;">
+    <div style="margin-top: 10px; margin-bottom: 5%;">
         <div class="container d-flex justify-content-center">
             <span style="margin-right: 10%;">
                 <a href="contratosAlquiler.php"> <button class="btn" style="color: white; background-color: #a80a0a;" >

@@ -303,12 +303,12 @@ include('head.php');
                     <table class="table table-striped table-hover" id="tablaPedidos">
                         <thead>
                             <tr>
-                                <th style='color: #c7240e;'>
+                                <th style='color: #c7240e;' title="Contador que refiere al orden en el listado. No es el identificador del pedido">
                                     <h3>#</h3>
                                 </th>
-                                <th>ID Pedido</th>
-                                <th>Fecha Pedido</th>
-                                <th>Fecha Entrega</th>
+                                <th title="Número Identificador del pedido">ID Pedido</th>
+                                <th title="Formato de fecha: YYYY/mm/dd">Fecha Pedido</th>
+                                <th title="Formato de fecha: YYYY/mm/dd">Fecha Entrega</th>
                                 <th>Estado del Pedido</th>
                                 <th>Aclaraciones sobre el Estado</th>
                                 <th>Condiciones de Entrega</th>
@@ -328,12 +328,18 @@ include('head.php');
                             </tr>
 
                             <tr class="pedido" data-id="<?= $Pedido['ppIdPedido'] ?>">
-                                <td>
+                                <td title="Contador que refiere al orden en el listado. No es el identificador del pedido">
                                     <h4 style='color: #c7240e;'><?= $contador ?></h4>
                                 </td>
-                                <td><b>ID: <?= $Pedido['ppIdPedido'] ?></b></td>
-                                <td><?= $Pedido['FechaPedido'] ?></td>
-                                <td><?= $Pedido['FechaEntrega'] ?></td>
+                                <td title="Número Identificador del pedido">
+                                    <b>ID: <?= $Pedido['ppIdPedido'] ?></b>
+                                </td>
+                                <td title="Formato de fecha: YYYY/mm/dd">
+                                    <?= $Pedido['FechaPedido'] ?>
+                                </td>
+                                <td title="Formato de fecha: YYYY/mm/dd">
+                                    <?= $Pedido['FechaEntrega'] ?>
+                                </td>
                                 <td>
                                     <?php
                                     // Definir los colores según el estado del pedido

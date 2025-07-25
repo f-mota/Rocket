@@ -267,10 +267,10 @@ include('head.php');
                                 </th>
                                 <th>Estado Contrato</th>
                                 <th>Número Contrato</th>
-                                <th title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo.">
+                                <th title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
                                     Inicio Contrato
                                 </th>
-                                <th title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo.">
+                                <th title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
                                     Finalización Contrato
                                 </th>
                                 <th>Apellido</th>
@@ -327,10 +327,10 @@ include('head.php');
                                         echo "<span class='badge badge-$clase'>" . $ListadoContratos[$i]['EstadoContrato'] . "</span>"; ?>
                                     </td>
                                     <td> <?php echo $ListadoContratos[$i]['IdContrato']; ?> </td>
-                                    <td title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo.">
+                                    <td title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
                                         <?php echo $ListadoContratos[$i]['FechaInicioContrato']; ?>
                                     </td>
-                                    <td title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo.">
+                                    <td title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
                                         <?php echo $ListadoContratos[$i]['FechaFinContrato']; ?>
                                     </td>
                                     <td> <?php echo $ListadoContratos[$i]['apellidoCliente']; ?> </td>

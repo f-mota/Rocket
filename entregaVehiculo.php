@@ -226,10 +226,10 @@ include('head.php');
                                 </th>
                                 <th>Contrato</th>
                                 <th>Estado Contrato</th>
-                                <th title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo.">
+                                <th title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
                                     Inicio Contrato
                                 </th>
-                                <th title="Fecha efectiva de entrega del vehículo al cliente">
+                                <th title="Fecha efectiva de entrega del vehículo al cliente. Formato de fecha: YYYY/mm/dd">
                                     Fecha de Entrega
                                 </th>
                                 <th>Hora de Entrega</th>
@@ -280,10 +280,10 @@ include('head.php');
                                         echo "<span class='badge badge-$clase'>" . $ListadoEntregas[$i]['EstadoContrato'] . "</span>"; ?>
                                     </td>
 
-                                    <td title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo.">
+                                    <td title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
                                         <?php echo $ListadoEntregas[$i]['FechaInicioContrato']; ?>
                                     </td>
-                                    <td title="Fecha efectiva de entrega del vehículo al cliente">
+                                    <td title="Fecha efectiva de entrega del vehículo al cliente. Formato de fecha: YYYY/mm/dd">
                                         <?php echo $ListadoEntregas[$i]['FechaEntrega']; ?>
                                     </td>
                                     <td> <?php echo $ListadoEntregas[$i]['HoraEntrega']; ?> </td>
@@ -483,19 +483,20 @@ include('head.php');
                                         <label for="fechainiciocontrato" class="form-label">Fecha de Inicio del contrato</label>
                                         <input type="text" class="form-control" id="fechainiciocontrato"
                                             name="fechaInicioContrato" value="La fecha registrada en el contrato aparecerá aquí"
-                                            title="La fecha registrada en el contrato no tiene por qué coincidir con fecha real de entrega" readonly>
+                                            title="La fecha registrada en el contrato puede no coincidir con fecha real de entrega. Formato de fecha en pantalla: mm/dd/YYYY" 
+                                            readonly>
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="fechaentrega" class="form-label">Fecha de Entrega efectiva</label>
                                         <input type="date" class="form-control" id="fechaentrega" name="fechaentrega"
-                                            value="" required>
+                                            value="" title="Formato de fecha: YYYY/mm/dd" required>
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="horaentrega" class="form-label">Hora de Entrega</label>
                                         <input type="time" class="form-control" id="horaentrega" name="horaentrega"
-                                            value="" required>
+                                            value="" title="Por favor complete también este campo" required>
                                     </div>
 
                                 </div>

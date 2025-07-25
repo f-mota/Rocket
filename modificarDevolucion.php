@@ -97,10 +97,12 @@ else {
 }
 
 
-// Por último se hace UPDATE de los datos luego de cliquear el botón "Guardar Cambios" (los elementos POST proceden del form debajo)
+// Se hace UPDATE de los datos luego de cliquear cualquiera de los dos botones (los elementos POST proceden del form debajo)
 $mensajeError = "";
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarEntrega'])) {
+if (isset($_POST['BotonModificarEntrega'])) {
+
+    // Se hace UPDATE de los datos luego de cliquear el botón "Guardar Cambios" 
 
     $idVehiculo = $devolucion['IdVehiculo'];  // El vehículo devuelto por el cliente
     $idSucursal = $_POST['SucursalesDisponibles']; // La nueva sucursal seleccionada del combo box
@@ -159,7 +161,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarEntrega
         exit();
 
     }
+} 
+elseif (isset($_POST['BotonDeshabilitarCambiosEntrega'])) {
 
+    // lógica para deshabilitar cambios
+    // Se hace UPDATE de los datos luego de cliquear el botón "Deshabilitar Cambios", y se entrega mensaje acorde
+
+    $idVehiculo = $devolucion['IdVehiculo'];  // El vehículo devuelto por el cliente
+    $idSucursal = $_POST['SucursalesDisponibles']; // La nueva sucursal seleccionada del combo box
+
+    $idContratoAsociado = $devolucion['dvIdContrato']; // El id del contrato asociado a la devolución
+
+    $id_Devolucion = $_POST['IdDevolucion']; 
+    $estadoDevolucion = $_POST['EstadoDevolucion']; 
+    $aclaracionesDevolucion = $_POST['AclaracionesDevolucion']; 
+    $infraccionesDevolucion = $_POST['InfraccionesDevolucion'];
+    $costosInfracciones = $_POST['CostosInfracciones']; 
+    $montoExtra = $_POST['MontoExtra']; 
+    
+
+    $mensajeError = ' ';
+
+    // MODIFICANDO LA SUCURSAL DE DEVOLUCIÓN
+
+    $ModificacionSucursal = "UPDATE vehiculos
+                                SET idSucursal = $idSucursal 
+                                WHERE idVehiculo = $idVehiculo; "; 
+
+    $rs = mysqli_query($conexion, $ModificacionSucursal);
+
+    if (!$rs) {
+        $mensajeError = "No se pudo acceder al vehículo y correspondiente sucursal en la BD. ";
+    }
+
+    // MODIFICANDO Condiciones de devolucion
+
+    $ModificacionEstadoDevolucion = "UPDATE `devoluciones-vehiculos` 
+                                        SET estadoDevolucion = '$estadoDevolucion', 
+                                            aclaracionesDevolucion = '$aclaracionesDevolucion', 
+                                            infraccionesDevolucion = '$infraccionesDevolucion', 
+                                            costosInfracciones = '$costosInfracciones', 
+                                            montoExtra = '$montoExtra', 
+                                            actualizacion = 'S' 
+                                        WHERE idDevolucion = $id_Devolucion; "; 
+
+    $rs = mysqli_query($conexion, $ModificacionEstadoDevolucion);
+
+    if (!$rs) {
+
+        $mensajeError .= "No se pudo actualizar el estado de la devolucion";
+        header("Location: devolucionVehiculo.php?mensaje=" . urlencode($mensajeError));
+        exit();
+    }
+    else {
+
+        // Redirigir después de la actualización y deshabilitación
+        $mensajeError = "Si usted realizó cambios en la devolución correspondiente al contrato número {$idContratoAsociado}, estos han sido guardados. La posibilidad de realizar nuevos cambios ha sido deshabilitada.";
+        echo "<script> 
+            alert('$mensajeError');
+            window.location.href = 'devolucionVehiculo.php?NumeroContrato={$idContratoAsociado}&MatriculaContrato=&ApellidoContrato=&NombreContrato=&DocContrato=&DevolucionDesde=&DevolucionHasta=&BotonFiltrar=FiltrandoDevolucion';
+        </script>";
+        exit();
+
+    }
 }
 
 
@@ -389,6 +453,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarEntrega
                     >
                 </div>
 
+                <br><br>
                 <button type="submit" class="btn btn-dark" name="BotonModificarEntrega" 
                         value="modificandoEntrega"; 
                         <?php 
@@ -403,6 +468,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarEntrega
                         ?>
                 >
                     Guardar Cambios
+                </button>
+                <button type="submit" class="btn btn-warning" name="BotonDeshabilitarCambiosEntrega" 
+                        value="deshabilitandoModificacion"; 
+                        <?php 
+                            // Si la devolución ya fue modificada, boton deshabilitado: 
+                            if ($actualizado == "S") {
+                                echo "disabled";
+                            }
+                            // caso contrario  
+                            if ($actualizado == "N") {                                    
+                                echo " ";
+                            }
+                        ?>
+                >
+                    Deshabilitar Cambios
                 </button>
             </form>
 

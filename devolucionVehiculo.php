@@ -223,10 +223,10 @@ include('head.php');
                                     <h3>#</h3>
                                 </th>
                                 <th>Contrato</th>
-                                <th title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo.">
+                                <th title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
                                     Finalización Contrato
                                 </th>
-                                <th title="Fecha efectiva de devolución del vehículo por parte del cliente">
+                                <th title="Fecha efectiva de devolución del vehículo por parte del cliente. Formato de fecha: YYYY/mm/dd">
                                     Fecha Devolución
                                 </th>
                                 <th>Hora Devolución</th>
@@ -254,10 +254,10 @@ include('head.php');
                                         </span></td>
                                     <td> <?php echo $ListadoDevolucion[$i]['IdContrato']; ?> </td>
 
-                                    <td title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo.">
+                                    <td title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
                                         <?php echo $ListadoDevolucion[$i]['FechaFinContrato']; ?>
                                     </td>
-                                    <td title="Fecha efectiva de devolución del vehículo por parte del cliente">
+                                    <td title="Fecha efectiva de devolución del vehículo por parte del cliente. Formato de fecha: YYYY/mm/dd">
                                         <?php echo $ListadoDevolucion[$i]['FechaDevolucion']; ?>
                                     </td>
 
@@ -477,19 +477,20 @@ include('head.php');
                                         <label for="fechafincontrato" class="form-label">Fecha de Finalización del contrato</label>
                                         <input type="text" class="form-control" id="fechafincontrato"
                                             name="fechaFinContrato" value="La fecha registrada en el contrato aparecerá aquí"
-                                            title="La fecha registrada en el contrato no tiene por qué coincidir con fecha real de devolución" readonly>
+                                            title="La fecha registrada en el contrato puede no coincidir con fecha real de devolución. Formato de fecha en pantalla: mm/dd/YYYY" 
+                                            readonly>
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="fechadevolucion" class="form-label">Fecha de Devolución efectiva</label>
                                         <input type="date" class="form-control" id="fechadevolucion"
-                                            name="fechadevolucion" required>
+                                            name="fechadevolucion" title="Formato de fecha: YYYY/mm/dd" required>
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="horadevolucion" class="form-label">Hora de Devolución</label>
                                         <input type="time" class="form-control" id="horadevolucion"
-                                            name="horadevolucion" required>
+                                            name="horadevolucion" title="Por favor complete también este campo" required>
                                     </div>
                                 </div>
 

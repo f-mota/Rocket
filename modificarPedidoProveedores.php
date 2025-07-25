@@ -92,7 +92,7 @@ function obtenerNombre($conexion, $tabla, $idCampo, $id, $nombreCampo) {
 
             <div class="form-container">
 
-                <h2 class="mb-4">Modificar Pedido a Proveedor #<?= $pedido['idPedido'] ?></h2><br>
+                <h2 class="mb-4">Modificar Pedido a Proveedor ID = <?= $pedido['idPedido'] ?></h2><br>
 
                 <!-- Mostrar mensaje de restricción si corresponde -->
                 <?php if ($mensajeRestriccion): ?>

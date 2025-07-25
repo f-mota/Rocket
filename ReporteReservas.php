@@ -19,15 +19,18 @@ include('head.php');
 
 ?>
 
-<body class="bg-light">
-    <div style="margin: auto; max-width: 90%;">
-        <div class="" style="margin-bottom: 120px;">
+<body class="bg-light" style="margin: 0 auto;">
+    <div class="wrapper" style="margin-bottom: 40px; min-height: 100%; overflow: hidden;">
+        <div class="container" style="max-width: 97%;">
             
-            <div class="p-5 mb-4 bg-white shadow-sm" style="margin-top: 10%; border: 2px solid #5250ab; border-radius: 14px;">
+            <div class="table-responsive p-5 mb-4 bg-white shadow-sm" style="max-width: 97%; max-height: 700px; margin-top: 10%; border: 2px solid #5250ab; border-radius: 14px;">
 
-                <h2 class="mb-4 text-secondary"><strong>Reporte: Reservas de vehículos </strong></h2>
+                <h2 class="mb-4 text-secondary">
+                    <strong>Reporte: Reservas de vehículos </strong>
+                </h2>
                 
                 <!-- Tabla con reporte de reservas -->
+
                 <table class="table table-striped table-hover" id="tablaReservas">
                     <thead>
                         <tr>
@@ -92,22 +95,22 @@ include('head.php');
                     </tbody>
                 </table>                    
 
-                <!-- Botón de acción -->
-                <div style="margin-top: 5%; margin-bottom: 3%;">
-                    <div class="container d-flex justify-content-center">
-                        <span style="margin-right: 10%;">
-                            <a href="reservas.php"> <button class="btn" style="color: white; background-color: #5250ab;" >
-                                Volver
-                            </button></a>
-                        </span>
-
-                        <a href="ReporteReservas_pdf.php"> <button class="btn btn-warning" >
-                            Imprimir
-                        </button></a>
-                    </div>
-                </div>
-
             </div>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div style="margin-top: 10px; margin-bottom: 5%;">
+        <div class="container d-flex justify-content-center">
+            <span style="margin-right: 10%;">
+                <a href="reservas.php"> <button class="btn" style="color: white; background-color: #5250ab;" >
+                    Volver
+                </button></a>
+            </span>
+
+            <a href="ReporteReservas_pdf.php"> <button class="btn btn-warning" >
+                Imprimir
+            </button></a>
         </div>
     </div>
 

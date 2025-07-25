@@ -20,7 +20,7 @@ include('head.php');
 ?>
 
 <body class="bg-light" style="margin: 0 auto;">
-    <div class="wrapper" style="margin-bottom: 100px; min-height: 100%;">
+    <div class="wrapper" style="margin-bottom: 40px; min-height: 100%; overflow: hidden;">
         <div class="container" style="max-width: 97%;">
             
             <div class="table-responsive p-5 mb-4 bg-white shadow-sm" style="max-width: 97%; max-height: 700px; margin-top: 10%; border: 2px solid #a80a0a; border-radius: 14px;">
@@ -109,26 +109,25 @@ include('head.php');
                 </table>                    
             </div>
         </div>
+    </div>
 
-        <!-- Botón de acción -->
-        <div style="margin-top: 5%; margin-bottom: 5%;">
-            <div class="container d-flex justify-content-center">
-                <span style="margin-right: 10%;">
-                    <a href="contratosAlquiler.php"> <button class="btn" style="color: white; background-color: #a80a0a;" >
-                        Volver
-                    </button></a>
-                </span>
-
-                <a href="ReporteContratos_pdf.php"> <button class="btn btn-warning" >
-                    Imprimir
+    <!-- Botón de acción -->
+    <div style="margin-top: 5%; margin-bottom: 5%;">
+        <div class="container d-flex justify-content-center">
+            <span style="margin-right: 10%;">
+                <a href="contratosAlquiler.php"> <button class="btn" style="color: white; background-color: #a80a0a;" >
+                    Volver
                 </button></a>
-            </div>
-        </div>
+            </span>
 
-        <div style="">
-            <?php require_once "foot.php"; ?>
+            <a href="ReporteContratos_pdf.php"> <button class="btn btn-warning" >
+                Imprimir
+            </button></a>
         </div>
+    </div>
 
+    <div style="">
+        <?php require_once "foot.php"; ?>
     </div>
 
 </body>

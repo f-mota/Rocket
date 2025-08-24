@@ -265,17 +265,39 @@ video here
 
 <br>
 
-**EN**<br>
-Complete review including documentation in Confluence, work management in Jira, testing in Zephyr using BDD and Gherkin syntax, and system functionalities.
+#### Documentation & Functionalities Review
 
-📺 [Watch the review on YouTube](https://www.youtube.com/watch?v=5DLfTt6_gyo)
+<br>
+
+**EN**<br>
+Complete review including documentation in Confluence, work management in Jira, test cases in Zephyr using BDD and Gherkin syntax, and system functionalities.
+
+📺 [Watch the review on YouTube](https://www.youtube.com/watch?v=b8RnsQvW8ns)
 
 <br>
 
 **ES**<br>
-Review completa incluyendo documentación en Confluence, gestión del trabajo en Jira, testing en Zephyr usando BDD y sintaxis Gherkin, y funcionalidades del sistema.
+Review completa incluyendo documentación en Confluence, gestión del trabajo en Jira, casos de prueba en Zephyr usando BDD y sintaxis Gherkin, y funcionalidades del sistema.
 
-📺 [Mirá la revisión en YouTube](https://www.youtube.com/watch?v=5DLfTt6_gyo)
+📺 [Mirá la revisión en YouTube](https://www.youtube.com/watch?v=b8RnsQvW8ns)
+
+<br>
+
+#### Rocket Reports Review
+
+<br>
+
+**EN**<br>
+A quick tour of Rocket Reports sections.
+
+📺 [Watch the review on YouTube](https://www.youtube.com/watch?v=IDcO-afSXdo)
+
+<br>
+
+**ES**<br>
+Un recorrido rápido por las secciones de Reportes de Rocket.
+
+📺 [Mirá la revisión en YouTube](https://www.youtube.com/watch?v=IDcO-afSXdo)
 
 <br> <br>
 

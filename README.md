@@ -322,8 +322,10 @@ Review completa incluyendo documentación en Confluence, gestión del trabajo en
 
 ### 🧪 Testing & QA
 
-- Manual and functional testing workflows | _Flujos de trabajo de pruebas manuales y funcionales_
+- Manual and functional testing cycles integrated into development sprints | _Ciclos de pruebas manuales y funcionales integradas en los sprints de desarrollo_
 - Acceptance testing with BDD/TDD principles | _Pruebas de aceptación con principios BDD/TDD_
+- Quality assurance using Behavior-Driven Development (BDD) and Gherkin syntax | _Aseguramiento de Calidad mediante Desarrollo Guiado por Comportamiento (BDD) y sintaxis Gherkin_
+- Manual test scenarios aligned with real-world use cases | _Escenarios de prueba manuales alineados con casos de uso realistas del negocio_
 
 <br>
 
@@ -343,7 +345,7 @@ Review completa incluyendo documentación en Confluence, gestión del trabajo en
 
 **MIT License.** Extremely permissive. Allows use, modification, distribution, and private/commercial use. Requires attribution.
 
-Copyright (c) 2025 Nicolás D. Servidio
+Copyright (c) 2025 Nicolás Damián Servidio, Bruno Carossi, Eduardo Facundo Mota
 
 ---
 
@@ -357,9 +359,13 @@ Copyright (c) 2025 Nicolás D. Servidio
 📧 nicolasservidio.dm@gmail.com  
 🔗 [LinkedIn](https://www.linkedin.com/in/nicolas-servidio-del-monte) · [GitHub](https://github.com/nicolasservidio)
 
+<br>
+
 **Bruno Carossi**  
 📧 mail aquí
 🔗 [LinkedIn](https://www.linkedin.com/in/nicolas-servidio-del-monte) · [GitHub](https://github.com/nicolasservidio)
+
+<br>
 
 **Eduardo Facundo Mota**  
 📧 mail aquí  

@@ -209,19 +209,19 @@ El proyecto incluyó el diseño integral del sistema, desde la recopilación exh
 
 ### 🔐 Login and Main Dashboard | Login y Panel principal
 
-video here
+https://github.com/user-attachments/assets/574a08e0-953d-44a0-9c51-9c4841075759
 
 <br>
 
 ### 🚗 Vehicle Management | Gestión de Vehículos
 
-video here
+https://github.com/user-attachments/assets/4452fa36-4107-404c-b65f-db312e701a14
 
 <br>
 
 ### 👤 Client Management | Gestión de Clientes
 
-video here
+https://github.com/user-attachments/assets/b988b3d9-2f2c-4318-9a15-ab68fda6aaea
 
 <br>
 

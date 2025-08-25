@@ -259,7 +259,9 @@ https://github.com/user-attachments/assets/9b8d6527-8096-479e-8b79-08ca93dea9e2
 
 ### 📝 Supplier Order Management | Gestión de Pedidos a Proveedores
 
-video here
+https://github.com/user-attachments/assets/4c6f8c77-adeb-4b50-bb4b-0701e8b15579
+
+https://github.com/user-attachments/assets/ca217c39-1131-44fa-97ef-cf9f5c53b7eb
 
 <br> <br>
 

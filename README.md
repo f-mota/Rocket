@@ -11,7 +11,7 @@
 
 <br>
 
-here video
+https://github.com/user-attachments/assets/574a08e0-953d-44a0-9c51-9c4841075759
 
 <br><br>
 
@@ -227,31 +227,33 @@ https://github.com/user-attachments/assets/b988b3d9-2f2c-4318-9a15-ab68fda6aaea
 
 ### 📅 Vehicle Reservation Management | Gestión de Reservas de Vehículos
 
-video here
+https://github.com/user-attachments/assets/98dd4133-3b3d-4f86-af04-5a1a69d5236c
 
 <br>
 
 ### 📄 Rental Contract Management | Gestión de Contratos de Alquiler
 
-video here
+https://github.com/user-attachments/assets/20dd46a5-37b9-4765-8e37-275935b383f7
+
+https://github.com/user-attachments/assets/3f43a2d0-4ed4-49d6-9626-bae00123eeb1
 
 <br>
 
 ### 📦 Vehicle Delivery Management | Gestión de Entregas de Vehículos
 
-video here
+https://github.com/user-attachments/assets/bb1d4643-bdf2-4e5a-88a9-fedb4942a212
 
 <br>
 
 ### 🔁 Vehicle Return Management | Gestión de Devoluciones de Vehículos
 
-video here
+https://github.com/user-attachments/assets/ad7679b8-0aaa-4b69-ae94-f4296abe9522
 
 <br>
 
 ### 🧑‍💼 Supplier Management | Gestión de Proveedores
 
-video here
+https://github.com/user-attachments/assets/9b8d6527-8096-479e-8b79-08ca93dea9e2
 
 <br>
 

@@ -292,7 +292,7 @@ Review completa incluyendo documentación en Confluence, gestión del trabajo en
 <br>
 
 **EN**<br>
-A quick tour of Rocket Reports sections.
+A quick tour through the sections of Reports on Rocket.
 
 📺 [Watch the review on YouTube](https://www.youtube.com/watch?v=IDcO-afSXdo)
 

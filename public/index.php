@@ -1,4 +1,8 @@
 <?php
+echo "Sistema desplegado correctamente.";
+
+/*
+<?php
 
 $uri = $_SERVER['REQUEST_URI'];
 
@@ -9,3 +13,4 @@ if ($uri === '/adminer.php') {
 require_once __DIR__ . '/../index.php';
 
 ?>
+*/

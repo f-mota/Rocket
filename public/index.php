@@ -1,12 +1,6 @@
 
 <?php
 
-
-echo "Adminer está activo";
-
-
-/*
-
 $uri = $_SERVER['REQUEST_URI'];
 
 if ($uri === '/adminer.php') {
@@ -14,7 +8,5 @@ if ($uri === '/adminer.php') {
 }
 
 require_once __DIR__ . '/../index.php';
-
-*/
 
 ?>

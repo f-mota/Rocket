@@ -29,10 +29,13 @@ include('head.php');
             </div>
 
             <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary" name="submitBtn">Iniciar Sesión</button> 
-                <span style="text-align: center; padding-top: 10px;"> 
-                    <a href="cerrarsesion.php"> Cerrar sesión previa</a> 
-                </span>
+                <button type="submit" class="btn btn-primary" name="submitBtn">Iniciar Sesión</button>
+
+                <?php if (isset($_SESSION['Usuario']) && $_SESSION['Usuario'] !== ''): ?>
+                    <span style="text-align: center; padding-top: 10px;">
+                        <a href="cerrarsesion.php"> Cerrar sesión previa</a>
+                    </span>
+                <?php endif; ?>
             </div>
 
 <?php require_once "validar_login.php"?>

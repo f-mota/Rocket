@@ -43,11 +43,10 @@ if (isset($_POST['userId']) && isset($_POST['password'])) {
 
 }
 
-if ($error_message): ?>
+if ($error_message || $validaciones): ?>
     <div class="alert alert-danger mt-3">
         <?php 
-        echo $error_message; 
-        echo $validaciones;
+        echo $validaciones != "" ? $validaciones : $error_message;
         ?>        
     </div>
 <?php endif; ?>

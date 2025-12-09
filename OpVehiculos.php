@@ -440,9 +440,9 @@ require_once "head.php";
 
             <br><br><br>
             <div class="d-flex justify-content-between col-8">
-                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#nuevoVehiculo">Nuevo</button>
-                <button type="button" class="btn btn-warning" id="btnModificar" onclick="modificarVehiculo()" disabled>Modificar</button>
-                <button type="button" class="btn btn-danger" id="btnEliminar" onclick="eliminarVehiculo()" disabled>Eliminar</button>
+                <button type="button" class="btn btn-dark btn-filtrar" data-bs-toggle="modal" data-bs-target="#nuevoVehiculo">Nuevo</button>
+                <button type="button" class="btn btn-warning btn-filtrar" id="btnModificar" onclick="modificarVehiculo()" disabled>Modificar</button>
+                <button type="button" class="btn btn-danger btn-filtrar" id="btnEliminar" onclick="eliminarVehiculo()" disabled>Eliminar</button>
             </div>
 
         </main>
@@ -517,7 +517,7 @@ require_once "head.php";
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" name="BotonRegistrarVehiculo" value="RegistrandoVehiculo">Agregar</button>
+                        <button type="submit" class="btn btn-primary btn-filtrar" name="BotonRegistrarVehiculo" value="RegistrandoVehiculo">Agregar</button>
                     </form>
 
                 </div>

@@ -10,7 +10,9 @@ if (isset($_GET['id'])) {
     $idCliente = $_GET['id'];
 
     // Consulta para eliminar el cliente de la base de datos
-    $consulta = "DELETE FROM clientes WHERE idCliente = ?";
+    $consulta = "UPDATE clientes 
+                SET activo = false 
+                WHERE idCliente = ?;";
     $stmt = $MiConexion->prepare($consulta);
     $stmt->bind_param("i", $idCliente);
     $stmt->execute();
@@ -25,11 +27,8 @@ if (isset($_GET['id'])) {
         header('Location: clientes.php?mensaje=Error al eliminar el cliente.');
         exit();
     }
-} 
-else {
+} else {
     // Si no se pasa un ID, redirigir al listado de clientes
     header('Location: clientes.php');
     exit();
 }
-
-?>

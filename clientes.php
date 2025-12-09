@@ -8,6 +8,7 @@ include('conn/conexion.php');
 $MiConexion = ConexionBD();
 
 // Obtener filtros del formulario
+
 $filtros = [
     'documento' => isset($_GET['documento']) ? trim($_GET['documento']) : '',
     'nombre' => isset($_GET['nombre']) ? trim($_GET['nombre']) : '',
@@ -15,6 +16,7 @@ $filtros = [
     'email' => isset($_GET['email']) ? trim($_GET['email']) : '',
     'telefono' => isset($_GET['telefono']) ? trim($_GET['telefono']) : '',
     'direccion' => isset($_GET['direccion']) ? trim($_GET['direccion']) : '',
+    'soloEliminados' => isset($_GET['soloEliminados']) ? trim($_GET['soloEliminados']) : '',
 ];
 
 // Generar consulta filtrada
@@ -33,19 +35,48 @@ include('head.php');
         $tituloPagina = "CLIENTES";
         include('topNavBar.php');
 
-        if (isset($_GET['mensaje'])) {
-            echo '<div class="alert alert-info" role="alert">' . $_GET['mensaje'] . '</div>';
-        }
-        ?>
+
+        $mensaje = isset($_GET['mensaje']) ? $_GET['mensaje'] : null;
+
+
+        if ($mensaje): ?>
+            <!-- Modal -->
+            <div class="modal fade" id="mensajeModal" tabindex="-1" aria-labelledby="mensajeModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="mensajeModalLabel">Confirmación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <?= htmlspecialchars($mensaje); ?>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="clientes.php" class="btn btn-primary">Aceptar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Script para auto-abrir el modal -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var modal = new bootstrap.Modal(document.getElementById('mensajeModal'));
+                    modal.show();
+                });
+            </script>
+        <?php endif; ?>
+
+
 
         <!-- Algunos efectos moderno para el form de consultas ;) -->
         <style>
-
             @keyframes fadeInUp {
                 from {
                     opacity: 0;
                     transform: translateY(30px);
                 }
+
                 to {
                     opacity: 1;
                     transform: translateY(0);
@@ -53,14 +84,15 @@ include('head.php');
             }
 
             .filtro-consultas {
-                transition: all 0.4s ease-in-out; 
-                border-radius: 15px; 
-                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); 
-                animation: fadeInUp 0.8s ease-in-out; /* Hace que el cuadro "aparezca suavemente" */
+                transition: all 0.4s ease-in-out;
+                border-radius: 15px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                animation: fadeInUp 0.8s ease-in-out;
+                /* Hace que el cuadro "aparezca suavemente" */
             }
 
             .filtro-consultas:hover {
-                transform: translateY(-5px); 
+                transform: translateY(-5px);
                 box-shadow: 0px 10px 20px rgba(198, 167, 31, 0.5);
             }
 
@@ -70,7 +102,8 @@ include('head.php');
             }
 
             .form-control:focus {
-                border: 2px solid rgb(160, 4, 4); /* Resalta con dorado */
+                border: 2px solid rgb(160, 4, 4);
+                /* Resalta con dorado */
                 box-shadow: rgba(152, 10, 10, 0.81);
             }
 
@@ -79,7 +112,8 @@ include('head.php');
             }
 
             .btn-filtrar:hover {
-                transform: scale(1.1); /* Botón se agranda ligeramente */
+                transform: scale(1.1);
+                /* Botón se agranda ligeramente */
             }
         </style>
 
@@ -121,13 +155,27 @@ include('head.php');
                             value="<?= htmlspecialchars($filtros['direccion']) ?>">
                     </div>
                 </div><br>
+
                 <div class="d-flex flex-wrap justify-content-between align-items-center mt-3">
                     <div class="d-flex flex-wrap gap-2">
                         <button type="submit" class="btn btn-black btn-filtrar">Filtrar</button>
                         <a href="clientes.php" class="btn btn-warning btn-filtrar">Limpiar Filtros</a>
                     </div>
+
+                    <!-- Checkbox: Mostrar solo eliminados -->
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox"
+                            id="soloEliminados"
+                            name="soloEliminados"
+                            value="1"
+                            <?= isset($filtros['soloEliminados']) && $filtros['soloEliminados'] == 1 ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="soloEliminados">
+                            Mostrar solo eliminados
+                        </label>
+                    </div>
                 </div>
             </form>
+
         </div>
 
         <!-- Sección de Listado Clientes -->
@@ -136,11 +184,7 @@ include('head.php');
             <h5 class="mb-4 text-secondary"><strong>Listado Clientes</strong></h5>
             <table class="table table-hover" id="tablaClientes">
                 <thead>
-                    <tr>
-                        <th style='color: #bd399e;'>
-                            <h3>#</h3>
-                        </th>
-                        <th>ID Cliente</th>
+                    <tr>                        
                         <th>Documento</th>
                         <th>Nombre</th>
                         <th>Apellido</th>
@@ -155,8 +199,6 @@ include('head.php');
 
                     for ($i = 0; $i < $CantidadClientes; $i++) {
                         echo "<tr class='cliente' data-id='" . $ListadoClientes[$i]['ID'] . "'>
-                            <td><span style='color: #bd399e;'><h3>" . $contador . "</h3></span></td>
-                            <td>" . $ListadoClientes[$i]['ID'] . "</td>
                             <td>" . $ListadoClientes[$i]['DOCUMENTO'] . "</td>
                             <td>" . $ListadoClientes[$i]['NOMBRE'] . "</td>
                             <td>" . $ListadoClientes[$i]['APELLIDO'] . "</td>
@@ -174,10 +216,12 @@ include('head.php');
         <!-- Recuadro con cantidad total de registros encontrados -->
         <style>
             .no-btn-effect {
-                pointer-events: none; /* Evita que se comporte como un botón */
-                box-shadow: none !important; 
-                cursor: default !important; /* Hace que el cursor no cambie */
-                border: none; 
+                pointer-events: none;
+                /* Evita que se comporte como un botón */
+                box-shadow: none !important;
+                cursor: default !important;
+                /* Hace que el cursor no cambie */
+                border: none;
             }
         </style>
         <p class="btn no-btn-effect" style="background-color: rgb(153, 6, 6); color: #ffffff; margin-left: 25px;">
@@ -186,18 +230,32 @@ include('head.php');
 
         <br><br><br>
 
+        <?php $viendoEliminados = isset($_GET['soloEliminados']) && $_GET['soloEliminados'] == 1;
+        ?>
+
         <!-- Botones -->
         <div class="d-flex justify-content-between" style="margin-left: 2%; margin-right: 2%; margin-top: 3%;">
+
             <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#nuevoClienteModal">
                 <i class="fas fa-plus-circle"></i> Nuevo
             </button>
+
             <div>
-                <button class="btn btn-warning" id="btnModificar" onclick="modificarCliente()" disabled>Modificar Cliente</button>
+                <button class="btn btn-warning" id="btnModificar" onclick="modificarCliente()" disabled>
+                    Modificar Cliente
+                </button>
+
                 <button class="btn btn-danger" id="btnEliminar" onclick="eliminarCliente()" disabled>
                     <i class="fas fa-trash-alt"></i> Eliminar
                 </button>
             </div>
         </div>
+
+        <!-- Variable JavaScript para saber si se están viendo eliminados -->
+        <script>
+            const viendoEliminados = <?= $viendoEliminados ? 'true' : 'false' ?>;
+        </script>
+
 
         <!-- Modal para Nuevo Cliente -->
         <div class="modal fade" id="nuevoClienteModal" tabindex="-1" aria-labelledby="nuevoClienteModalLabel" aria-hidden="true">
@@ -252,7 +310,6 @@ include('head.php');
     </div>
 
     <script>
-
         // Desplazamiento vertical al listado luego de consulta
         function scrollToTable() {
             localStorage.setItem('scrollToTable', 'true'); // Guardar indicador antes de enviar
@@ -261,9 +318,12 @@ include('head.php');
         document.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('scrollToTable') === 'true') {
                 setTimeout(() => {
-                    document.getElementById('tablaClientesContenedor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.getElementById('tablaClientesContenedor').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                     localStorage.removeItem('scrollToTable'); // Limpiar indicador después del scroll
-                }, 500); 
+                }, 500);
             }
         });
 
@@ -272,16 +332,29 @@ include('head.php');
         // Selección de cliente al hacer clic en una fila
         document.querySelectorAll('#tablaClientes .cliente').forEach(row => {
             row.addEventListener('click', () => {
-                // Desmarcar cualquier fila previamente seleccionada
-                document.querySelectorAll('.cliente').forEach(row => row.classList.remove('table-active'));
+
+                // Desmarcar selección previa
+                document.querySelectorAll('.cliente').forEach(r => r.classList.remove('table-active'));
+
                 // Marcar la fila seleccionada
                 row.classList.add('table-active');
                 clienteSeleccionado = row.dataset.id;
-                // Habilitar los botones
+
+                // Habilitar Modificar siempre
                 document.getElementById('btnModificar').disabled = false;
-                document.getElementById('btnEliminar').disabled = false;
+
+                // Si NO estamos viendo eliminados → habilitar eliminar
+                let viendoEliminados = document.getElementById('soloEliminados').checked;
+
+                if (!viendoEliminados) {
+                    document.getElementById('btnEliminar').disabled = false;
+                } else {
+                    document.getElementById('btnEliminar').disabled = true;
+                }
             });
         });
+
+
 
         // Función para redirigir a ModificarCliente.php con el ID del cliente seleccionado
         function modificarCliente() {

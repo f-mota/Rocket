@@ -1,8 +1,11 @@
 <?php
-function Listar_Clientes($MiConexion, $filtros = []) {
+function Listar_Clientes($MiConexion, $filtros = [])
+{
     $query = "SELECT idCliente AS ID, dniCliente AS DOCUMENTO, nombreCliente AS NOMBRE, 
               apellidoCliente AS APELLIDO, mailCliente AS EMAIL, telefonoCliente AS TELEFONO, 
-              direccionCliente AS DIRECCION FROM clientes WHERE 1=1";
+              direccionCliente AS DIRECCION 
+              FROM clientes 
+              WHERE 1=1";
 
     $params = [];
     $types = '';
@@ -36,6 +39,13 @@ function Listar_Clientes($MiConexion, $filtros = []) {
         $query .= " AND direccionCliente LIKE ?";
         $params[] = "%" . $filtros['direccion'] . "%";
         $types .= 's';
+    }
+
+    // 🔥 FIX: usar isset() para detectar el checkbox marcado
+    if (isset($filtros['soloEliminados']) && $filtros['soloEliminados'] == '1') {
+        $query .= " AND activo = 0";
+    } else {
+        $query .= " AND activo = 1";
     }
 
     $stmt = $MiConexion->prepare($query);

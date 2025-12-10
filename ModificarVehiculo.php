@@ -10,6 +10,21 @@ include('conn/conexion.php');
 
 $conexion = ConexionBD();
 
+// Importo funciones para listar tablas auxiliares
+require_once 'funciones/Select_Tablas.php';
+
+$ListadoCombustible = Listar_Combustible($conexion);
+$CantidadCombustible = count($ListadoCombustible);
+
+$ListadoGrupo = Listar_Grupo($conexion);
+$CantidadGrupo = count($ListadoGrupo);
+
+$ListadoModelo = Listar_Modelo($conexion);
+$CantidadModelo = count($ListadoModelo);
+
+$sucursalesDisponibles = Listar_Sucursal($conexion);
+$cantidadSucursales = count($sucursalesDisponibles);
+
 
 // Primero se traen los datos del vehículo para mostrar en pantalla y permitir modificar cualquiera de sus campos
 if (isset($_GET['id'])) {
@@ -33,66 +48,38 @@ if (isset($_GET['id'])) {
                    v.dirHidraulica as vHidraulica,
                    v.estadoFisicoDelVehiculo as vEstadoFisico,
                    v.disponibilidad as vDisponibilidad,
+                   v.activo as vActivo,              /* AÑADIDO: Columna activo */
                    v.kilometraje as vKilometraje,
                    v.idModelo as vIdModelo,
                    v.idCombustible as vIdCombustible,
-                   v.idGrupoVehiculo as vIdGrupoVehiculo,
+                   v.idGrupoVehiculo as vIdGrupo,
                    v.idSucursal as vIdSucursal,
-                   m.idModelo,
                    m.nombreModelo as vModelo,
-                   m.descripcionModelo as vDescripcionModelo,
-                   c.idCombustible,
                    c.tipoCombustible as vCombustible,
-                   g.idGrupo,
                    g.nombreGrupo as vGrupo,
-                   g.descripcionGrupo as vDescripcionGrupo,
-                   s.idSucursal as sIdSucursal,
-                   s.numeroSucursal as vSucursal,
                    s.direccionSucursal as vSucursalDireccion,
-                   s.ciudadSucursal as vSucursalCiudad,
-                   s.telefonoSucursal as vSucursalTel
+                   s.ciudadSucursal as vSucursalCiudad
             FROM vehiculos v, modelos m, combustibles c, `grupos-vehiculos` g, sucursales s
-            WHERE v.idVehiculo = $idVehiculo 
-            AND m.idModelo = v.idModelo  
+            WHERE m.idModelo = v.idModelo 
             AND c.idCombustible = v.idCombustible 
             AND g.idGrupo = v.idGrupoVehiculo
-            AND s.idSucursal = v.idSucursal; ";
-
+            AND s.idSucursal = v.idSucursal 
+            AND v.idVehiculo = $idVehiculo "; 
 
     $rs = mysqli_query($conexion, $SQL);
 
-    $vehiculo = mysqli_fetch_array($rs);
-
-
-    // También se traen todas las sucursales disponibles para el dropdown list:
-    $sucursalesDisponibles = array();
-    
-    require_once 'funciones/Select_Tablas.php';
-    $sucursalesDisponibles = Listar_Sucursal($conexion);
-    $cantidadSucursales = count($sucursalesDisponibles);
-
-    // Se traen todos los modelos y grupos de vehículos disponibles para los correspondientes dropdown lists:
-    $gruposDisponibles = array();
-    $gruposDisponibles = Listar_Grupo($conexion);
-    $cantidadGrupos = count($gruposDisponibles);
-
-    $modelosDisponibles = array();
-    $modelosDisponibles = Listar_Modelo($conexion);
-    $cantidadModelos = count($modelosDisponibles);
-
-    // Se traen todos los tipos de combustibles disponibles para el correspondiente dropdown list:
-    $combustiblesDisponibles = array();
-    $combustiblesDisponibles = Listar_Combustible($conexion);
-    $cantidadCombustibles = count($combustiblesDisponibles);
-
+    if ($rs) {
+        $vehiculo = mysqli_fetch_assoc($rs);
+    } else {
+        $mensajeError = "Error al consultar los datos del vehículo.";
+        echo "<script>alert('$mensajeError'); window.location.href = 'OpVehiculos.php';</script>";
+        exit();
+    }
 } 
-
 else {
-    // Si no se pasó correctamente un ID de vehículo, se redirige al módulo:
-    header("Location: OpVehiculos.php?mensaje=No se tomó el ID del vehículo seleccionado");
+    header('Location: OpVehiculos.php');
     exit();
 }
-
 
 // Por último se hace UPDATE de los datos luego de cliquear el botón "Guardar Cambios" (los elementos POST proceden del form debajo)
 $mensajeError = "";
@@ -100,29 +87,24 @@ $mensajeError = "";
 if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehiculo'])) {
 
     // Primero capturo todos los valores del formulario
-    $idVehiculo = $vehiculo['vID'];  // El vehículo devuelto por la consulta SQL
-    $matricula = strip_tags(trim($_POST['Matricula'])); // La matrícula tomada del formulario
-    $idGrupo = $_POST['GrupoVehiculo']; 
-    $idModelo = $_POST['ModeloVehiculo']; 
-    $idCombustible = $_POST['Combustible']; 
-    $color = strip_tags(trim($_POST['Color']));
-    $anioFabricacion = $_POST['AnioFabricacion'];
-    
-    // Proceso la fecha de compra para que sea compatible con formato de MySQL, y almaceno
-    if (!empty($_POST['FechaCompra'])) {
-        $fechaCompra = date("Y-m-d", strtotime($_POST['FechaCompra']));
-    } 
-    else {
-        $fechaCompra = null;
-    }
+    $matricula = isset($_POST['Matricula']) ? $_POST['Matricula'] : $vehiculo['vMatricula'];
+    $color = isset($_POST['Color']) ? $_POST['Color'] : $vehiculo['vColor'];
+    $fechaCompra = isset($_POST['FechaCompra']) ? $_POST['FechaCompra'] : $vehiculo['vFechaCompra'];
+    $precioCompra = isset($_POST['PrecioCompra']) ? $_POST['PrecioCompra'] : $vehiculo['vPrecioCompra'];
+    $anio = isset($_POST['Anio']) ? $_POST['Anio'] : $vehiculo['vAnio'];
+    $numeroMotor = isset($_POST['NumeroMotor']) ? $_POST['NumeroMotor'] : $vehiculo['vNumeroMotor'];
+    $numeroChasis = isset($_POST['NumeroChasis']) ? $_POST['NumeroChasis'] : $vehiculo['vNumeroChasis'];
+    $puertas = isset($_POST['Puertas']) ? $_POST['Puertas'] : $vehiculo['vNumeroPuertas'];
+    $asientos = isset($_POST['Asientos']) ? $_POST['Asientos'] : $vehiculo['vNumeroAsientos'];
+    $kilometraje = isset($_POST['Kilometraje']) ? $_POST['Kilometraje'] : $vehiculo['vKilometraje'];
+    $estadoVehiculo = isset($_POST['EstadoVehiculo']) ? $_POST['EstadoVehiculo'] : $vehiculo['vEstadoFisico'];
+    $idModelo = isset($_POST['IdModelo']) ? $_POST['IdModelo'] : $vehiculo['vIdModelo'];
+    $idGrupo = isset($_POST['IdGrupo']) ? $_POST['IdGrupo'] : $vehiculo['vIdGrupo'];
+    $idCombustible = isset($_POST['IdCombustible']) ? $_POST['IdCombustible'] : $vehiculo['vIdCombustible'];
+    $idSucursal = isset($_POST['IdSucursal']) ? $_POST['IdSucursal'] : $vehiculo['vIdSucursal'];
 
-    $precioCompra = $_POST['PrecioCompra'];
-
-    $numeroMotor = strip_tags(trim($_POST['NumeroMotor']));
-    $numeroChasis = strip_tags(trim($_POST['NumeroChasis']));
-    $numeroPuertas = $_POST['NumeroPuertas'];
-    $numeroAsientos = $_POST['NumeroAsientos'];
-
+    // Procesamiento de campos binarios
+    $automatico = null;
     if ($_POST['Automatico'] == "S" || $_POST['Automatico'] == "N") {
         $automatico = $_POST['Automatico'];
     } 
@@ -130,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
         $automatico = null;
     }
 
+    $aireAcondicionado = null;
     if ($_POST['AireAcondicionado'] == "S" || $_POST['AireAcondicionado'] == "N") {
         $aireAcondicionado = $_POST['AireAcondicionado'];
     } 
@@ -137,456 +120,302 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
         $aireAcondicionado = null;
     }
 
+    $direccionHidraulica = null;
     if ($_POST['DireccionHidraulica'] == "S" || $_POST['DireccionHidraulica'] == "N") {
         $direccionHidraulica = $_POST['DireccionHidraulica'];
     } 
     else {
         $direccionHidraulica = null;
     }
+    
+    // Captura del estado 'activo'
+    $activo = null;
+    if (isset($_POST['Activo']) && ($_POST['Activo'] == '1' || $_POST['Activo'] == '0')) {
+        $activo = $_POST['Activo'];
+    }
 
+    $disponibilidad = null;
     if ($_POST['Disponibilidad'] == "S" || $_POST['Disponibilidad'] == "N") {
         $disponibilidad = $_POST['Disponibilidad'];
     } 
     else {
         $disponibilidad = null;
     }
+
+    // **********************************************
+    // MODIFICACIÓN CRÍTICA: LÓGICA DE CONSISTENCIA
+    // **********************************************
+    if ($activo === '0') {
+        // Si el vehículo se marca como INACTIVO (0), su disponibilidad DEBE ser 'N'.
+        $disponibilidad = 'N'; 
+    }
+    // **********************************************
     
-    $estadoVehiculo = strip_tags(trim($_POST['AclaracionesEstadoVehiculo']));
-    $kilometraje = strip_tags(trim($_POST['Kilometraje']));    
-    $idSucursal = $_POST['Sucursal'];
-
-
     // MODIFICANDO el vehículo
 
     $SqlUpdate = "UPDATE vehiculos 
                                         SET matricula = '$matricula', 
-                                            color = '$color', 
-                                            anio = '$anioFabricacion', 
+                                            color = '$color',
                                             fechaCompra = '$fechaCompra', 
                                             precioCompra = '$precioCompra', 
+                                            anio = '$anio', 
                                             numeroMotor = '$numeroMotor', 
                                             numeroChasis = '$numeroChasis', 
-                                            puertas = '$numeroPuertas', 
-                                            asientos = '$numeroAsientos', 
+                                            puertas = '$puertas', 
+                                            asientos = '$asientos', 
+                                            kilometraje = '$kilometraje',
+                                            idModelo = '$idModelo', 
+                                            idGrupoVehiculo = '$idGrupo', 
+                                            idCombustible = '$idCombustible',
+                                            idSucursal = '$idSucursal',
+                                            disponibilidad = '$disponibilidad', /* Esto usará 'N' si activo=0, o el valor del form si activo=1 */
                                             esAutomatico = '$automatico', 
                                             aireAcondicionado = '$aireAcondicionado', 
                                             dirHidraulica = '$direccionHidraulica', 
-                                            estadoFisicoDelVehiculo = '$estadoVehiculo', 
-                                            kilometraje = '$kilometraje', 
-                                            disponibilidad = '$disponibilidad', 
-                                            idModelo = '$idModelo', 
-                                            idCombustible = '$idCombustible', 
-                                            idGrupoVehiculo = '$idGrupo', 
-                                            idSucursal = '$idSucursal' 
+                                            activo = '$activo',                           
+                                            estadoFisicoDelVehiculo = '$estadoVehiculo' 
                                         WHERE idVehiculo = $idVehiculo; "; 
 
     $rs = mysqli_query($conexion, $SqlUpdate);
 
-    if (!$rs) {
-
-        $mensajeError .= "No se pudo actualizar el vehiculo";
-        header("Location: OpVehiculos.php?mensaje=" . urlencode($mensajeError));
+    if ($rs) {
+        $mensaje = "El vehículo de ID: {$idVehiculo} ha sido modificado exitosamente.";
+        echo "<script>
+              alert('$mensaje');
+              window.location.href = 'OpVehiculos.php';
+        </script>";
         exit();
+    } else {
+        $mensajeError = "Error al modificar el vehículo: " . mysqli_error($conexion);
+        echo "<script>alert('$mensajeError');</script>";
     }
-    else {
-
-        // Redirigir después de la actualización
-        header("Location: OpVehiculos.php?mensaje=Vehiculo actualizado exitosamente");
-        exit();
-    }
-
 }
 
 
 ?>
 
 <body class="bg-light" style="margin: 0 auto;">
-    <div style="min-height: 100%; margin-bottom: 100px;">
-        <div class="wrapper">
-            <?php 
-            
-            include('sidebarGOp.php'); 
-            include('topNavBar.php'); 
-            
-            ?>
-            
-            <div class="p-5 mb-4 bg-white shadow-sm" 
-                 style="margin-top: 10%; margin-left: 1%; max-width: 98%; border: 1px solid #444444; border-radius: 14px;">
-                
-                <?php 
 
-                if ($mensajeError) { ?>
-                    <div class="alert alert-danger mt-3"> 
-                        <?php 
-                            echo "Error al intentar modificar el vehículo. <br><br>"; 
-                            echo $mensajeError; 
-                        ?>        
-                    </div>
-                <?php 
-                } 
-                ?>
+    <?php
+    $tituloPagina = "MODIFICAR VEHÍCULO";
+    require_once "topNavBar.php";
+    require_once "sidebarGop.php";
+    ?>
 
-                <h5 class="mb-4 text-secondary">
-                    <strong>Modificar Vehículo</strong>
-                </h5>
-                
-                <!-- Formulario para modificar el vehículo -->
-                <form method="POST">
+    <div class="container-fluid" style="margin-top: 8%; min-height: 80vh;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg p-4">
+                    <h2 class="card-title text-center mb-4">Modificar Vehículo #<?php echo $idVehiculo; ?></h2>
+                    <form method="post" action="ModificarVehiculo.php?id=<?php echo $idVehiculo; ?>">
 
-                    <div class="mb-3">
-                        <label for="idvehiculo" class="form-label">ID del Vehículo</label>
-                        <input type="text" class="form-control" id="idvehiculo" name="IdVehiculo" 
-                            value="Identificador del vehículo: <?php echo htmlspecialchars($vehiculo['vID']); ?> " disabled>
-                    </div>
+                        <h5 class="mt-4 mb-3">Información General</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="matricula" class="form-label">Matrícula <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="matricula" name="Matricula" value="<?php echo htmlspecialchars($vehiculo['vMatricula']); ?>" maxlength="12" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="color" class="form-label">Color</label>
+                                <input type="text" class="form-control" id="color" name="Color" value="<?php echo htmlspecialchars($vehiculo['vColor']); ?>">
+                            </div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="matricula" class="form-label">Matrícula del vehículo</label>
-                        <input type="text" maxlength="7" class="form-control" id="matricula" name="Matricula" 
-                            value="<?php echo htmlspecialchars($vehiculo['vMatricula']); ?> ">
-                    </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="modelo" class="form-label">Modelo <span class="text-danger">*</span></label>
+                                <select class="form-select" id="modelo" name="IdModelo" required>
+                                    <?php foreach ($ListadoModelo as $mod) : ?>
+                                        <option value="<?php echo $mod['IdModelo']; ?>" <?php echo ($vehiculo['vIdModelo'] == $mod['IdModelo']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($mod['NombreModelo']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="grupo" class="form-label">Grupo <span class="text-danger">*</span></label>
+                                <select class="form-select" id="grupo" name="IdGrupo" required>
+                                    <?php foreach ($ListadoGrupo as $gru) : ?>
+                                        <option value="<?php echo $gru['IdGrupo']; ?>" <?php echo ($vehiculo['vIdGrupo'] == $gru['IdGrupo']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($gru['NombreGrupo']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="grupovehiculo" class="form-label">Grupo </label>
-                        <select class="form-select" aria-label="Selector" id="grupovehiculo" 
-                                title="Grupo al que pertenece el vehículo" 
-                                name="GrupoVehiculo">
-                            <option value="" selected>Selecciona una opción</option>
+                        <h5 class="mt-4 mb-3">Detalles Técnicos</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="puertas" class="form-label">Puertas</label>
+                                <input type="number" class="form-control" id="puertas" name="Puertas" value="<?php echo htmlspecialchars($vehiculo['vNumeroPuertas']); ?>" min="1">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="asientos" class="form-label">Asientos</label>
+                                <input type="number" class="form-control" id="asientos" name="Asientos" value="<?php echo htmlspecialchars($vehiculo['vNumeroAsientos']); ?>" min="1">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="kilometraje" class="form-label">Kilometraje</label>
+                                <input type="number" class="form-control" id="kilometraje" name="Kilometraje" value="<?php echo htmlspecialchars($vehiculo['vKilometraje']); ?>" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                             <div class="col-md-6 mb-3">
+                                <label for="numeroMotor" class="form-label">Número de Motor</label>
+                                <input type="text" class="form-control" id="numeroMotor" name="NumeroMotor" value="<?php echo htmlspecialchars($vehiculo['vNumeroMotor']); ?>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="numeroChasis" class="form-label">Número de Chasis</label>
+                                <input type="text" class="form-control" id="numeroChasis" name="NumeroChasis" value="<?php echo htmlspecialchars($vehiculo['vNumeroChasis']); ?>">
+                            </div>
+                        </div>
 
-                            <?php 
-                            if (!empty($gruposDisponibles)) {
-                                $selected = '';
 
-                                for ($i = 0; $i < $cantidadGrupos; $i++) {  
-                                    // Lógica para verificar el grupo que ya se encuentra seleccionado:
-                                    $selected = (!empty($vehiculo['vIdGrupoVehiculo']) && $vehiculo['vIdGrupoVehiculo'] == $gruposDisponibles[$i]['IdGrupo']) ? 'selected' : '';
-                                    // Generación de opciones:
-                                    echo "<option value='{$gruposDisponibles[$i]['IdGrupo']}' $selected > 
-                                            {$gruposDisponibles[$i]['NombreGrupo']} 
-                                          </option>";
+                        <h5 class="mt-4 mb-3">Equipamiento</h5>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="automatico" class="form-label">Automático</label>
+                                <select class="form-select" id="automatico" name="Automatico">
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="S" <?php echo (isset($vehiculo['vAutomatico']) && $vehiculo['vAutomatico'] == 'S') ? 'selected' : ''; ?>>Sí</option>
+                                    <option value="N" <?php echo (isset($vehiculo['vAutomatico']) && $vehiculo['vAutomatico'] == 'N') ? 'selected' : ''; ?>>No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="aireacondicionado" class="form-label">Aire acondicionado</label>
+                                <select class="form-select" id="aireacondicionado" name="AireAcondicionado">
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="S" <?php echo (isset($vehiculo['vAire']) && $vehiculo['vAire'] == 'S') ? 'selected' : ''; ?>>Sí</option>
+                                    <option value="N" <?php echo (isset($vehiculo['vAire']) && $vehiculo['vAire'] == 'N') ? 'selected' : ''; ?>>No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="direccionhidraulica" class="form-label">Dirección hidráulica</label>
+                                <select class="form-select" id="direccionhidraulica" name="DireccionHidraulica">
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="S" <?php echo (isset($vehiculo['vHidraulica']) && $vehiculo['vHidraulica'] == 'S') ? 'selected' : ''; ?>>Sí</option>
+                                    <option value="N" <?php echo (isset($vehiculo['vHidraulica']) && $vehiculo['vHidraulica'] == 'N') ? 'selected' : ''; ?>>No</option>
+                                </select>
+                            </div>
+                             <div class="col-md-3 mb-3">
+                                <label for="combustible" class="form-label">Combustible <span class="text-danger">*</span></label>
+                                <select class="form-select" id="combustible" name="IdCombustible" required>
+                                    <?php foreach ($ListadoCombustible as $com) : ?>
+                                        <option value="<?php echo $com['IdCombustible']; ?>" <?php echo ($vehiculo['vIdCombustible'] == $com['IdCombustible']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($com['TipoCombustible']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Estado y Ubicación</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="activo" class="form-label">Estado Activo/Inactivo</label>
+                                <select class="form-select" aria-label="Selector" id="activo" name="Activo">
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="1" <?php echo (isset($vehiculo['vActivo']) && $vehiculo['vActivo'] == '1') ? 'selected' : ''; ?>>Activo</option>
+                                    <option value="0" <?php echo (isset($vehiculo['vActivo']) && $vehiculo['vActivo'] == '0') ? 'selected' : ''; ?>>Inactivo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="disponibilidad" class="form-label">Disponibilidad para arrendar </label>
+                                <select class="form-select" aria-label="Selector" id="disponibilidad" name="Disponibilidad" <?php echo (isset($vehiculo['vActivo']) && $vehiculo['vActivo'] == '0') ? 'disabled' : ''; ?>>
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="S" <?php echo (isset($vehiculo['vDisponibilidad']) && $vehiculo['vDisponibilidad'] == 'S') ? 'selected' : ''; ?>>Sí</option>
+                                    <option value="N" <?php echo (isset($vehiculo['vDisponibilidad']) && $vehiculo['vDisponibilidad'] == 'N') ? 'selected' : ''; ?>>No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="estadoVehiculo" class="form-label">Estado Físico del Vehículo</label>
+                                <input type="text" class="form-control" id="estadoVehiculo" name="EstadoVehiculo" value="<?php echo htmlspecialchars($vehiculo['vEstadoFisico']); ?>">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sucursal" class="form-label">Sucursal Asignada <span class="text-danger">*</span></label>
+                            <select class="form-select" aria-label="Selector" id="sucursal" name="IdSucursal" required>
+                                <option value="">Selecciona una sucursal</option>
+                                <?php 
+                                if (!empty($sucursalesDisponibles)) {
+                                    $selected = '';
+
+                                    for ($i = 0; $i < $cantidadSucursales; $i++) {  
+                                        // Lógica para verificar la sucursal seleccionada:
+                                        $selected = (!empty($vehiculo['vIdSucursal']) && $vehiculo['vIdSucursal'] == $sucursalesDisponibles[$i]['IdSucursal']) ? 'selected' : '';
+                                        // Generación de opciones:
+                                        echo "<option value='{$sucursalesDisponibles[$i]['IdSucursal']}' $selected > 
+                                                Ciudad: {$sucursalesDisponibles[$i]['CiudadSucursal']} - Dirección: {$sucursalesDisponibles[$i]['DireccionSucursal']} 
+                                              </option>";
+                                    }
+                                } 
+                                else {
+                                    echo "<option value=''> No se encuentran sucursales disponibles. </option>";
                                 }
-                            } 
-                            else {
-                                echo "<option value=''> No se encuentran grupos disponibles. </option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="modelovehiculo" class="form-label">Modelo </label>
-                        <select class="form-select" aria-label="Selector" id="modelovehiculo" 
-                                title="Modelo del vehículo" 
-                                name="ModeloVehiculo">
-                            <option value="" selected>Selecciona una opción</option>
-
-                            <?php 
-                            if (!empty($modelosDisponibles)) {
-                                $selected = '';
-
-                                for ($i = 0; $i < $cantidadModelos; $i++) {  
-                                    // Lógica para verificar el modelo que ya se encuentra seleccionado:
-                                    $selected = (!empty($vehiculo['vIdModelo']) && $vehiculo['vIdModelo'] == $modelosDisponibles[$i]['IdModelo']) ? 'selected' : '';
-                                    // Generación de opciones:
-                                    echo "<option value='{$modelosDisponibles[$i]['IdModelo']}' $selected > 
-                                            {$modelosDisponibles[$i]['NombreModelo']} 
-                                          </option>";
-                                }
-                            } 
-                            else {
-                                echo "<option value=''> No se encuentran modelos disponibles. </option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="combustible" class="form-label">Combustible preferente </label>
-                        <select class="form-select" aria-label="Selector" id="combustible" 
-                                title="Combustible preferente para el vehículo" 
-                                name="Combustible">
-                            <option value="" selected>Selecciona una opción</option>
-
-                            <?php 
-                            if (!empty($combustiblesDisponibles)) {
-                                $selected = '';
-
-                                for ($i = 0; $i < $cantidadCombustibles; $i++) {  
-                                    // Lógica para verificar el combustible que ya se encuentra seleccionado:
-                                    $selected = (!empty($vehiculo['vIdCombustible']) && $vehiculo['vIdCombustible'] == $combustiblesDisponibles[$i]['IdCombustible']) ? 'selected' : '';
-                                    // Generación de opciones:
-                                    echo "<option value='{$combustiblesDisponibles[$i]['IdCombustible']}' $selected > 
-                                            {$combustiblesDisponibles[$i]['TipoCombustible']} 
-                                          </option>";
-                                }
-                            } 
-                            else {
-                                echo "<option value=''> No se encuentran combustibles disponibles. </option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="color" class="form-label">Color del vehículo</label>
-                        <input type="text" maxlength="20" class="form-control" id="color" name="Color" 
-                            value="<?php echo htmlspecialchars($vehiculo['vColor']); ?> ">
-                    </div>
-
-                    <br>
-                    <div class="mb-3">
-                        <label for="aniofabricacion" class="form-label">Año de fabricación del vehículo</label>
-                        <input type="number" step="1" min="1900" max="2100" class="form-control" id="aniofabricacion" 
-                            name="AnioFabricacion" 
-                            title="No corresponde al año de adquisición del vehículo por parte de la empresa, es el año de fabricación"
-                            value="<?php echo htmlspecialchars($vehiculo['vAnio']); ?>">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="fechacompra" class="form-label">Fecha de Compra</label>
-                        <input type="date" class="form-control" id="fechacompra" title="Fecha de adquisición del vehículo por parte de la empresa" 
-                            name="FechaCompra" 
-                            value="<?php echo htmlspecialchars($vehiculo['vFechaCompra']); ?>" >
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="preciocompra" class="form-label">Precio de compra</label>
-                        <input type="number" step="0.01" min="0" max="1000000000" class="form-control" id="preciocompra" 
-                            name="PrecioCompra" 
-                            title="Precio al que la empresa adquirió el vehículo"
-                            value="<?php echo htmlspecialchars($vehiculo['vPrecioCompra']); ?>">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="numeromotor" class="form-label">Número de motor</label>
-                        <input type="text" maxlength="50" class="form-control" id="numeromotor" name="NumeroMotor" 
-                            title="El número de motor de un automóvil es un código alfanumérico único que identifica el motor específico instalado en un vehículo. Generalmente se encuentra en el bloque del motor, aunque su ubicación puede variar según el modelo del vehículo."
-                            value="<?php echo htmlspecialchars($vehiculo['vNumeroMotor']); ?> ">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="numerochasis" class="form-label">Número de chasis</label>
-                        <input type="text" maxlength="17" class="form-control" id="numerochasis" name="NumeroChasis" 
-                            title="El número de chasis de un auto, también conocido como VIN (Vehicle Identification Number), es un código alfanumérico único de 17 dígitos que identifica cada vehículo. Este número contiene información clave sobre el vehículo, como su país de fabricación, el modelo y las características específicas."
-                            value="<?php echo htmlspecialchars($vehiculo['vNumeroChasis']); ?> ">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="numeropuertas" class="form-label">Número de puertas</label>
-                        <input type="number" step="1" min="1" max="10" class="form-control" id="numeropuertas" 
-                            name="NumeroPuertas" 
-                            title="Número de puertas del vehículo"
-                            value="<?php echo htmlspecialchars($vehiculo['vNumeroPuertas']); ?>">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="numeroasientos" class="form-label">Número de asientos (pasajeros)</label>
-                        <input type="number" step="1" min="1" max="20" class="form-control" id="numeroasientos" 
-                            name="NumeroAsientos" 
-                            title="Número de asientos o pasajeros"
-                            value="<?php echo htmlspecialchars($vehiculo['vNumeroAsientos']); ?>">
-                    </div>
-
-                    <div class="mb-3">
-                        <?php
-                        if ($vehiculo['vAutomatico'] == null) { ?>
-                            
-                            <label for="automatico" class="form-label">Automático</label>
-                            <select class="form-select" id="automatico" name="Automatico">
-                                <option selected>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
+                                ?>
                             </select>
-                        <?php } ?>
+                        </div>
+                        
 
-                        <?php 
-                        if ($vehiculo['vAutomatico'] == "S") { ?>
-                            
-                            <label for="automatico" class="form-label">Automático</label>
-                            <select class="form-select" id="automatico" name="Automatico">
-                                <option>Seleccionar...</option>
-                                <option value="S" selected>Sí</option>
-                                <option value="N">No</option>
-                            </select>
-                        <?php } ?>
+                        <h5 class="mt-4 mb-3">Datos de Adquisición</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="fechaCompra" class="form-label">Fecha de Compra</label>
+                                <input type="date" class="form-control" id="fechaCompra" name="FechaCompra" value="<?php echo htmlspecialchars($vehiculo['vFechaCompra']); ?>">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="precioCompra" class="form-label">Precio de Compra (USD)</label>
+                                <input type="number" class="form-control" id="precioCompra" name="PrecioCompra" value="<?php echo htmlspecialchars($vehiculo['vPrecioCompra']); ?>" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="anio" class="form-label">Año de Fabricación</label>
+                                <input type="number" class="form-control" id="anio" name="Anio" value="<?php echo htmlspecialchars($vehiculo['vAnio']); ?>" min="1900" max="2050">
+                            </div>
+                        </div>
 
-                        <?php 
-                        if ($vehiculo['vAutomatico'] == "N") { ?>
-                            
-                            <label for="automatico" class="form-label">Automático</label>
-                            <select class="form-select" id="automatico" name="Automatico">
-                                <option>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N" selected>No</option>
-                            </select>
-                        <?php } ?>
-                    </div>
+                        <br>
+                        <div class="d-flex justify-content-start gap-2">
+                            <button type="submit" class="btn btn-dark" name="BotonModificarVehiculo" value="modificandoVehiculo">
+                                Guardar Cambios
+                            </button>
+                            <a href="OpVehiculos.php" class="btn btn-secondary">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
 
-                    <div class="mb-3">
-                        <?php
-                        if ($vehiculo['vAire'] == null) { ?>
-                            
-                            <label for="aireacondicionado" class="form-label">Aire Acondicionado</label>
-                            <select class="form-select" id="aireacondicionado" name="AireAcondicionado">
-                                <option selected>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
-                            </select>
-                        <?php } ?>
-
-                        <?php 
-                        if ($vehiculo['vAire'] == "S") { ?>
-                            
-                            <label for="aireacondicionado" class="form-label">Aire Acondicionado</label>
-                            <select class="form-select" id="aireacondicionado" name="AireAcondicionado">
-                                <option>Seleccionar...</option>
-                                <option value="S" selected>Sí</option>
-                                <option value="N">No</option>
-                            </select>
-                        <?php } ?>
-
-                        <?php 
-                        if ($vehiculo['vAire'] == "N") { ?>
-                            
-                            <label for="aireacondicionado" class="form-label">Aire Acondicionado</label>
-                            <select class="form-select" id="aireacondicionado" name="AireAcondicionado">
-                                <option>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N" selected>No</option>
-                            </select>
-                        <?php } ?>
-                    </div>
-
-                    <div class="mb-3">
-                        <?php
-                        if ($vehiculo['vHidraulica'] == null) { ?>
-                            
-                            <label for="direccionhidraulica" class="form-label">Dirección hidráulica</label>
-                            <select class="form-select" id="direccionhidraulica" name="DireccionHidraulica">
-                                <option selected>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
-                            </select>
-                        <?php } ?>
-
-                        <?php 
-                        if ($vehiculo['vHidraulica'] == "S") { ?>
-                            
-                            <label for="direccionhidraulica" class="form-label">Dirección hidráulica</label>
-                            <select class="form-select" id="direccionhidraulica" name="DireccionHidraulica">
-                                <option>Seleccionar...</option>
-                                <option value="S" selected>Sí</option>
-                                <option value="N">No</option>
-                            </select>
-                        <?php } ?>
-
-                        <?php 
-                        if ($vehiculo['vHidraulica'] == "N") { ?>
-                            
-                            <label for="direccionhidraulica" class="form-label">Dirección hidráulica</label>
-                            <select class="form-select" id="direccionhidraulica" name="DireccionHidraulica">
-                                <option>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N" selected>No</option>
-                            </select>
-                        <?php } ?>
-                    </div>
-                    
-                    <br>
-                    <div class="mb-3">
-                        <label for="aclaracionesestadovehiculo" class="form-label">
-                            Aclaraciones sobre el estado físico del vehículo 
-                        </label>
-                        <textarea class="form-control" id="aclaracionesestadovehiculo" maxlength="200" 
-                            name="AclaracionesEstadoVehiculo" 
-                            rows="5" cols="33" 
-                            value="<?php echo htmlspecialchars($vehiculo['vEstadoFisico']); ?>" ><?php echo htmlspecialchars($vehiculo['vEstadoFisico']); ?></textarea>
-                    </div>
-                    <br>
-
-                    <div class="mb-3">
-                        <label for="kilometraje" class="form-label">Kilometraje y fecha</label>
-                        <input type="text" maxlength="50" class="form-control" id="kilometraje" name="Kilometraje" 
-                            title="Se sugiere colocar la fecha de medición junto al valor del kilometraje"
-                            value="<?php echo htmlspecialchars($vehiculo['vKilometraje']); ?> ">
-                    </div>
-
-                    <div class="mb-3">
-                        <?php
-                        if ($vehiculo['vDisponibilidad'] == null) { ?>
-                            
-                            <label for="disponibilidad" class="form-label" title="Disponibilidad para la reserva por parte de clientes">
-                                Disponibilidad
-                            </label>
-                            <select class="form-select" id="disponibilidad" name="Disponibilidad" title="Disponibilidad para la reserva">
-                                <option selected>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
-                            </select>
-                        <?php } ?>
-
-                        <?php 
-                        if ($vehiculo['vDisponibilidad'] == "S") { ?>
-                            
-                            <label for="disponibilidad" class="form-label" title="Disponibilidad para la reserva por parte de clientes">
-                                Disponibilidad
-                            </label>
-                            <select class="form-select" id="disponibilidad" name="Disponibilidad" title="Disponibilidad para la reserva">
-                                <option>Seleccionar...</option>
-                                <option value="S" selected>Sí</option>
-                                <option value="N">No</option>
-                            </select>
-                        <?php } ?>
-
-                        <?php 
-                        if ($vehiculo['vDisponibilidad'] == "N") { ?>
-                            
-                            <label for="disponibilidad" class="form-label" title="Disponibilidad para la reserva por parte de clientes">
-                                Disponibilidad
-                            </label>
-                            <select class="form-select" id="disponibilidad" name="Disponibilidad" title="Disponibilidad para la reserva">
-                                <option>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N" selected>No</option>
-                            </select>
-                        <?php } ?>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="sucursales" class="form-label"> Sucursal </label>
-                        <select class="form-select" aria-label="Selector" id="sucursales" 
-                                title="Sucursal en la que se encuentra el vehículo" 
-                                name="Sucursal">
-                            <option value="" selected>Selecciona una opción</option>
-
-                            <?php 
-                            if (!empty($sucursalesDisponibles)) {
-                                $selected = '';
-
-                                for ($i = 0; $i < $cantidadSucursales; $i++) {  
-                                    // Lógica para verificar la sucursal seleccionada:
-                                    $selected = (!empty($vehiculo['vIdSucursal']) && $vehiculo['vIdSucursal'] == $sucursalesDisponibles[$i]['IdSucursal']) ? 'selected' : '';
-                                    // Generación de opciones:
-                                    echo "<option value='{$sucursalesDisponibles[$i]['IdSucursal']}' $selected > 
-                                            Ciudad: {$sucursalesDisponibles[$i]['CiudadSucursal']} - Dirección: {$sucursalesDisponibles[$i]['DireccionSucursal']} 
-                                          </option>";
-                                }
-                            } 
-                            else {
-                                echo "<option value=''> No se encuentran sucursales disponibles. </option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <br>
-                    <button type="submit" class="btn btn-dark" name="BotonModificarVehiculo" value="modificandoVehiculo"; >
-                        Guardar Cambios
-                    </button>
-                </form>
-
+                </div>
             </div>
         </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const activoSelect = document.getElementById('activo');
+            const disponibilidadSelect = document.getElementById('disponibilidad');
+
+            function updateDisponibilidadState() {
+                // Si el estado seleccionado es Inactivo (0), deshabilitar la disponibilidad
+                if (activoSelect.value === '0') {
+                    disponibilidadSelect.disabled = true;
+                    // Opcional: mostrar visualmente que se forzará a 'No'
+                    disponibilidadSelect.value = 'N'; 
+                } else {
+                    disponibilidadSelect.disabled = false;
+                    // Asegurarse de que el valor original se restaure si es necesario, aunque el PHP lo recalcula.
+                    // Para el front, simplemente lo habilitamos.
+                }
+            }
+
+            activoSelect.addEventListener('change', updateDisponibilidadState);
+
+            // Ejecutar al cargar para manejar el estado inicial (si viene de la DB como inactivo)
+            updateDisponibilidadState();
+        });
+    </script>
+    
 
 </body>
 </html>

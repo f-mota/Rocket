@@ -1,6 +1,7 @@
 <?php
 
-function Registrar_Vehiculo($matricula, $modelo, $grupo, $disponible, $conn) {
+// MODIFICADO: Se agrega el parámetro $activo
+function Registrar_Vehiculo($matricula, $modelo, $grupo, $disponible, $activo, $conn) {
 
     // Preprocesamiento
     $matricula = trim($matricula);
@@ -40,21 +41,20 @@ function Registrar_Vehiculo($matricula, $modelo, $grupo, $disponible, $conn) {
     }
 
     // Inserto en la BD
-    $SQL = "INSERT INTO vehiculos (matricula, fechaCompra, idModelo, idGrupoVehiculo, disponibilidad, idCombustible, idSucursal) 
-            VALUES ('$matricula', NOW(), $modelo, $grupo, '$disponible', 9, 3); ";
+    // MODIFICADO: Se añade 'activo' a las columnas y $activo a los VALUES
+    $SQL = "INSERT INTO vehiculos (matricula, fechaCompra, idModelo, idGrupoVehiculo, disponibilidad, activo, idCombustible, idSucursal) 
+            VALUES ('$matricula', NOW(), $modelo, $grupo, '$disponible', $activo, 9, 3); ";
     
     $rs = mysqli_query($conn, $SQL);
 
     if (!$rs) {
-        //si surge un error, finalizo la ejecucion del script con un mensaje
-        die('<h4>Error al intentar agregar el vehículo.</h4>');
+        // Redirigir con un mensaje de error
+        $mensaje = "Registro fallido. No fue posible insertar el vehículo en la base de datos: " . mysqli_error($conn);
+        echo "<script>alert('$mensaje'); window.location.href = 'OpVehiculos.php';</script>";
+        exit();
     }
 
-    // Recuperar el ID del vehículo recién insertado
-    $id_vehiculo = mysqli_insert_id($conn);
-    
-    return $id_vehiculo;
-
+    // Obtener el idVehiculo
+    $idVehiculo = mysqli_insert_id($conn);
+    return $idVehiculo;
 }
-
-?>

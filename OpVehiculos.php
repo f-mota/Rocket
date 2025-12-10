@@ -8,11 +8,10 @@ Corroborar_Usuario(); // No se puede ingresar a la página php a menos que se ha
 require_once "conn/conexion.php";
 $conexion = ConexionBD();
 
-// Incluyo el script con la funcion que genera mi listado
+// Incluyo las funciones necesarias para listado y consulta
 require_once 'funciones/vehiculos listado.php';
-$ListadoVehiculos = Listar_Vehiculos($conexion);
-$CantidadVehiculos = count($ListadoVehiculos);
-
+require_once 'funciones/vehiculo consulta.php';
+require_once 'funciones/Select_Tablas.php'; // AÑADIDO: Necesario para listar sucursales
 
 // Filtrado de vehículos
 
@@ -22,9 +21,9 @@ $grupo = isset($_POST['Grupo']) ? $_POST['Grupo'] : '';
 $color = isset($_POST['Color']) ? $_POST['Color'] : '';
 $combustible = isset($_POST['Combustible']) ? $_POST['Combustible'] : '';
 $disponibilidad = isset($_POST['Disponibilidad']) ? $_POST['Disponibilidad'] : '';
-$ciudadsucursal = isset($_POST['CiudadSucursal']) ? $_POST['CiudadSucursal'] : '';
-$direccionsucursal = isset($_POST['DireccionSucursal']) ? $_POST['DireccionSucursal'] : '';
-$telsucursal = isset($_POST['TelSucursal']) ? $_POST['TelSucursal'] : '';
+// REMOVIDOS los filtros individuales por texto: ciudadsucursal, direccionsucursal, telsucursal
+$idSucursalFiltro = isset($_POST['IdSucursalFiltro']) ? $_POST['IdSucursalFiltro'] : ''; // NUEVO: Filtro por ID de Sucursal
+
 $puertas = isset($_POST['Puertas']) ? $_POST['Puertas'] : '';
 $asientos = isset($_POST['Asientos']) ? $_POST['Asientos'] : '';
 $automatico = isset($_POST['Automatico']) ? $_POST['Automatico'] : '';
@@ -37,37 +36,115 @@ $adquisicionhasta = isset($_POST['AdquisicionHasta']) ? $_POST['AdquisicionHasta
 $preciodesde = isset($_POST['PrecioDesde']) ? $_POST['PrecioDesde'] : '';
 $preciohasta = isset($_POST['PrecioHasta']) ? $_POST['PrecioHasta'] : '';
 
-// Consulta por medio de formulario de Filtro
+// Obtener listado de sucursales para el SELECT del filtro
+$sucursalesDisponibles = Listar_Sucursal($conexion);
+
+// Lógica principal de consulta y filtrado
 if (!empty($_POST['BotonFiltro'])) {
 
-    require_once 'funciones/vehiculo consulta.php';
     Procesar_Consulta();
 
-    $ListadoVehiculos = array();
-    $CantidadVehiculos = '';
-    $ListadoVehiculos = Consulta_Vehiculo($_POST['Matricula'], $_POST['Modelo'], $_POST['Grupo'], $_POST['Color'], $_POST['Combustible'], $_POST['Disponibilidad'], $_POST['CiudadSucursal'], $_POST['DireccionSucursal'], $_POST['TelSucursal'], $_POST['Puertas'], $_POST['Asientos'], $_POST['Automatico'], $_POST['AireAcondicionado'], $_POST['DireccionHidraulica'], $_POST['FabricacionDesde'], $_POST['FabricacionHasta'], $_POST['AdquisicionDesde'], $_POST['AdquisicionHasta'], $_POST['PrecioDesde'], $_POST['PrecioHasta'], $conexion);
+    // Lógica del filtro 'Activo'
+    $activo_filtro = isset($_POST['MostrarInactivos']) && $_POST['MostrarInactivos'] == 'on' ? '0' : '1';
+
+    // MODIFICADO: Se pasa $idSucursalFiltro en lugar de ciudad, dirección y teléfono
+    $ListadoVehiculos = Consulta_Vehiculo(
+        $_POST['Matricula'],
+        $_POST['Modelo'],
+        $_POST['Grupo'],
+        $_POST['Color'],
+        $_POST['Combustible'],
+        $_POST['Disponibilidad'],
+        $idSucursalFiltro,
+        '',
+        '', // ID, y dos strings vacíos para compatibilidad de firma (serán ignorados en vehiculo consulta.php)
+        $_POST['Puertas'],
+        $_POST['Asientos'],
+        $_POST['Automatico'],
+        $_POST['AireAcondicionado'],
+        $_POST['DireccionHidraulica'],
+        $_POST['FabricacionDesde'],
+        $_POST['FabricacionHasta'],
+        $_POST['AdquisicionDesde'],
+        $_POST['AdquisicionHasta'],
+        $_POST['PrecioDesde'],
+        $_POST['PrecioHasta'],
+        $activo_filtro,
+        $conexion
+    );
     $CantidadVehiculos = count($ListadoVehiculos);
 } else {
 
-    // Listo la totalidad de los registros en la tabla "vehiculos". 
-    $ListadoVehiculos = Listar_Vehiculos($conexion);
+    // Si no hay filtro aplicado (carga inicial o desfiltrar no presionado), se muestra el listado por defecto: solo vehículos ACTIVOS (activo = '1')
+    $activo_filtro = '1';
+    // MODIFICADO: Se pasan parámetros de sucursal vacíos
+    $ListadoVehiculos = Consulta_Vehiculo(
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '', // Tres strings vacíos para sucursal (ID, Dir, Tel)
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        $activo_filtro,
+        $conexion
+    );
     $CantidadVehiculos = count($ListadoVehiculos);
 }
 
 if (!empty($_POST['BotonDesfiltrar'])) {
 
-    // Listo la totalidad de los registros en la tabla "vehiculos" 
-    $ListadoVehiculos = Listar_Vehiculos($conexion);
+    // Desfiltrar vuelve a la vista por defecto: solo activos (activo = '1')
+    $activo_filtro = '1';
+    // MODIFICADO: Se pasan parámetros de sucursal vacíos
+    $ListadoVehiculos = Consulta_Vehiculo(
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '', // Tres strings vacíos para sucursal (ID, Dir, Tel)
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        $activo_filtro,
+        $conexion
+    );
     $CantidadVehiculos = count($ListadoVehiculos);
+
+    // Limpiar variables POST para el formulario
     $_POST['Matricula'] = "";
     $_POST['Modelo'] = "";
     $_POST['Grupo'] = "";
     $_POST['Color'] = "";
     $_POST['Combustible'] = "";
     $_POST['Disponibilidad'] = "";
-    $_POST['CiudadSucursal'] = "";
-    $_POST['DireccionSucursal'] = "";
-    $_POST['TelSucursal'] = "";
+    $_POST['IdSucursalFiltro'] = ""; // NUEVO: Limpiar el ID de Sucursal
+    // REMOVIDOS: CiudadSucursal, DireccionSucursal, TelSucursal de la limpieza
     $_POST['Puertas'] = "";
     $_POST['Asientos'] = "";
     $_POST['Automatico'] = "";
@@ -79,6 +156,7 @@ if (!empty($_POST['BotonDesfiltrar'])) {
     $_POST['AdquisicionHasta'] = "";
     $_POST['PrecioDesde'] = "";
     $_POST['PrecioHasta'] = "";
+    $_POST['MostrarInactivos'] = ""; // Limpiar el checkbox
 }
 
 
@@ -89,6 +167,7 @@ $model = '';
 $grup = '';
 $combus = '';
 $sucurs = '';
+$activoREG = '1'; // Estado activo por defecto (1)
 
 // Registrar nuevo vehiculo
 require_once 'funciones/RegistrarVehiculo.php';
@@ -101,19 +180,20 @@ if (!empty($_POST['BotonRegistrarVehiculo'])) {
     $model = $_POST['ModeloREG'];
     $grup = $_POST['GrupoREG'];
     $dispo = $_POST['DisponibilidadREG'];
+    $activoREG = '1'; // Se registra siempre como activo
 
-    $idVehiculo = Registrar_Vehiculo($matri, $model, $grup, $dispo, $conexion);
+    $idVehiculo = Registrar_Vehiculo($matri, $model, $grup, $dispo, $activoREG, $conexion);
 
     $mensaje = "Se registró exitosamente el vehículo de ID: {$idVehiculo} y matrícula: {$matri}.";
-    echo "<script> 
+    echo "<script>
           alert('$mensaje');
           window.location.href = 'OpVehiculos.php';
     </script>";
-    exit(); 
+    exit();
 }
 
 // SELECCIONES para combo boxes del Registro de nuevo vehículo
-require_once 'funciones/Select_Tablas.php';
+// Estas funciones ya están incluidas por require_once 'funciones/Select_Tablas.php';
 
 $ListadoGrupo = Listar_Grupo($conexion);
 $CantidadGrupo = count($ListadoGrupo);
@@ -137,14 +217,13 @@ require_once "head.php";
 
         <main class="d-flex flex-column justify-content-center align-items-center h-100 bg-light bg-gradient p-4">
 
-            <!-- Algunos efectos moderno para el form de consultas ;) -->
             <style>
-
                 @keyframes fadeInUp {
                     from {
                         opacity: 0;
                         transform: translateY(30px);
                     }
+
                     to {
                         opacity: 1;
                         transform: translateY(0);
@@ -152,14 +231,15 @@ require_once "head.php";
                 }
 
                 .filtro-consultas {
-                    transition: all 0.4s ease-in-out; 
-                    border-radius: 15px; 
-                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); 
-                    animation: fadeInUp 0.8s ease-in-out; /* Hace que el cuadro "aparezca suavemente" */
+                    transition: all 0.4s ease-in-out;
+                    border-radius: 15px;
+                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                    animation: fadeInUp 0.8s ease-in-out;
+                    /* Hace que el cuadro "aparezca suavemente" */
                 }
 
                 .filtro-consultas:hover {
-                    transform: translateY(-5px); 
+                    transform: translateY(-5px);
                     box-shadow: 0px 10px 20px rgba(198, 167, 31, 0.5);
                 }
 
@@ -169,7 +249,8 @@ require_once "head.php";
                 }
 
                 .form-control:focus {
-                    border: 2px solid rgb(160, 4, 4); /* Resalta con dorado */
+                    border: 2px solid rgb(160, 4, 4);
+                    /* Resalta con dorado */
                     box-shadow: rgba(152, 10, 10, 0.81);
                 }
 
@@ -178,7 +259,8 @@ require_once "head.php";
                 }
 
                 .btn-filtrar:hover {
-                    transform: scale(1.1); /* Botón se agranda ligeramente */
+                    transform: scale(1.1);
+                    /* Botón se agranda ligeramente */
                 }
             </style>
 
@@ -186,8 +268,8 @@ require_once "head.php";
                 <h4 class="text-center mb-4">Filtrar Vehículos</h4>
 
                 <form action="OpVehiculos.php" method="post" onsubmit="scrollToTable()">
-                    <div class="row">
 
+                    <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="matricula" class="form-label">Matrícula</label>
                             <input type="text" class="form-control" id="matricula" name="Matricula" value="<?php echo !empty($_POST['Matricula']) ? $_POST['Matricula'] : ''; ?>">
@@ -214,65 +296,70 @@ require_once "head.php";
                         <div class="col-md-4 mb-3">
                             <label for="disponibilidad" class="form-label">Disponibilidad</label>
                             <select class="form-select" id="disponibilidad" name="Disponibilidad">
-                                <option selected>Disponibilidad para arrendar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
+                                <option value="" selected>Disponibilidad para arrendar...</option>
+                                <option value="S" <?php echo (isset($_POST['Disponibilidad']) && $_POST['Disponibilidad'] == 'S') ? 'selected' : ''; ?>>Sí</option>
+                                <option value="N" <?php echo (isset($_POST['Disponibilidad']) && $_POST['Disponibilidad'] == 'N') ? 'selected' : ''; ?>>No</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-4 mb-3">
-                            <label for="ciudadsucursal" class="form-label">Ciudad de Sucursal</label>
-                            <input type="text" class="form-control" id="ciudadsucursal" name="CiudadSucursal" value="<?php echo !empty($_POST['CiudadSucursal']) ? $_POST['CiudadSucursal'] : ''; ?>">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="direccionsucursal" class="form-label">Dirección de Sucursal</label>
-                            <input type="text" class="form-control" id="direccionsucursal" name="DireccionSucursal" value="<?php echo !empty($_POST['DireccionSucursal']) ? $_POST['DireccionSucursal'] : ''; ?>">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="telsucursal" class="form-label">Teléfono de Sucursal</label>
-                            <input type="text" class="form-control" id="telsucursal" name="TelSucursal" value="<?php echo !empty($_POST['TelSucursal']) ? $_POST['TelSucursal'] : ''; ?>">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-2 mb-2">
-                            <label for="puertas" class="form-label">Puertas</label>
-                            <input type="text" class="form-control" id="puertas" name="Puertas" value="<?php echo !empty($_POST['Puertas']) ? $_POST['Puertas'] : ''; ?>">
-                        </div>
-                        <div class="col-md-2 mb-2">
-                            <label for="asientos" class="form-label">Asientos</label>
-                            <input type="text" class="form-control" id="asientos" name="Asientos" value="<?php echo !empty($_POST['Asientos']) ? $_POST['Asientos'] : ''; ?>">
-                        </div>
-                        <div class="col-md-2 mb-2">
                             <label for="automatico" class="form-label">Automático</label>
                             <select class="form-select" id="automatico" name="Automatico">
-                                <option selected>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
+                                <option value="" selected>Seleccionar...</option>
+                                <option value="S" <?php echo (isset($_POST['Automatico']) && $_POST['Automatico'] == 'S') ? 'selected' : ''; ?>>Sí</option>
+                                <option value="N" <?php echo (isset($_POST['Automatico']) && $_POST['Automatico'] == 'N') ? 'selected' : ''; ?>>No</option>
                             </select>
                         </div>
-                        <div class="col-md-2 mb-2">
+                        <div class="col-md-4 mb-3">
                             <label for="aireacondicionado" class="form-label">Aire acondicionado</label>
                             <select class="form-select" id="aireacondicionado" name="AireAcondicionado">
-                                <option selected>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
+                                <option value="" selected>Seleccionar...</option>
+                                <option value="S" <?php echo (isset($_POST['AireAcondicionado']) && $_POST['AireAcondicionado'] == 'S') ? 'selected' : ''; ?>>Sí</option>
+                                <option value="N" <?php echo (isset($_POST['AireAcondicionado']) && $_POST['AireAcondicionado'] == 'N') ? 'selected' : ''; ?>>No</option>
                             </select>
                         </div>
-                        <div class="col-md-2 mb-2">
+                        <div class="col-md-4 mb-3">
                             <label for="direccionhidraulica" class="form-label">Dirección hidráulica</label>
                             <select class="form-select" id="direccionhidraulica" name="DireccionHidraulica">
-                                <option selected>Seleccionar...</option>
-                                <option value="S">Sí</option>
-                                <option value="N">No</option>
+                                <option value="" selected>Seleccionar...</option>
+                                <option value="S" <?php echo (isset($_POST['DireccionHidraulica']) && $_POST['DireccionHidraulica'] == 'S') ? 'selected' : ''; ?>>Sí</option>
+                                <option value="N" <?php echo (isset($_POST['DireccionHidraulica']) && $_POST['DireccionHidraulica'] == 'N') ? 'selected' : ''; ?>>No</option>
                             </select>
                         </div>
                     </div>
-                    <br>
+
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-8 mb-3">
+                            <label for="idSucursalFiltro" class="form-label">Sucursal Asignada</label>
+                            <select class="form-select" id="idSucursalFiltro" name="IdSucursalFiltro">
+                                <option value="" selected>Filtrar por Sucursal...</option>
+                                <?php
+                                if (!empty($sucursalesDisponibles)) {
+                                    foreach ($sucursalesDisponibles as $suc) {
+                                        $selected = (isset($_POST['IdSucursalFiltro']) && $_POST['IdSucursalFiltro'] == $suc['IdSucursal']) ? 'selected' : '';
+                                        echo "<option value='{$suc['IdSucursal']}' $selected >";
+                                        echo htmlspecialchars("{$suc['CiudadSucursal']} - {$suc['DireccionSucursal']}");
+                                        echo "</option>";
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Puertas / Asientos</label>
+                            <div class="d-flex">
+                                <input type="text" class="form-control me-2" id="puertas" name="Puertas" placeholder="Puertas"
+                                    value="<?php echo !empty($_POST['Puertas']) ? $_POST['Puertas'] : ''; ?>">
+                                <input type="text" class="form-control" id="asientos" name="Asientos" placeholder="Asientos"
+                                    value="<?php echo !empty($_POST['Asientos']) ? $_POST['Asientos'] : ''; ?>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
                             <label for="aniofabricacion" class="form-label">Año de fabricación</label>
                             <div class="d-flex">
                                 <input type="number" step="1" min="1900" max="2050" id="fabricaciondesde" title="Desde..." class="form-control me-2" name="FabricacionDesde"
@@ -282,7 +369,7 @@ require_once "head.php";
                                     value="<?php echo !empty($_POST['FabricacionHasta']) ? $_POST['FabricacionHasta'] : ''; ?>">
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-3">
                             <label for="fechacompra" class="form-label">Fecha de adquisición</label>
                             <div class="d-flex">
                                 <input type="date" id="adquisiciondesde" title="Desde..." class="form-control me-2" name="AdquisicionDesde"
@@ -292,7 +379,7 @@ require_once "head.php";
                                     value="<?php echo !empty($_POST['AdquisicionHasta']) ? $_POST['AdquisicionHasta'] : ''; ?>">
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-3">
                             <label for="precio" class="form-label">Precio vehículo</label>
                             <div class="d-flex">
                                 <input type="number" min="0" max="1000000000" id="preciodesde" title="Desde..." class="form-control me-2" name="PrecioDesde"
@@ -305,17 +392,24 @@ require_once "head.php";
                     </div>
 
                     <br><br>
-                    <div class="d-flex flex-wrap justify-content-between align-items-center">
-                        <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-black btn-filtrar" name="BotonFiltro" value="Filtrando">Filtrar</button>
                             <button type="submit" class="btn btn-warning btn-filtrar" name="BotonDesfiltrar" value="Desfiltrando">Limpiar Filtros</button>
+                        </div>
+
+                        <div class="form-check d-flex align-items-center" style="height: 58px;">
+                            <input class="form-check-input" type="checkbox" id="mostrarInactivos" name="MostrarInactivos"
+                                <?php echo (isset($_POST['MostrarInactivos']) && $_POST['MostrarInactivos'] == 'on') ? 'checked' : ''; ?>>
+                            <label class="form-check-label ms-2" for="mostrarInactivos">
+                                Mostrar solo Vehículos Inactivos/Eliminados
+                            </label>
                         </div>
                     </div>
                 </form>
 
             </div>
 
-            <!-- Listado de vehículos -->
             <div id="tablaVehiculosContenedor" class="card col-10 bg-white p-4 rounded shadow mb-4" style="margin-top: 5%;">
                 <h4 class="text-center mb-3">Listado de Vehículos</h4> <br>
                 <div class="table-responsive" style="max-height: 700px;">
@@ -329,6 +423,7 @@ require_once "head.php";
                                 <th scope="col"> Combustible </th>
                                 <th scope="col"> Sucursal </th>
                                 <th scope="col"> Disp. </th>
+                                <th scope="col"> Estado </th>
                                 <th scope="col"> Puertas y asientos </th>
                                 <th scope="col"> Automático </th>
                                 <th scope="col"> Aire acondicionado </th>
@@ -347,13 +442,13 @@ require_once "head.php";
 
                                 <tr class='vehiculo'
                                     data-id="<?= $ListadoVehiculos[$i]['vID'] ?>"
-                                    data-matricula="<?= $ListadoVehiculos[$i]['vMatricula'] ?>"
+                                    data-activo="<?= $ListadoVehiculos[$i]['vActivo'] ?>" data-matricula="<?= $ListadoVehiculos[$i]['vMatricula'] ?>"
                                     data-modelo="<?= $ListadoVehiculos[$i]['vModelo'] ?>"
                                     data-grupo="<?= $ListadoVehiculos[$i]['vGrupo'] ?>"
                                     data-combustible="<?= $ListadoVehiculos[$i]['vCombustible'] ?>"
                                     data-sucursal="<?= "{$ListadoVehiculos[$i]['vSucursalDireccion']}, {$ListadoVehiculos[$i]['vSucursalCiudad']}" ?>"
                                     data-disponibilidad="<?= $ListadoVehiculos[$i]['vDisponibilidad'] ?>"
-                                    onclick="selectRow(this, '<?= $ListadoVehiculos[$i]['vID'] ?>')">
+                                    onclick="selectRow(this)">
 
                                     <td> <?php echo $i + 1; ?> </td>
 
@@ -367,7 +462,7 @@ require_once "head.php";
 
                                     <td> <?php echo $ListadoVehiculos[$i]['vCombustible']; ?> </td>
 
-                                    <td> <?php echo "{$ListadoVehiculos[$i]['vSucursalCiudad']}, 
+                                    <td> <?php echo "{$ListadoVehiculos[$i]['vSucursalCiudad']},
                                                 {$ListadoVehiculos[$i]['vSucursalDireccion']}"; ?> <br><br>
                                         <b>Tel:</b> <?php echo $ListadoVehiculos[$i]['vSucursalTel']; ?>
                                     </td>
@@ -378,6 +473,11 @@ require_once "head.php";
                                         </span>
                                     </td>
 
+                                    <td title="Estado de actividad">
+                                        <span class="badge bg-<?php echo $ListadoVehiculos[$i]['ColorActivo']; ?>">
+                                            <?php echo $ListadoVehiculos[$i]['TextoActivo']; ?>
+                                        </span>
+                                    </td>
                                     <td>
                                         <b>Puertas:</b> <?php echo $ListadoVehiculos[$i]['vNumeroPuertas']; ?> <br><br>
                                         <b>Asientos:</b> <?php echo $ListadoVehiculos[$i]['vNumeroAsientos']; ?> pasajeros
@@ -425,13 +525,14 @@ require_once "head.php";
                 </div>
             </div>
 
-            <!-- Recuadro con cantidad total de registros encontrados -->
             <style>
                 .no-btn-effect {
-                    pointer-events: none; /* Evita que se comporte como un botón */
-                    box-shadow: none !important; 
-                    cursor: default !important; /* Hace que el cursor no cambie */
-                    border: none; 
+                    pointer-events: none;
+                    /* Evita que se comporte como un botón */
+                    box-shadow: none !important;
+                    cursor: default !important;
+                    /* Hace que el cursor no cambie */
+                    border: none;
                 }
             </style>
             <p class="btn no-btn-effect" style="background-color: rgb(153, 6, 6); color: #ffffff; margin-left: 25px;">
@@ -442,13 +543,12 @@ require_once "head.php";
             <div class="d-flex justify-content-between col-8">
                 <button type="button" class="btn btn-dark btn-filtrar" data-bs-toggle="modal" data-bs-target="#nuevoVehiculo">Nuevo</button>
                 <button type="button" class="btn btn-warning btn-filtrar" id="btnModificar" onclick="modificarVehiculo()" disabled>Modificar</button>
-                <button type="button" class="btn btn-danger btn-filtrar" id="btnEliminar" onclick="eliminarVehiculo()" disabled>Eliminar</button>
+                <button type="button" class="btn btn-danger btn-filtrar" id="btnEliminar" disabled>Eliminar</button>
             </div>
 
         </main>
     </div>
 
-    <!-- Modal para nuevo vehículo -->
     <div class="modal fade" id="nuevoVehiculo" tabindex="-1" aria-labelledby="nuevoVehiculoLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -458,13 +558,12 @@ require_once "head.php";
                 </div>
                 <div class="modal-body">
 
-                    <!-- Form para agregar vehículo -->
                     <form method="post">
 
                         <div class="mb-3">
                             <label for="matricula" class="form-label">Matrícula</label>
                             <input type="text" maxlength="12" class="form-control" title="Máximo de 12 caracteres."
-                                   name="MatriculaREG" value="" required>
+                                name="MatriculaREG" value="" required>
                         </div>
                         <div class="mb-3">
                             <label for="modelo" class="form-label">Modelo</label>
@@ -517,6 +616,8 @@ require_once "head.php";
                             </select>
                         </div>
 
+                        <input type="hidden" name="ActivoREG" value="1">
+
                         <button type="submit" class="btn btn-primary btn-filtrar" name="BotonRegistrarVehiculo" value="RegistrandoVehiculo">Agregar</button>
                     </form>
 
@@ -530,8 +631,37 @@ require_once "head.php";
     </div>
 
     <script>
+        let vehiculoSeleccionado = null;
+        let vehiculoActivo = null;
 
-        // Desplazamiento vertical al listado luego de consulta
+        // Función para manejar la selección de fila (adaptada)
+        document.querySelectorAll('.vehiculo').forEach(row => {
+            row.addEventListener('click', () => {
+                // Desmarcar cualquier fila previamente seleccionada
+                document.querySelectorAll('.vehiculo').forEach(r => r.classList.remove('table-active'));
+                // Marcar la fila seleccionada
+                row.classList.add('table-active');
+
+                vehiculoSeleccionado = row.dataset.id;
+                vehiculoActivo = row.dataset.activo; // Obtener el estado 'activo'
+
+                // Habilitar el botón Modificar
+                document.getElementById('btnModificar').disabled = false;
+
+                const btnEliminar = document.getElementById('btnEliminar');
+
+                // Lógica para deshabilitar el botón de Eliminación Lógica si ya está inactivo (activo = 0)
+                if (vehiculoActivo === '0') {
+                    btnEliminar.disabled = true;
+                    btnEliminar.textContent = 'Inactivo';
+                } else {
+                    btnEliminar.disabled = false;
+                    btnEliminar.textContent = 'Eliminar';
+                }
+            });
+        });
+
+        // Función para desplazar la pantalla hasta la tabla de resultados
         function scrollToTable() {
             localStorage.setItem('scrollToTable', 'true'); // Guardar indicador antes de enviar
         }
@@ -539,28 +669,16 @@ require_once "head.php";
         document.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('scrollToTable') === 'true') {
                 setTimeout(() => {
-                    document.getElementById('tablaVehiculosContenedor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.getElementById('tablaVehiculosContenedor').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                     localStorage.removeItem('scrollToTable'); // Limpiar indicador después del scroll
-                }, 500); 
+                }, 500);
             }
-        });
 
-
-
-        let vehiculoSeleccionado = null;
-
-        // Sombreado de fila en la Tabla de Vehiculos al hacer clic en la misma
-        document.querySelectorAll('#tablaVehiculos .vehiculo').forEach(row => {
-            row.addEventListener('click', () => {
-                // Desmarcar cualquier fila previamente seleccionada
-                document.querySelectorAll('.vehiculo').forEach(row => row.classList.remove('table-active'));
-                // Marcar la fila seleccionada
-                row.classList.add('table-active');
-                vehiculoSeleccionado = row.dataset.id;
-                // Habilitar los botones
-                document.getElementById('btnModificar').disabled = false;
-                document.getElementById('btnEliminar').disabled = false;
-            });
+            // Asocia el listener a la función de eliminarVehiculo
+            document.getElementById('btnEliminar').addEventListener('click', eliminarVehiculo);
         });
 
         // Función para redirigir a ModificarVehiculo.php con el ID del Vehículo seleccionado
@@ -570,18 +688,16 @@ require_once "head.php";
             }
         }
 
-        // Función para redirigir a EliminarVehiculo.php con el ID del Vehículo seleccionado
+        // Función para redirigir a EliminarVehiculo.php con el ID del Vehículo seleccionado (Eliminación Lógica)
         function eliminarVehiculo() {
-            if (vehiculoSeleccionado) {
+            if (vehiculoSeleccionado && vehiculoActivo === '1') {
                 if (confirm('¿Estás seguro de que quieres eliminar este Vehículo?')) {
                     window.location.href = 'EliminarVehiculo.php?id=' + vehiculoSeleccionado;
                 }
-            }
+            } 
         }
     </script>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

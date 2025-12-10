@@ -15,14 +15,12 @@ function Procesar_Consulta() {
     $_POST['Combustible'] = trim($_POST['Combustible']);
     $_POST['Combustible'] = strip_tags($_POST['Combustible']);
 
-    $_POST['CiudadSucursal'] = trim($_POST['CiudadSucursal']);
-    $_POST['CiudadSucursal'] = strip_tags($_POST['CiudadSucursal']);
-
-    $_POST['DireccionSucursal'] = trim($_POST['DireccionSucursal']);
-    $_POST['DireccionSucursal'] = strip_tags($_POST['DireccionSucursal']);
-
-    $_POST['TelSucursal'] = trim($_POST['TelSucursal']);
-    $_POST['TelSucursal'] = strip_tags($_POST['TelSucursal']);
+    // REMOVIDOS: Los trims y strip_tags para CiudadSucursal, DireccionSucursal, TelSucursal, 
+    // ya que ahora se espera un ID de Sucursal en su lugar, que no necesita limpieza de tags/trim,
+    // y los otros dos campos de sucursal ya no existen en el formulario.
+    // $_POST['CiudadSucursal'] = trim($_POST['CiudadSucursal']);
+    // $_POST['CiudadSucursal'] = strip_tags($_POST['CiudadSucursal']);
+    // ...
 
     $_POST['Puertas'] = trim($_POST['Puertas']);
     $_POST['Puertas'] = strip_tags($_POST['Puertas']);
@@ -42,7 +40,9 @@ function Procesar_Consulta() {
 }
 
 
-function Consulta_Vehiculo($matricula, $modelo, $grupo, $color, $combustible, $disponibilidad, $ciudadsucursal, $direccionsucursal, $telsucursal, $puertas, $asientos, $automatico, $aireacondicionado, $direccionhidraulica, $fabricaciondesde, $fabricacionhasta, $adquisiciondesde, $adquisicionhasta, $preciodesde, $preciohasta, $conexion) {
+// MODIFICADO: $ciudadsucursal ahora se utiliza para pasar el ID de Sucursal ($idSucursalFiltro). 
+// Las variables $direccionsucursal y $telsucursal se mantienen para no romper la firma, pero se ignoran.
+function Consulta_Vehiculo($matricula, $modelo, $grupo, $color, $combustible, $disponibilidad, $idSucursalFiltro, $direccionsucursal, $telsucursal, $puertas, $asientos, $automatico, $aireacondicionado, $direccionhidraulica, $fabricaciondesde, $fabricacionhasta, $adquisiciondesde, $adquisicionhasta, $preciodesde, $preciohasta, $activo, $conexion) {
 
     if ($disponibilidad != "S" && $disponibilidad != "N") {
         $disponibilidad = null;
@@ -56,6 +56,12 @@ function Consulta_Vehiculo($matricula, $modelo, $grupo, $color, $combustible, $d
     if ($direccionhidraulica != "S" && $direccionhidraulica != "N") {
         $direccionhidraulica = null;
     }
+    
+    // Asumimos que $activo viene como '1' (por defecto) o '0' (si se marcó el filtro)
+    if ($activo !== '0') {
+        $activo = '1';
+    }
+
 
     $Listado = array();
     
@@ -75,6 +81,7 @@ function Consulta_Vehiculo($matricula, $modelo, $grupo, $color, $combustible, $d
                    v.dirHidraulica as vHidraulica,
                    v.estadoFisicoDelVehiculo as vEstadoFisico,
                    v.disponibilidad as vDisponibilidad,
+                   v.activo as vActivo,              /* AÑADIDO: Columna activo */
                    v.kilometraje as vKilometraje,
                    v.idModelo,
                    v.idCombustible,
@@ -97,151 +104,147 @@ function Consulta_Vehiculo($matricula, $modelo, $grupo, $color, $combustible, $d
             WHERE m.idModelo = v.idModelo 
             AND c.idCombustible = v.idCombustible 
             AND g.idGrupo = v.idGrupoVehiculo
-            AND s.idSucursal = v.idSucursal ";
+            AND s.idSucursal = v.idSucursal 
+            "; // Condición base de JOINs
+
+    // AÑADIDO: Lógica de filtrado por activo.
+    $SQL .= " AND v.activo = '$activo' ";
+
 
     // Concateno el resto de la consulta para poder agregar condicionales
     if (!empty($matricula)) {
-        $SQL .= " AND v.matricula LIKE '$matricula%' ";
+        $SQL .= " AND v.matricula LIKE '%$matricula%' ";
     }
-
     if (!empty($modelo)) {
         $SQL .= " AND m.nombreModelo LIKE '%$modelo%' ";
     }
-
     if (!empty($grupo)) {
         $SQL .= " AND g.nombreGrupo LIKE '%$grupo%' ";
     }
-
     if (!empty($color)) {
-        $SQL .= " AND v.color LIKE '$color%' ";
+        $SQL .= " AND v.color LIKE '%$color%' ";
     }
-
     if (!empty($combustible)) {
         $SQL .= " AND c.tipoCombustible LIKE '%$combustible%' ";
     }
-
     if (!empty($disponibilidad)) {
-        $SQL .= " AND v.disponibilidad LIKE '%$disponibilidad%' ";
+        $SQL .= " AND v.disponibilidad = '$disponibilidad' ";
     }
-
-    if (!empty($ciudadsucursal)) {
-        $SQL .= " AND s.ciudadSucursal LIKE '%$ciudadsucursal%' ";
+    
+    // MODIFICADO: Aplicar filtro por ID de Sucursal si está presente.
+    if (!empty($idSucursalFiltro)) {
+        $SQL .= " AND s.idSucursal = '$idSucursalFiltro' ";
     }
-
-    if (!empty($direccionsucursal)) {
-        $SQL .= " AND s.direccionSucursal LIKE '%$direccionsucursal%' ";
-    }
-
-    if (!empty($telsucursal)) {
-        $SQL .= " AND s.telefonoSucursal LIKE '$telsucursal%' ";
-    }
+    // REMOVIDOS los antiguos filtros por LIKE para ciudad, direccion y telefono
 
     if (!empty($puertas)) {
-        $SQL .= " AND v.puertas LIKE '$puertas%' ";
+        $SQL .= " AND v.puertas = '$puertas' ";
     }
-
     if (!empty($asientos)) {
-        $SQL .= " AND v.asientos LIKE '$asientos%' ";
+        $SQL .= " AND v.asientos = '$asientos' ";
     }
-
     if (!empty($automatico)) {
-        $SQL .= " AND v.esAutomatico LIKE '%$automatico%' ";
+        $SQL .= " AND v.esAutomatico = '$automatico' ";
     }
-
     if (!empty($aireacondicionado)) {
-        $SQL .= " AND v.aireAcondicionado LIKE '%$aireacondicionado%' ";
+        $SQL .= " AND v.aireAcondicionado = '$aireacondicionado' ";
     }
-
     if (!empty($direccionhidraulica)) {
-        $SQL .= " AND v.dirHidraulica LIKE '%$direccionhidraulica%' ";
+        $SQL .= " AND v.dirHidraulica = '$direccionhidraulica' ";
     }
-
     if (!empty($fabricaciondesde)) {
-        $SQL .= " AND v.anio >= '$fabricaciondesde'";
+        $SQL .= " AND v.anio >= '$fabricaciondesde' ";
     }
     if (!empty($fabricacionhasta)) {
-        $SQL .= " AND v.anio <= '$fabricacionhasta'";
-    }    
-
+        $SQL .= " AND v.anio <= '$fabricacionhasta' ";
+    }
     if (!empty($adquisiciondesde)) {
-        $SQL .= " AND v.fechaCompra >= '$adquisiciondesde'";
+        $SQL .= " AND v.fechaCompra >= '$adquisiciondesde' ";
     }
     if (!empty($adquisicionhasta)) {
-        $SQL .= " AND v.fechaCompra <= '$adquisicionhasta'";
+        $SQL .= " AND v.fechaCompra <= '$adquisicionhasta' ";
     }
-
     if (!empty($preciodesde)) {
-        $SQL .= " AND v.precioCompra >= '$preciodesde'";
+        $SQL .= " AND v.precioCompra >= '$preciodesde' ";
     }
     if (!empty($preciohasta)) {
-        $SQL .= " AND v.precioCompra <= '$preciohasta'";
-    }  
+        $SQL .= " AND v.precioCompra <= '$preciohasta' ";
+    }
 
-    $SQL .= " ORDER BY v.matricula, m.nombreModelo; "; // Agrego el orden a la consulta sql
+
+    $SQL .= " ORDER BY v.idVehiculo ASC ";
 
     $rs = mysqli_query($conexion, $SQL);
-        
-    // El resultado debe organizarse en una matriz, entonces lo recorro:
-    $i = 0;
-    while ($data = mysqli_fetch_array($rs)) {
+
+    if ($rs) {
+        $i = 0;
+        while ($data = mysqli_fetch_array($rs)) {
             $Listado[$i]['vID'] = $data['vID'];
             $Listado[$i]['vMatricula'] = $data['vMatricula'];
-
             $Listado[$i]['vColor'] = $data['vColor'];
-            if ($Listado[$i]['vColor'] == "" || $Listado[$i]['vColor'] == " " ) {
-                $Listado[$i]['vColor'] = "Sin información";
-            } 
-
             $Listado[$i]['vFechaCompra'] = $data['vFechaCompra'];
-            if ($Listado[$i]['vFechaCompra'] == "" || $Listado[$i]['vFechaCompra'] == " " ) {
-                $Listado[$i]['vFechaCompra'] = "Sin información";
-            } 
 
             $Listado[$i]['vPrecioCompra'] = $data['vPrecioCompra'];
-            if ($Listado[$i]['vPrecioCompra'] == "" || $Listado[$i]['vPrecioCompra'] == " " ) {
+            if (is_null($data['vPrecioCompra'])) {
                 $Listado[$i]['vPrecioCompra'] = "Sin información";
-            } 
+            }
 
             $Listado[$i]['vAnio'] = $data['vAnio'];
-            if ($Listado[$i]['vAnio'] == "" || $Listado[$i]['vAnio'] == " " ) {
-                $Listado[$i]['vAnio'] = "Sin información";
+            if (is_null($data['vAnio'])) {
+                $Listado[$i]['vAnio'] = "A definir.";
             }
 
             $Listado[$i]['vNumeroMotor'] = $data['vNumeroMotor'];
+            if (is_null($data['vNumeroMotor'])) {
+                $Listado[$i]['vNumeroMotor'] = "A definir.";
+            }
+
             $Listado[$i]['vNumeroChasis'] = $data['vNumeroChasis'];
+            if (is_null($data['vNumeroChasis'])) {
+                $Listado[$i]['vNumeroChasis'] = "A definir.";
+            }
+
             $Listado[$i]['vNumeroPuertas'] = $data['vNumeroPuertas'];
+            if (is_null($data['vNumeroPuertas'])) {
+                $Listado[$i]['vNumeroPuertas'] = "A definir.";
+            }
+
             $Listado[$i]['vNumeroAsientos'] = $data['vNumeroAsientos'];
+            if (is_null($data['vNumeroAsientos'])) {
+                $Listado[$i]['vNumeroAsientos'] = "A definir.";
+            }
 
             $Listado[$i]['vAutomatico'] = $data['vAutomatico'];
             if ($Listado[$i]['vAutomatico'] == "S") {
-                $Listado[$i]['vAutomatico'] = "Es automático";
+                $Listado[$i]['vAutomatico'] = "Sí";
             }
             else {
-                $Listado[$i]['vAutomatico'] = "No automático";
+                $Listado[$i]['vAutomatico'] = "No";
             }
 
             $Listado[$i]['vAire'] = $data['vAire'];
             if ($Listado[$i]['vAire'] == "S") {
-                $Listado[$i]['vAire'] = "Con aire acondicionado";
+                $Listado[$i]['vAire'] = "Sí";
             }
             else {
-                $Listado[$i]['vAire'] = "Sin aire acondicionado";
+                $Listado[$i]['vAire'] = "No";
             }
 
             $Listado[$i]['vHidraulica'] = $data['vHidraulica'];
             if ($Listado[$i]['vHidraulica'] == "S") {
-                $Listado[$i]['vHidraulica'] = "Con dir. hidráulica";
+                $Listado[$i]['vHidraulica'] = "Sí";
             }
             else {
-                $Listado[$i]['vHidraulica'] = "Sin dir. hidráulica";
-            } 
+                $Listado[$i]['vHidraulica'] = "No";
+            }
 
             $Listado[$i]['vEstadoFisico'] = $data['vEstadoFisico'];
-            if ($Listado[$i]['vEstadoFisico'] == "" || $Listado[$i]['vEstadoFisico'] == " " ) {
-                $Listado[$i]['vEstadoFisico'] = "Sin información";
+            if (is_null($data['vEstadoFisico'])) {
+                $Listado[$i]['vEstadoFisico'] = "A definir.";
             }
 
             $Listado[$i]['vDisponibilidad'] = $data['vDisponibilidad'];
+
             if ($Listado[$i]['vDisponibilidad'] == "S") {
                 $Listado[$i]['vDisponibilidad'] = "Sí";
                 $Listado[$i]['ColorAdvertencia'] = "success";
@@ -250,6 +253,17 @@ function Consulta_Vehiculo($matricula, $modelo, $grupo, $color, $combustible, $d
                 $Listado[$i]['vDisponibilidad'] = "No";
                 $Listado[$i]['ColorAdvertencia'] = "danger";
             }
+
+            // AÑADIDO: Procesamiento de activo
+            $Listado[$i]['vActivo'] = $data['vActivo']; // Se almacena 1 o 0
+            if ($data['vActivo'] == 1) {
+                 $Listado[$i]['TextoActivo'] = "Activo";
+                 $Listado[$i]['ColorActivo'] = "success";
+            } else {
+                 $Listado[$i]['TextoActivo'] = "Inactivo/Eliminado";
+                 $Listado[$i]['ColorActivo'] = "secondary";
+            }
+            // FIN AÑADIDO
 
             $Listado[$i]['vKilometraje'] = $data['vKilometraje'];
             $Listado[$i]['vModelo'] = $data['vModelo'];
@@ -271,15 +285,19 @@ function Consulta_Vehiculo($matricula, $modelo, $grupo, $color, $combustible, $d
 
             $Listado[$i]['vSucursalCiudad'] = $data['vSucursalCiudad'];
             if (is_null($data['vSucursalCiudad'])) {
-                $Listado[$i]['vSucursalCiudad'] = " ";
+                $Listado[$i]['vSucursalCiudad'] = "A definir.";
             }
 
             $Listado[$i]['vSucursalTel'] = $data['vSucursalTel'];
+            if (is_null($data['vSucursalTel'])) {
+                $Listado[$i]['vSucursalTel'] = "A definir.";
+            }
 
             $i++;
+        }
+    } else {
+        // En caso de error
     }
 
     return $Listado;
 }
-
-?>

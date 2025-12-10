@@ -1,9 +1,9 @@
 <?php
 
-session_start(); 
+session_start();
 
-require_once 'funciones/corroborar_usuario.php'; 
-Corroborar_Usuario(); 
+require_once 'funciones/corroborar_usuario.php';
+Corroborar_Usuario();
 
 include('head.php');
 include('conn/conexion.php');
@@ -73,16 +73,14 @@ if (isset($_GET['id'])) {
     // Se traen todos los vehículos disponibles:
 
     $vehiculosDisponibles = array();
-    
+
     require_once 'funciones/Select_Tablas.php';
     $vehiculosDisponibles = Listar_Vehiculos_Disponibles($conexion);
     $cantidadVehiculos = count($vehiculosDisponibles);
 
     $estadosContrato = Listar_EstadosContrato($conexion);
     $cantidadEstados = count($estadosContrato);
-} 
-
-else {
+} else {
     // Si no se pasa un ID, se redirige al listado de contratos
     header("Location: contratosAlquiler.php?mensaje=No se encontró el contrato seleccionado. ");
     exit();
@@ -97,8 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
     $idDetalleContrato = $contrato['dcIdDetalleContrato'];
     $idCliente = $contrato['cIdCliente'];
     $idVehiculo = $_POST['VehiculosDisponibles'];
-    $estadoContrato = $_POST['EstadoDelContrato']; 
-    $precioPorDia = $_POST['PrecioPorDia'];  
+    $estadoContrato = $_POST['EstadoDelContrato'];
+    $precioPorDia = $_POST['PrecioPorDia'];
 
     // Validaciones de fechas
     $errores = [];
@@ -115,11 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
 
         if ($fechaRetiro > $fechaDevolucion) {
             $errores[] = "La fecha de retiro no puede ser posterior a la fecha de devolución.";
-        }
-        else {
+        } else {
             // Validación de duración máxima de contrato (1 mes)
             $intervalo = $fechaRetiro->diff($fechaDevolucion);
-            if ($intervalo->days > 30) { 
+            if ($intervalo->days > 30) {
                 $errores[] = "Los contratos no pueden superar 1 mes de duración.";
             }
         }
@@ -152,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
     $day = $fechaEspanol['day'];
     $fechaDevolucionIngles = "$year-$mo-$day";
 
-    $fechadevolucion = $fechaDevolucionIngles; 
+    $fechadevolucion = $fechaDevolucionIngles;
 
 
     // Cálculo de cantidad de días
@@ -164,15 +161,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
     $diferenciaDias = $intervalo->days;
 
     $diferenciaDias = intval($diferenciaDias);
-/*    $horas_totales = $intervalo->format('%d:%H:%i'); */
+    /*    $horas_totales = $intervalo->format('%d:%H:%i'); */
 
     // Monto total:
     $montoTotal = $diferenciaDias * $precioPorDia;
 
 
     require_once 'funciones/CRUD-Reservas.php';
-    
-    if ($idVehiculo) {   
+
+    if ($idVehiculo) {
 
         // Actualizar los datos del detalle del contrato
         $ModificacionDetalleContrato = "UPDATE `detalle-contratos` 
@@ -180,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
                                             cantidadDiasContrato = $diferenciaDias, 
                                             montoTotalContrato = $montoTotal, 
                                             estadoContrato = 'El estado ha sido modificado' 
-                                        WHERE idDetalleContrato = $idDetalleContrato; "; 
+                                        WHERE idDetalleContrato = $idDetalleContrato; ";
 
         $rs = mysqli_query($conexion, $ModificacionDetalleContrato);
 
@@ -189,8 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
             $mensajeError = "No se pudo acceder al detalle del contrato en la base de datos";
             header("Location: contratosAlquiler.php?mensaje=" . urlencode($mensajeError));
             exit();
-        }
-        else {
+        } else {
 
             // Actualizar los datos del contrato
             $ModificacionContrato = "UPDATE `contratos-alquiler` 
@@ -199,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
                                         idCliente = $idCliente, 
                                         idVehiculo = $idVehiculo,
                                         idEstadoContrato = $estadoContrato 
-                                    WHERE idContrato = $idContrato; "; 
+                                    WHERE idContrato = $idContrato; ";
 
             $rs = mysqli_query($conexion, $ModificacionContrato);
 
@@ -208,8 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
                 $mensajeError = "No se pudo acceder al encabezado del contrato en la base de datos";
                 header("Location: contratosAlquiler.php?mensaje=" . urlencode($mensajeError));
                 exit();
-            }
-            else {
+            } else {
 
                 // Redirigir después de la actualización
                 $mensajeError = "Contrato {$idContrato} modificado exitosamente.";
@@ -220,9 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
                 exit();
             }
         }
-    }
-
-    else {
+    } else {
         header("Location: contratosAlquiler.php?mensaje=No se puede realizar la modificación del contrato.");
         exit();
     }
@@ -234,52 +227,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
 <body class="bg-light" style="margin: 0 auto;">
     <div class="wrapper" style="min-height: 100%; margin-bottom: 100px;">
 
-        <?php 
-        
-        include('sidebarGOp.php'); 
-        include('topNavBar.php'); 
-        
+        <?php
+
+        include('sidebarGOp.php');
+        include('topNavBar.php');
+
         ?>
-        
-        <div class="p-5 mb-4 bg-white shadow-sm" 
-             style="margin-top: 150px; margin-bottom: 100px; margin-left: 1%; max-width: 98%; border: 1px solid #444444; border-radius: 14px;">
-            
-            <?php 
+
+        <div class="p-5 mb-4 bg-white shadow-sm"
+            style="margin-top: 150px; margin-bottom: 100px; margin-left: 1%; max-width: 98%; border: 1px solid #444444; border-radius: 14px;">
+
+            <?php
 
             if ($mensajeError) { ?>
-                <div class="alert alert-danger mt-3"> 
-                    <?php 
-                        echo "Error al intentar modificar el contrato. <br><br>"; 
-                        echo $mensajeError; 
-                    ?>        
+                <div class="alert alert-danger mt-3">
+                    <?php
+                    echo "Error al intentar modificar el contrato. <br><br>";
+                    echo $mensajeError;
+                    ?>
                 </div>
-            <?php } 
+            <?php }
             ?>
 
             <h5 class="mb-4 text-secondary"><strong>Modificar Contrato</strong></h5>
 
             <!-- ALERTA -->
-            <?php 
-                $alerta = "";
+            <?php
+            $alerta = "";
 
-                if($contrato['ecEstadoContrato'] == "En Preparación") {
-                    $alerta = "success";
+            if ($contrato['ecEstadoContrato'] == "En Preparación") {
+                $alerta = "success";
+            } else {
+                $alerta = "danger";
+            }
+            ?>
+            <div class="alert alert-<?php echo $alerta; ?> mt-5">
+                <?php
+                // Si el estado es "En Preparación", entonces bligatorio llenar todos los campos
+                if ($contrato['ecEstadoContrato'] == "En Preparación") {
+                    echo "<br><h6 class='mb-4 text-secondary' >Todos los campos son obligatorios </h6>";
                 }
+                // Caso contrario (contrato firmado, cancelado, activo, etc), campos deshabilitados:
                 else {
-                    $alerta = "danger";
+                    echo "<br><h6 class='mb-4' style='color: #d62606;' >El contrato ya fue firmado o cancelado </h6>";
                 }
-            ?> 
-            <div class="alert alert-<?php echo $alerta; ?> mt-5"> 
-                <?php 
-                    // Si el estado es "En Preparación", entonces bligatorio llenar todos los campos
-                    if ($contrato['ecEstadoContrato'] == "En Preparación") {
-                        echo "<br><h6 class='mb-4 text-secondary' >Todos los campos son obligatorios </h6>";
-                    }
-                    // Caso contrario (contrato firmado, cancelado, activo, etc), campos deshabilitados:
-                    else {
-                        echo "<br><h6 class='mb-4' style='color: #d62606;' >El contrato ya fue firmado o cancelado </h6>";
-                    }
-                ?>     
+                ?>
             </div><br><br>
 
             <!-- Formulario para modificar el contrato -->
@@ -287,53 +279,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
 
                 <div class="mb-3">
                     <label for="idcontrato" class="form-label">Contrato</label>
-                    <input type="text" class="form-control" id="idcontrato" name="IdContrato" 
-                        value="Identificador del contrato: <?php echo htmlspecialchars($contrato['cIdContrato']); ?> " disabled>
+                    <input type="text" class="form-control" id="idcontrato" name="IdContrato"
+                        value="Identificador del contrato: <?php echo htmlspecialchars($contrato['cIdContrato']); ?> "
+                        disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="cliente" class="form-label">Cliente</label>
-                    <input type="text" class="form-control" id="cliente" name="NombreCompletoCliente" 
-                        value="<?php echo htmlspecialchars($contrato['clApellidoCliente']); echo ", "; 
-                                      echo htmlspecialchars($contrato['clNombreCliente']); ?>" disabled>
+                    <input type="text" class="form-control" id="cliente" name="NombreCompletoCliente" value="<?php echo htmlspecialchars($contrato['clApellidoCliente']);
+                                                                                                                echo ", ";
+                                                                                                                echo htmlspecialchars($contrato['clNombreCliente']); ?>" disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="documento" class="form-label">Documento del Cliente</label>
-                    <input type="text" class="form-control" id="documento" name="DocumentoCliente" 
+                    <input type="text" class="form-control" id="documento" name="DocumentoCliente"
                         value=" <?php echo htmlspecialchars($contrato['clDniCliente']); ?> " disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="vehiculosdisponibles" class="form-label"> Vehículos disponibles </label>
-                    <select class="form-select" aria-label="Selector" id="vehiculosdisponibles" 
-                            name="VehiculosDisponibles" 
-                            <?php 
-                                // Si el estado es "En Preparación", entonces obligatorio llenar el campo
-                                if ($contrato['ecEstadoContrato'] == "En Preparación") {
-                                    echo "required";
-                                }
-                                // Caso contrario (contrato firmado, cancelado, activo, etc), campo deshabilitado:
-                                else {
-                                    echo "title='El contrato ya fue firmado o cancelado' disabled";
-                                }
-                            ?>
-                    >
+                    <select class="form-select" aria-label="Selector" id="vehiculosdisponibles"
+                        name="VehiculosDisponibles" <?php
+                                                    // Si el estado es "En Preparación", entonces obligatorio llenar el campo
+                                                    if ($contrato['ecEstadoContrato'] == "En Preparación") {
+                                                        echo "required";
+                                                    }
+                                                    // Caso contrario (contrato firmado, cancelado, activo, etc), campo deshabilitado:
+                                                    else {
+                                                        echo "title='El contrato ya fue firmado o cancelado' disabled";
+                                                    }
+                                                    ?>>
                         <option value="" selected>Selecciona una opción</option>
 
-                        <?php 
+                        <?php
                         if (!empty($vehiculosDisponibles)) {
                             $selected = '';
 
-                            for ($i = 0; $i < $cantidadVehiculos; $i++) {  
+                            for ($i = 0; $i < $cantidadVehiculos; $i++) {
                                 // Lógica para verificar si el grupo debe estar seleccionado
                                 $selected = (!empty($contrato['vIdVehiculo']) && $contrato['vIdVehiculo'] == $vehiculosDisponibles[$i]['IdVehiculo']) ? 'selected' : '';
                                 echo "<option value='{$vehiculosDisponibles[$i]['IdVehiculo']}' $selected > 
                                         MATRÍCULA: {$vehiculosDisponibles[$i]['matricula']} - {$vehiculosDisponibles[$i]['modelo']}, {$vehiculosDisponibles[$i]['grupo']}  
                                       </option>";
                             }
-                        } 
-                        else {
+                        } else {
                             echo "<option value=''> En este momento no existen vehículos disponibles. </option>";
                         }
                         ?>
@@ -342,86 +332,79 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
 
                 <div class="mb-3">
                     <label for="fecharetiro" class="form-label">Fecha de Retiro</label>
-                    <input type="date" class="form-control" id="fecharetiro" name="FechaRetiro" 
-                        value="<?php echo htmlspecialchars($contrato['cFechaInicioContrato']); ?>" 
-                        <?php 
-                            // Si el estado es "En Preparación", entonces obligatorio llenar el campo
-                            if ($contrato['ecEstadoContrato'] == "En Preparación") {
-                                echo "required";
-                            }
-                            // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                            else {
-                                echo "title='El contrato ya fue firmado o cancelado' disabled";
-                            }
-                        ?>
-                    >
+                    <input type="date" class="form-control" id="fecharetiro" name="FechaRetiro"
+                        value="<?php echo htmlspecialchars($contrato['cFechaInicioContrato']); ?>" <?php
+                                                                                                    // Si el estado es "En Preparación", entonces obligatorio llenar el campo
+                                                                                                    if ($contrato['ecEstadoContrato'] == "En Preparación") {
+                                                                                                        echo "required";
+                                                                                                    }
+                                                                                                    // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
+                                                                                                    else {
+                                                                                                        echo "title='El contrato ya fue firmado o cancelado' disabled";
+                                                                                                    }
+                                                                                                    ?>>
                 </div>
 
                 <div class="mb-3">
                     <label for="fechadevolucion" class="form-label">Fecha de Devolución</label>
-                    <input type="date" class="form-control" id="fechadevolucion" name="FechaDevolucion" 
-                        value="<?php echo htmlspecialchars($contrato['cFechaFinContrato']); ?>" 
-                        <?php 
-                            // Si el estado es "En Preparación", entonces obligatorio llenar el campo
-                            if ($contrato['ecEstadoContrato'] == "En Preparación") {
-                                echo "required";
-                            }
-                            // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                            else {
-                                echo "title='El contrato ya fue firmado o cancelado' disabled";
-                            }
-                        ?>
-                    >
+                    <input type="date" class="form-control" id="fechadevolucion" name="FechaDevolucion"
+                        value="<?php echo htmlspecialchars($contrato['cFechaFinContrato']); ?>" <?php
+                                                                                                // Si el estado es "En Preparación", entonces obligatorio llenar el campo
+                                                                                                if ($contrato['ecEstadoContrato'] == "En Preparación") {
+                                                                                                    echo "required";
+                                                                                                }
+                                                                                                // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
+                                                                                                else {
+                                                                                                    echo "title='El contrato ya fue firmado o cancelado' disabled";
+                                                                                                }
+                                                                                                ?>>
                 </div>
 
                 <style>
                     .input-container {
 
-                    display: flex;
-                    align-items: center;
+                        display: flex;
+                        align-items: center;
                     }
                 </style>
 
                 <div class="mb-3">
                     <label for="preciopordia" class="form-label">Precio por día</label>
-                    <div class="input-container"> 
+                    <div class="input-container">
 
-                        <input type="number" min="20" max="1000" step="0.01" class="form-control" style="max-width: 120px;"
-                               id="preciopordia" name="PrecioPorDia" title="Superior a $ 20 USD e inferior a $ 1000 USD"
-                               value="<?php echo htmlspecialchars($contrato['dcPrecioPorDiaContrato']); ?>" 
-                                <?php 
-                                    // Si el estado es "En Preparación", entonces obligatorio llenar el campo
-                                    if ($contrato['ecEstadoContrato'] == "En Preparación") {
-                                        echo "required";
-                                    }
-                                    // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                                    else {
-                                        echo "title='El contrato ya fue firmado o cancelado' disabled";
-                                    }
-                                ?>
-                        > 
+                        <input type="number" min="20" max="1000" step="0.01" class="form-control"
+                            style="max-width: 120px;" id="preciopordia" name="PrecioPorDia"
+                            title="Superior a $ 20 USD e inferior a $ 1000 USD"
+                            value="<?php echo htmlspecialchars($contrato['dcPrecioPorDiaContrato']); ?>" <?php
+                                                                                                            // Si el estado es "En Preparación", entonces obligatorio llenar el campo
+                                                                                                            if ($contrato['ecEstadoContrato'] == "En Preparación") {
+                                                                                                                echo "required";
+                                                                                                            }
+                                                                                                            // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
+                                                                                                            else {
+                                                                                                                echo "title='El contrato ya fue firmado o cancelado' disabled";
+                                                                                                            }
+                                                                                                            ?>>
                         <span style="padding: 0 0 0 10px;"> $ USD por día </span>
 
-                    </div> 
+                    </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="estadocontrato" class="form-label"> Estado del Contrato </label>
-                    <select class="form-select" aria-label="Selector" id="estadocontrato" name="EstadoDelContrato" 
-                        <?php 
-                            // Si el estado es "En Preparación", entonces obligatorio llenar el campo
-                            if ($contrato['ecEstadoContrato'] == "En Preparación") {
-                                echo "required";
-                            }
-                            // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                            else {
-                                echo "title='El contrato ya fue firmado o cancelado' disabled";
-                            }
-                        ?>
-                    >
+                    <select class="form-select" aria-label="Selector" id="estadocontrato" name="EstadoDelContrato" <?php
+                                                                                                                    // Si el estado es "En Preparación", entonces obligatorio llenar el campo
+                                                                                                                    if ($contrato['ecEstadoContrato'] == "En Preparación") {
+                                                                                                                        echo "required";
+                                                                                                                    }
+                                                                                                                    // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
+                                                                                                                    else {
+                                                                                                                        echo "title='El contrato ya fue firmado o cancelado' disabled";
+                                                                                                                    }
+                                                                                                                    ?>>
                         <option value="" selected>Selecciona una opción</option>
 
-                        <?php 
+                        <?php
                         if (!empty($estadosContrato)) {
                             $selected = '';
 
@@ -432,29 +415,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
                                         {$estadosContrato[$i]['EstadoContrato']}  
                                       </option>";
                             }
-                        } 
-                        else {
+                        } else {
                             echo "<option value=''> No se pueden recuperar los diferentes estados de un contrato. </option>";
                         }
                         ?>
                     </select>
                 </div>
-
-                <button type="submit" class="btn btn-primary" name="BotonModificarContrato" 
-                        value="modificandoContrato"; 
-                            <?php 
-                                // Si el estado es "En Preparación", entonces obligatorio llenar el campo
-                                if ($contrato['ecEstadoContrato'] == "En Preparación") {
-                                    echo " ";
-                                }
-                                // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                                else {
-                                    echo "disabled";
-                                }
-                            ?>
-                        >
-                    Guardar Cambios
-                </button>
+                <div class="d-flex justify-content-start gap-2">
+                    <button type="submit" class="btn btn-primary" name="BotonModificarContrato"
+                        value="modificandoContrato" ; <?php
+                                                        // Si el estado es "En Preparación", entonces obligatorio llenar el campo
+                                                        if ($contrato['ecEstadoContrato'] == "En Preparación") {
+                                                            echo " ";
+                                                        }
+                                                        // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
+                                                        else {
+                                                            echo "disabled";
+                                                        }
+                                                        ?>>
+                        Guardar Cambios
+                    </button>
+                    <a href="contratosAlquiler.php" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+                </div>
             </form>
         </div>
 
@@ -465,4 +449,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
     </div>
 
 </body>
+
 </html>

@@ -95,12 +95,12 @@ include('head.php');
 
             <!-- Algunos efectos moderno para el form de consultas ;) -->
             <style>
-
                 @keyframes fadeInUp {
                     from {
                         opacity: 0;
                         transform: translateY(30px);
                     }
+
                     to {
                         opacity: 1;
                         transform: translateY(0);
@@ -108,14 +108,15 @@ include('head.php');
                 }
 
                 .filtro-consultas {
-                    transition: all 0.4s ease-in-out; 
-                    border-radius: 15px; 
-                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); 
-                    animation: fadeInUp 0.8s ease-in-out; /* Hace que el cuadro "aparezca suavemente" */
+                    transition: all 0.4s ease-in-out;
+                    border-radius: 15px;
+                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                    animation: fadeInUp 0.8s ease-in-out;
+                    /* Hace que el cuadro "aparezca suavemente" */
                 }
 
                 .filtro-consultas:hover {
-                    transform: translateY(-5px); 
+                    transform: translateY(-5px);
                     box-shadow: 0px 10px 20px rgba(198, 167, 31, 0.5);
                 }
 
@@ -125,7 +126,8 @@ include('head.php');
                 }
 
                 .form-control:focus {
-                    border: 2px solid rgb(160, 4, 4); /* Resalta con dorado */
+                    border: 2px solid rgb(160, 4, 4);
+                    /* Resalta con dorado */
                     box-shadow: rgba(152, 10, 10, 0.81);
                 }
 
@@ -134,11 +136,13 @@ include('head.php');
                 }
 
                 .btn-filtrar:hover {
-                    transform: scale(1.1); /* Botón se agranda ligeramente */
+                    transform: scale(1.1);
+                    /* Botón se agranda ligeramente */
                 }
             </style>
 
-            <div class="filtro-consultas" style="margin-top: 20px; margin-bottom: 50px; padding: 35px; max-width: 97%; background-color: white; border: 1px solid #c7240e; border-radius: 14px;">
+            <div class="filtro-consultas"
+                style="margin-top: 20px; margin-bottom: 50px; padding: 35px; max-width: 97%; background-color: white; border: 1px solid #c7240e; border-radius: 14px;">
                 <div style='color: #c7240e; margin-bottom: 30px;'>
                     <h3 class="fw-bold"> Contratos </h3>
                 </div>
@@ -241,10 +245,12 @@ include('head.php');
                     <div class="w-100"></div> <!-- salto de linea -->
                     <div class="d-flex flex-wrap justify-content-between align-items-end mt-3">
                         <div class="d-flex flex-wrap gap-2">
-                            <button type="submit" style="background-color: #c7240e; color: white;" class="btn btn-filtrar" name="BotonFiltrar" value="FiltrandoContratos">
+                            <button type="submit" style="background-color: #c7240e; color: white;"
+                                class="btn btn-filtrar" name="BotonFiltrar" value="FiltrandoContratos">
                                 <i class="fas fa-filter"></i> Filtrar
                             </button>
-                            <button type="submit" class="btn btn-warning btn-filtrar" name="BotonLimpiarFiltros" value="LimpiandoFiltros">
+                            <button type="submit" class="btn btn-warning btn-filtrar" name="BotonLimpiarFiltros"
+                                value="LimpiandoFiltros">
                                 <i class="fas fa-ban"></i> Limpiar Filtros
                             </button>
                         </div>
@@ -262,15 +268,18 @@ include('head.php');
                     <table class="table table-striped table-hover" id="tablaContratos">
                         <thead>
                             <tr>
-                                <th style='color: #c7240e;'>
+                                <!-- <th style='color: #c7240e;'>
                                     <h3>#</h3>
-                                </th>
-                                <th>Estado Contrato</th>
+                                </th> -->
                                 <th>Número Contrato</th>
-                                <th title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
+                                <th>Estado Contrato</th>
+
+                                <th
+                                    title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
                                     Inicio Contrato
                                 </th>
-                                <th title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
+                                <th
+                                    title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
                                     Finalización Contrato
                                 </th>
                                 <th>Apellido</th>
@@ -297,9 +306,11 @@ include('head.php');
                                 <tr class='contrato' data-id='<?php echo $ListadoContratos[$i]['IdContrato']; ?>'
                                     onclick="selectRow(this, '<?= $ListadoContratos[$i]['IdContrato'] ?>')">
 
-                                    <td><span style='color: #c7240e;'>
+                                    <!-- <td><span style='color: #c7240e;'>
                                             <h4> <?php echo $contador; ?> </h4>
-                                        </span></td>
+                                        </span></td> -->
+
+                                    <td> <?php echo $ListadoContratos[$i]['IdContrato']; ?> </td>
                                     <td><?php
                                         $estado = strtolower($ListadoContratos[$i]['EstadoContrato']);
                                         $clase = '';
@@ -326,11 +337,12 @@ include('head.php');
                                         }
                                         echo "<span class='badge badge-$clase'>" . $ListadoContratos[$i]['EstadoContrato'] . "</span>"; ?>
                                     </td>
-                                    <td> <?php echo $ListadoContratos[$i]['IdContrato']; ?> </td>
-                                    <td title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
+                                    <td
+                                        title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
                                         <?php echo $ListadoContratos[$i]['FechaInicioContrato']; ?>
                                     </td>
-                                    <td title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
+                                    <td
+                                        title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
                                         <?php echo $ListadoContratos[$i]['FechaFinContrato']; ?>
                                     </td>
                                     <td> <?php echo $ListadoContratos[$i]['apellidoCliente']; ?> </td>
@@ -346,16 +358,15 @@ include('head.php');
                                     <td> <?php echo "{$ListadoContratos[$i]['PrecioPorDiaContrato']} US$"; ?> </td>
                                     <td> <?php echo "{$ListadoContratos[$i]['CantidadDiasContrato']} días"; ?> </td>
                                     <td> <?php echo "{$ListadoContratos[$i]['MontoTotalContrato']} US$"; ?> </td>
-                                    <td> 
-                                        <?php 
-                                            if ($ListadoContratos[$i]['IdReserva'] == "No existe") {
-                                                echo "<span class='badge badge-danger'>{$ListadoContratos[$i]['NumReserva']}</span>"; 
-                                            } 
-                                            else {
-                                                echo "<span class='badge badge-warning'><a href='reservas.php?NumeroReserva={$ListadoContratos[$i]['NumReserva']}&MatriculaReserva=&ApellidoReserva=&NombreReserva=&DocReserva=&RetiroDesde=&RetiroHasta=&BotonFiltrar=FiltrandoReservas'>Nº: {$ListadoContratos[$i]['NumReserva']}</a></span>"; 
-                                            }
-                                        ?> 
-                                    </td> 
+                                    <td>
+                                        <?php
+                                        if ($ListadoContratos[$i]['IdReserva'] == "No existe") {
+                                            echo "<span class='badge badge-danger'>{$ListadoContratos[$i]['NumReserva']}</span>";
+                                        } else {
+                                            echo "<span class='badge badge-warning'><a href='reservas.php?NumeroReserva={$ListadoContratos[$i]['NumReserva']}&MatriculaReserva=&ApellidoReserva=&NombreReserva=&DocReserva=&RetiroDesde=&RetiroHasta=&BotonFiltrar=FiltrandoReservas'>Nº: {$ListadoContratos[$i]['NumReserva']}</a></span>";
+                                        }
+                                        ?>
+                                    </td>
                                 </tr>
                                 <?php $contador++; ?>
                             <?php
@@ -370,19 +381,22 @@ include('head.php');
                 <!-- Recuadro con cantidad total de registros encontrados -->
                 <style>
                     .no-btn-effect {
-                        pointer-events: none; /* Evita que se comporte como un botón */
-                        box-shadow: none !important; 
-                        cursor: default !important; /* Hace que el cursor no cambie */
-                        border: none; 
+                        pointer-events: none;
+                        /* Evita que se comporte como un botón */
+                        box-shadow: none !important;
+                        cursor: default !important;
+                        /* Hace que el cursor no cambie */
+                        border: none;
                     }
                 </style>
-                <p class="btn no-btn-effect" style="background-color: rgb(153, 6, 6); color: #ffffff; margin-left: 25px;">
+                <p class="btn no-btn-effect"
+                    style="background-color: rgb(153, 6, 6); color: #ffffff; margin-left: 25px;">
                     Total de registros encontrados: <?php echo $CantidadContratos; ?>
                 </p>
 
 
                 <!-- Botones de acción -->
-                <div style="margin-top: 8%;">
+                <div>
                     <div class="container d-flex justify-content-center">
 
                         <button class="btn btn-dark me-2" data-bs-toggle="modal" data-bs-target="#nuevoRegistroModal">
@@ -393,9 +407,9 @@ include('head.php');
                             Modificar
                         </button>
 
-                        <button class="btn btn-danger me-2" id="btnEliminar" onclick="eliminarContrato()" disabled>
+                        <!-- <button class="btn btn-danger me-2" id="btnEliminar" onclick="eliminarContrato()" disabled>
                             Eliminar
-                        </button>
+                        </button> -->
 
                         <a href="ReporteContratos.php"> <button class="btn btn-primary">
                                 Imprimir
@@ -613,7 +627,7 @@ include('head.php');
         });
     </script>
 
-    <script>        
+    <script>
         // Efecto sobre la imagen del reporte
         window.onload = function() {
 
@@ -643,7 +657,6 @@ include('head.php');
     </script>
 
     <script>
-
         // Desplazamiento vertical al listado luego de consulta
         function scrollToTable() {
             localStorage.setItem('scrollToTable', 'true'); // Guardar indicador antes de enviar
@@ -652,9 +665,12 @@ include('head.php');
         document.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('scrollToTable') === 'true') {
                 setTimeout(() => {
-                    document.getElementById('tablaContratosContenedor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.getElementById('tablaContratosContenedor').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                     localStorage.removeItem('scrollToTable'); // Limpiar indicador después del scroll
-                }, 500); 
+                }, 500);
             }
         });
 

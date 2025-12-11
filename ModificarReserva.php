@@ -173,10 +173,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
     // Si hay errores, redirigir con el mensaje de error
     if (!empty($errores)) {
         $mensajeDeError = implode(' ', $errores);
-        echo "<script> 
-            alert('$mensajeDeError');
-            window.location.href = 'reservas.php?NumeroReserva={$numreserva}&MatriculaReserva=&ApellidoReserva=&NombreReserva=&DocReserva=&RetiroDesde=&RetiroHasta=&BotonFiltrar=FiltrandoReservas';
-        </script>";
+        // Redirigir con mensaje de error para que lo muestre el modal
+        header("Location: reservas.php?status=error&mensaje=" . urlencode($mensajeDeError));
         exit();
     }
 
@@ -210,19 +208,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
     
     if ($idVehiculo) {   
 
-        // Actualizar los datos del cliente
+        // Actualizar los datos de la reserva
         $ModificacionReserva = "UPDATE `reservas-vehiculos` 
-                                SET numeroReserva = $numreserva, 
-                                    fechaReserva = NOW(), 
+                                SET fechaReserva = NOW(), 
                                     fechaInicioReserva = '$fecharetiro', 
                                     FechaFinReserva = '$fechadevolucion', 
                                     cantidadDiasReserva = '$diferenciaDias',
                                     totalReserva = '$montoTotal',
                                     idCliente = $idCliente, 
                                     idVehiculo = $idVehiculo 
-                                WHERE idReserva = $idReserva"; 
+                                WHERE idReserva = ?"; 
 
-        $rs = mysqli_query($conexion, $ModificacionReserva);
+        $stmt = $conexion->prepare($ModificacionReserva);
+        if (!$stmt) {
+            $mensajeError = "Error al preparar la consulta: " . $conexion->error;
+            header("Location: reservas.php?status=error&mensaje=" . urlencode($mensajeError));
+            exit();
+        }
+
+        $stmt->bind_param("i", $idReserva);
+        $rs = $stmt->execute();
 
         if (!$rs) {
 
@@ -230,15 +235,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
             //si surge un error, finalizo la ejecucion del script con un mensaje 
             header("Location: reservas.php?mensaje=" . urlencode($mensajeError));
             exit();
+            $stmt->close();
         }
         else {
 
             // Redirigir después de la actualización
-            $mensajeError = "Reserva número " . trim($numreserva) . " modificada exitosamente.";
-            echo "<script> 
-                alert('$mensajeError');
-                window.location.href = 'reservas.php?NumeroReserva={$numreserva}&MatriculaReserva=&ApellidoReserva=&NombreReserva=&DocReserva=&RetiroDesde=&RetiroHasta=&BotonFiltrar=FiltrandoReservas';
-            </script>";
+            $mensajeExito = "Reserva modificada exitosamente.";
+            // Redirigir con mensaje de éxito para que lo muestre el modal
+            header("Location: reservas.php?status=success&mensaje=" . urlencode($mensajeExito));
+            $stmt->close();
             exit();
         }
     }
@@ -322,7 +327,7 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
                 <br><h6 class='mb-4 text-secondary' ><?php echo $mensajeAlerta; ?></h6>
             </div><br><br>
 
-            <form method="POST">
+            <form method="POST" onsubmit="return validarFechasModificacion()">
                 <input type="hidden" name="idReservaReactivar" value="<?php echo $idReserva; ?>">
 
                 <div class="mb-3">
@@ -383,6 +388,7 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
                         value="<?php echo htmlspecialchars($reserva['FechaRetiro']); ?>"  
                         <?php echo $disabledAttr; ?>
                         <?php if (!$isDisabledGeneral) { echo "required"; } ?>
+                        
                     >
                 </div>
 
@@ -392,6 +398,7 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
                         value="<?php echo htmlspecialchars($reserva['FechaDevolucion']); ?>" 
                         <?php echo $disabledAttr; ?>
                         <?php if (!$isDisabledGeneral) { echo "required"; } ?>
+                        
                     >
                 </div>
 
@@ -430,33 +437,45 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
     </div>
 
     <script>
-        function cancelarReserva(idReserva) {
-            if (confirm('¿Estás seguro de que quieres CANCELAR esta reserva? Se le solicitará un motivo obligatorio.')) {
-                
-                let comentario = null;
-                let esValido = false;
+        const MAX_DAYS = 30;
 
-                // Bucle para obligar a ingresar un comentario
-                while (!esValido) {
-                    comentario = prompt('⚠️ Ingrese el motivo de la cancelación (campo obligatorio):');
-
-                    if (comentario === null) {
-                        return; // El usuario presionó "Cancelar"
-                    }
-
-                    if (comentario.trim() === '') {
-                        alert('El motivo de la cancelación es obligatorio. Por favor, ingrese un comentario válido.');
-                    } else {
-                        esValido = true;
-                    }
-                }
-                
-                let comentarioCodificado = encodeURIComponent(comentario.trim());
-                
-                // Redirigir a EliminarReserva.php con el ID y el comentario
-                window.location.href = 'EliminarReserva.php?id=' + idReserva + '&comentario=' + comentarioCodificado;
+        function validarFechasModificacion() {
+            const fechaRetiroInput = document.getElementById('fecharetiro');
+            const fechaDevolucionInput = document.getElementById('fechadevolucion');
+            
+            if (!fechaRetiroInput.value || !fechaDevolucionInput.value) {
+                alert('Ambas fechas son obligatorias.');
+                return false;
             }
+
+            const fechaRetiro = new Date(fechaRetiroInput.value);
+            const fechaDevolucion = new Date(fechaDevolucionInput.value);
+
+            if (fechaDevolucion <= fechaRetiro) {
+                alert('La fecha de devolución debe ser posterior a la fecha de retiro.');
+                return false;
+            }
+
+            const diffTime = Math.abs(fechaDevolucion - fechaRetiro);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays > MAX_DAYS) {
+                alert(`La duración máxima de la reserva es de ${MAX_DAYS} días. Su selección es de ${diffDays} días.`);
+                return false;
+            }
+
+            return true; // Envía el formulario si todo es correcto
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const fechaRetiroInput = document.getElementById('fecharetiro');
+            const fechaDevolucionInput = document.getElementById('fechadevolucion');
+
+            if(fechaRetiroInput && fechaDevolucionInput) {
+                fechaRetiroInput.addEventListener('change', () => { fechaDevolucionInput.min = fechaRetiroInput.value; });
+            }
+        });
+
     </script>
 
 </body>

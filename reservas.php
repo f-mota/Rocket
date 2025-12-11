@@ -60,6 +60,7 @@ require_once 'funciones/Select_Tablas.php';
 $ListadoVehiculos = Listar_VehiculosReservados($conexion);
 $CantidadVehiculos = count($ListadoVehiculos);
 
+// Se asume que Listar_Clientes() está en funciones/Select_Tablas.php y no se usa directamente en el modal modificado.
 $ListadoClientes = Listar_Clientes($conexion);
 $CantidadClientes = count($ListadoClientes);
 
@@ -77,9 +78,8 @@ include('head.php');
         $tituloPagina = "RESERVAS";
         include('topNavBar.php');
 
-        if (isset($_GET['mensaje'])) {
-            echo '<div class="alert alert-info" role="alert">' . $_GET['mensaje'] . '</div>';
-        }
+        // Se elimina el código para mostrar el alert de $_GET['mensaje'] aquí.
+        // Ahora se usa un modal al final del archivo.
 
         ?>
 
@@ -113,6 +113,10 @@ include('head.php');
                 }
                 .btn-filtrar:hover {
                     transform: scale(1.1); 
+                }
+                .input-group-append .btn {
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
                 }
             </style>
 
@@ -231,15 +235,21 @@ include('head.php');
                                     $tooltip = "data-bs-toggle='tooltip' data-bs-placement='top' data-bs-html='true' title='**Motivo de Cancelación**:<br>{$comentario}'";
                                 }
                                 
+                                // *** LÓGICA MODIFICADA AQUÍ ***
+                                // Ahora siempre muestra el idReserva, sin el prefijo "ID: "
+                                $id_reserva_bd = $ListadoReservas[$i]['idReserva'];
+                                $display_reserva = $id_reserva_bd; 
+                                // *** FIN DE LÓGICA MODIFICADA ***
+
                                 ?>
 
                                 <tr class='<?php echo $claseFila; ?>' 
-                                    data-id='<?php echo $ListadoReservas[$i]['idReserva']; ?>'
+                                    data-id='<?php echo $id_reserva_bd; ?>'
                                     data-activo='<?php echo $activo; ?>'
                                 >
 
                                     
-                                    <td> <?php echo $ListadoReservas[$i]['numeroReserva']; ?> </td>
+                                    <td> <?php echo $display_reserva; ?> </td>
 
                                     <td> <?php echo $ListadoReservas[$i]['apellidoCliente']; ?> </td>
 
@@ -344,39 +354,35 @@ include('head.php');
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
 
-                            <form action="Nueva_Reserva.php" method="post">
+                            <form action="Procesar_Nueva_Reserva.php" method="post" onsubmit="return validarFechasReserva()"> 
                                 <div class="modal-body">
 
-                                    <div class="mb-3">
-                                        <label for="idCliente" class="form-label">Cliente</label>
-                                        <select class="form-select" aria-label="Selector" id="selector" name="idCliente" required>
-                                            <option value="" selected>Selecciona una opción</option>
+                                    <input type="hidden" id="idCliente" name="idCliente" value="">
 
-                                            <?php
-                                            if (!empty($ListadoClientes)) {
-                                                $selected = '';
-                                                for ($i = 0; $i < $CantidadClientes; $i++) {
-                                                    $selected = (!empty($_POST['idCliente']) && $_POST['idCliente'] == $ListadoClientes[$i]['idCliente']) ? 'selected' : '';
-                                                    echo "<option value='{$ListadoClientes[$i]['idCliente']}' $selected> 
-                                                        {$ListadoClientes[$i]['apellidoCliente']} {$ListadoClientes[$i]['nombreCliente']} ({$ListadoClientes[$i]['dniCliente']}) <br> 
-                                                        TEL: {$ListadoClientes[$i]['telefonoCliente']} 
-                                                    </option>";
-                                                }
-                                            } else {
-                                                echo "<option value=''>No se encontraron clientes</option>";
-                                            }
-                                            ?>
-                                        </select>
+                                    <div class="mb-3">
+                                        <label for="documentoCliente" class="form-label">Documento del Cliente *</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="documentoCliente" name="documentoCliente" required 
+                                                onchange="autocompletarCliente(this.value)">
+                                            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#buscarClienteModal">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="apellidoCliente" class="form-label">Apellido *</label>
+                                        <input type="text" class="form-control" id="apellidoCliente" name="apellidoCliente" required>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="numreserva" class="form-label">Número de reserva</label>
-                                        <input type="text" class="form-control" id="numreserva" name="numreserva" required>
+                                        <label for="nombreCliente" class="form-label">Nombre *</label>
+                                        <input type="text" class="form-control" id="nombreCliente" name="nombreCliente" required>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="idVehiculo" class="form-label">Vehículo</label>
-                                        <select class="form-select" aria-label="Selector" id="selector" name="idVehiculo" required>
+                                        <label for="idVehiculo" class="form-label">Vehículo *</label>
+                                        <select class="form-select" aria-label="Selector" id="idVehiculo" name="idVehiculo" required>
                                             <option value="" selected>Selecciona una opción</option>
 
                                             <?php
@@ -395,14 +401,13 @@ include('head.php');
 
                                     <style>
                                         .input-container {
-
                                             display: flex;
                                             align-items: center;
                                         }
                                     </style>
 
                                     <div class="mb-3">
-                                        <label for="preciopordia" class="form-label">Precio por día</label>
+                                        <label for="preciopordia" class="form-label">Precio por día *</label>
                                         <div class="input-container">
                                             <input type="number" min="20" max="1000" step="0.01" class="form-control" style="max-width: 120px;"
                                                 id="preciopordia" name="PrecioPorDia" title="Mínimo $ 20 USD y máximo 1000 USD"
@@ -412,13 +417,15 @@ include('head.php');
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="fecharetiro" class="form-label">Fecha de Retiro</label>
-                                        <input type="date" class="form-control" id="fecharetiro" name="fecharetiro" value="" required>
+                                        <label for="fecharetiro" class="form-label">Fecha de Retiro *</label>
+                                        <input type="date" class="form-control" id="fecharetiro" name="fecharetiro" required>
+                                        <div class="invalid-feedback" id="feedbackRetiro"></div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="fechadevolucion" class="form-label">Fecha de Devolución</label>
-                                        <input type="date" class="form-control" id="fechadevolucion" name="fechadevolucion" value="" required>
+                                        <label for="fechadevolucion" class="form-label">Fecha de Devolución *</label>
+                                        <input type="date" class="form-control" id="fechadevolucion" name="fechadevolucion" required>
+                                        <div class="invalid-feedback" id="feedbackDevolucion"></div>
                                     </div>
 
                                 </div>
@@ -427,6 +434,87 @@ include('head.php');
                                     <button type="submit" class="btn btn-primary">Guardar</button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal fade" id="buscarClienteModal" tabindex="-1" aria-labelledby="buscarClienteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="buscarClienteModalLabel">Buscar Cliente</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label for="searchDoc" class="form-label">Buscar por Documento</label>
+                                        <input type="text" class="form-control" id="searchDoc" onkeyup="buscarClientes()">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="searchApellido" class="form-label">Buscar por Apellido</label>
+                                        <input type="text" class="form-control" id="searchApellido" onkeyup="buscarClientes()">
+                                    </div>
+                                </div>
+                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Documento</th>
+                                                <th>Apellido</th>
+                                                <th>Nombre</th>
+                                                <th>Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="resultadoBusquedaClientes">
+                                            </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal para Confirmar Cancelación -->
+                <div class="modal fade" id="cancelarReservaModal" tabindex="-1" aria-labelledby="cancelarReservaModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="cancelarReservaModalLabel">Confirmar Cancelación</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>¿Estás seguro de que quieres CANCELAR esta reserva?</p>
+                                <form id="formCancelarReserva">
+                                    <div class="mb-3">
+                                        <label for="comentarioCancelacion" class="form-label">Motivo de la cancelación (obligatorio):</label>
+                                        <textarea class="form-control" id="comentarioCancelacion" name="comentario" rows="3" required></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-danger" onclick="confirmarCancelacion()">Confirmar Cancelación</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmationModalLabel"></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="confirmationModalBody">
+                                </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -444,23 +532,61 @@ include('head.php');
     <script>
 
         let reservaSeleccionada = null;
-        // Nueva variable para almacenar el estado de la reserva seleccionada ('S' o 'N')
         let reservaActivaEstado = null; 
-
+        const today = new Date().toISOString().split('T')[0];
+        const MAX_DAYS = 30; // Nuevo límite de días
+        
         // Desplazamiento vertical al listado luego de consulta
         function scrollToTable() {
-            localStorage.setItem('scrollToTable', 'true'); // Guardar indicador antes de enviar
+            localStorage.setItem('scrollToTable', 'true');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            
+            // LÓGICA DEL MODAL DE CONFIRMACIÓN (omito el código por simplicidad, se mantiene igual)
+            const urlParams = new URLSearchParams(window.location.search);
+            const mensaje = urlParams.get('mensaje');
+            const status = urlParams.get('status');
+            
+            if (mensaje) {
+                const modalElement = document.getElementById('confirmationModal');
+                const modalTitle = document.getElementById('confirmationModalLabel');
+                const modalBody = document.getElementById('confirmationModalBody');
+                
+                let titleText = "Notificación";
+                let titleClass = "text-primary";
+                
+                if (status === 'success') {
+                    titleText = "¡Éxito!";
+                    titleClass = "text-success";
+                } else if (status === 'error') {
+                    titleText = "Error";
+                    titleClass = "text-danger";
+                }
+                
+                modalTitle.textContent = titleText;
+                modalTitle.classList.add(titleClass);
+                modalBody.textContent = decodeURIComponent(mensaje);
+                
+                const myModal = new bootstrap.Modal(modalElement);
+                myModal.show();
+
+                // Limpiar los parámetros de la URL para que el modal no se muestre al recargar
+                if (window.history.replaceState) {
+                    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                    window.history.replaceState({path: newUrl}, '', newUrl);
+                }
+            }
+
+
             if (localStorage.getItem('scrollToTable') === 'true') {
                 setTimeout(() => {
                     document.getElementById('tablaReservasContenedor').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    localStorage.removeItem('scrollToTable'); // Limpiar indicador después del scroll
+                    localStorage.removeItem('scrollToTable'); 
                 }, 500); 
             }
             
-            // Inicializar Tooltips de Bootstrap (Necesario para el Tooltip condicional)
+            // Inicializar Tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
@@ -469,79 +595,201 @@ include('head.php');
             // Selección de fila en la Tabla de Reservas al hacer clic en la misma
             document.querySelectorAll('#tablaReservas .reserva').forEach(row => {
                 row.addEventListener('click', () => {
-                    // Desmarcar cualquier fila previamente seleccionada
                     document.querySelectorAll('.reserva').forEach(row => row.classList.remove('table-active'));
-                    // Marcar la fila seleccionada
                     row.classList.add('table-active');
                     
                     reservaSeleccionada = row.dataset.id;
-                    // CAPTURAR EL ESTADO ACTIVO/CANCELADO de la fila
                     reservaActivaEstado = row.dataset.activo; 
                     
-                    // Habilitar el botón Modificar (siempre permitido)
                     document.getElementById('btnModificar').disabled = false;
                     
-                    // Lógica para habilitar/deshabilitar el botón CANCELAR
                     const btnCancelar = document.getElementById('btnEliminar');
 
                     if (reservaActivaEstado === 'S') {
-                        // Si la reserva está activa, se puede cancelar
                         btnCancelar.disabled = false; 
                         btnCancelar.textContent = "Cancelar";
                     } else {
-                        // Si la reserva ya está cancelada ('N'), se deshabilita el botón
                         btnCancelar.disabled = true; 
-                        btnCancelar.textContent = "Cancelada"; // Feedback visual
+                        btnCancelar.textContent = "Cancelada"; 
                     }
                 });
             });
+            
+            // Inicializar el campo de fecha de retiro para que no permita fechas anteriores a hoy
+            document.getElementById('fecharetiro').setAttribute('min', today);
+            
+            // Listener para actualizar el mínimo de fecha de devolución y activar validación de 30 días
+            document.getElementById('fecharetiro').addEventListener('change', (e) => {
+                const retiroDate = e.target.value;
+                if (retiroDate) {
+                    const minDevolucionDate = new Date(retiroDate);
+                    minDevolucionDate.setDate(minDevolucionDate.getDate() + 1); 
+                    document.getElementById('fechadevolucion').setAttribute('min', minDevolucionDate.toISOString().split('T')[0]);
+                }
+                validarFechasReserva(); // Validar al cambiar la fecha de retiro
+            });
+            
+            document.getElementById('fechadevolucion').addEventListener('change', validarFechasReserva); // Validar al cambiar la fecha de devolución
         });
 
-        // Función para redirigir a ModificarReserva.php con el ID del cliente seleccionado
+        // Función de Validación de Fechas (Front-end) - ACTUALIZADA CON LÍMITE DE 30 DÍAS
+        function validarFechasReserva() {
+            const fechaRetiro = document.getElementById('fecharetiro');
+            const fechaDevolucion = document.getElementById('fechadevolucion');
+            let esValido = true;
+            
+            // Limpiar validaciones anteriores
+            fechaRetiro.classList.remove('is-invalid');
+            fechaDevolucion.classList.remove('is-invalid');
+            document.getElementById('feedbackRetiro').textContent = '';
+            document.getElementById('feedbackDevolucion').textContent = '';
+
+            // 1. Validar que la fecha de retiro no sea anterior a hoy
+            if (fechaRetiro.value < today) {
+                fechaRetiro.classList.add('is-invalid');
+                document.getElementById('feedbackRetiro').textContent = 'La fecha de retiro no puede ser anterior a hoy.';
+                esValido = false;
+            }
+            
+            if (!fechaRetiro.value || !fechaDevolucion.value) {
+                return esValido; 
+            }
+            
+            const dateRetiro = new Date(fechaRetiro.value);
+            const dateDevolucion = new Date(fechaDevolucion.value);
+
+            // 2. Validar que la fecha de devolución sea posterior a la de retiro
+            if (dateDevolucion <= dateRetiro) {
+                fechaDevolucion.classList.add('is-invalid');
+                document.getElementById('feedbackDevolucion').textContent = 'La fecha de devolución debe ser posterior a la fecha de retiro.';
+                esValido = false;
+            } 
+            
+            // 3. NUEVA VALIDACIÓN: Limite de 30 días
+            const diffTime = Math.abs(dateDevolucion.getTime() - dateRetiro.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+            if (diffDays > MAX_DAYS) {
+                fechaDevolucion.classList.add('is-invalid');
+                document.getElementById('feedbackDevolucion').textContent = `La duración máxima de una reserva es de ${MAX_DAYS} días. Su reserva dura ${diffDays} días.`;
+                esValido = false;
+            } 
+
+            return esValido;
+        }
+
+
+        // Función para redirigir a ModificarReserva.php con el ID del cliente seleccionado (omito por simplicidad)
         function modificarReserva() {
             if (reservaSeleccionada) {
                 window.location.href = 'ModificarReserva.php?id=' + reservaSeleccionada;
             }
         }
 
-        // Función para CANCELAR la reserva (Eliminación Lógica)
+        // Función para ABRIR el modal de cancelación
         function eliminarReserva() {
-            // Se asume que el botón está habilitado (reservaActivaEstado === 'S') al llegar aquí
             if (reservaSeleccionada) {
-                
-                // 1. Confirmar la acción
-                if (confirm('¿Estás seguro de que quieres CANCELAR esta reserva?')) {
-                    
-                    let comentario = null;
-                    let esValido = false;
-
-                    // 2. Bucle para solicitar el comentario hasta que sea válido o el usuario cancele
-                    while (!esValido) {
-                        // Usamos prompt() para solicitar el comentario
-                        comentario = prompt('⚠️ Ingrese el motivo de la cancelación (campo obligatorio):');
-
-                        if (comentario === null) {
-                            // El usuario presionó "Cancelar" en el prompt. Detener el proceso.
-                            return; 
-                        }
-
-                        // Verificar si el comentario está vacío después de quitar espacios
-                        if (comentario.trim() === '') {
-                            alert('El motivo de la cancelación es obligatorio. Por favor, ingrese un comentario válido.');
-                        } else {
-                            esValido = true; // El comentario es válido (no nulo y no vacío).
-                        }
-                    }
-                    
-                    // 3. Procesar la cancelación con el comentario válido
-                    // Codificar el comentario para que pueda viajar seguro en la URL
-                    let comentarioCodificado = encodeURIComponent(comentario.trim());
-
-                    // 4. Redirigir a EliminarReserva.php enviando el ID y el comentario
-                    window.location.href = 'EliminarReserva.php?id=' + reservaSeleccionada + '&comentario=' + comentarioCodificado;
-                }
+                const cancelarModal = new bootstrap.Modal(document.getElementById('cancelarReservaModal'));
+                cancelarModal.show();
             }
         }
+
+        // Función para PROCESAR la cancelación desde el modal
+        function confirmarCancelacion() {
+            const comentarioInput = document.getElementById('comentarioCancelacion');
+            const comentario = comentarioInput.value.trim();
+
+            if (comentario === '') {
+                alert('El motivo de la cancelación es obligatorio.');
+                comentarioInput.focus();
+            } else {
+                const comentarioCodificado = encodeURIComponent(comentario);
+                window.location.href = `EliminarReserva.php?id=${reservaSeleccionada}&comentario=${comentarioCodificado}`;
+            }
+        }
+        
+        // Lógica de Clientes para el Modal de Nueva Reserva (omito por simplicidad, se mantiene igual)
+
+        function autocompletarCliente(documento) {
+            if (documento.trim() === '') {
+                document.getElementById('idCliente').value = '';
+                document.getElementById('apellidoCliente').value = '';
+                document.getElementById('nombreCliente').value = '';
+                return;
+            }
+
+            // Llamada AJAX al servidor para buscar cliente por DNI/Documento
+            fetch('funciones/Buscar_Cliente.php?documento=' + encodeURIComponent(documento))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.encontrado) {
+                        document.getElementById('idCliente').value = data.id;
+                        document.getElementById('apellidoCliente').value = data.apellido;
+                        document.getElementById('nombreCliente').value = data.nombre;
+                    } else {
+                        // Limpiar campos para que el usuario ingrese el nuevo cliente
+                        document.getElementById('idCliente').value = '';
+                        document.getElementById('apellidoCliente').value = '';
+                        document.getElementById('nombreCliente').value = '';
+                    }
+                })
+                .catch(error => console.error('Error al autocompletar cliente:', error));
+        }
+
+        function buscarClientes() {
+            const searchDoc = document.getElementById('searchDoc').value.trim();
+            const searchApellido = document.getElementById('searchApellido').value.trim();
+            const resultadosTbody = document.getElementById('resultadoBusquedaClientes');
+
+            if (searchDoc === '' && searchApellido === '') {
+                resultadosTbody.innerHTML = '<tr><td colspan="4" class="text-center">Ingrese un Documento o Apellido para buscar.</td></tr>';
+                return;
+            }
+
+            // Llamada AJAX al servidor para buscar clientes
+            fetch(`funciones/Buscar_Cliente.php?searchDoc=${encodeURIComponent(searchDoc)}&searchApellido=${encodeURIComponent(searchApellido)}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultadosTbody.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(cliente => {
+                            const newRow = `
+                                <tr>
+                                    <td>${cliente.documento}</td>
+                                    <td>${cliente.apellido}</td>
+                                    <td>${cliente.nombre}</td>
+                                    <td><button type="button" class="btn btn-sm btn-success" onclick="seleccionarCliente('${cliente.id}', '${cliente.documento}', '${cliente.apellido}', '${cliente.nombre}')">Seleccionar</button></td>
+                                </tr>
+                            `;
+                            resultadosTbody.innerHTML += newRow;
+                        });
+                    } else {
+                        resultadosTbody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron clientes.</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al buscar clientes:', error);
+                    resultadosTbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Error al buscar clientes.</td></tr>';
+                });
+        }
+        
+        function seleccionarCliente(id, documento, apellido, nombre) {
+            // Rellenar los campos del formulario principal
+            document.getElementById('idCliente').value = id;
+            document.getElementById('documentoCliente').value = documento;
+            document.getElementById('apellidoCliente').value = apellido;
+            document.getElementById('nombreCliente').value = nombre;
+            
+            // Cerrar el modal de búsqueda
+            var buscarModal = bootstrap.Modal.getInstance(document.getElementById('buscarClienteModal'));
+            buscarModal.hide();
+            
+            // Abrir el modal de nueva reserva
+            var reservaModal = new bootstrap.Modal(document.getElementById('nuevaReserva'));
+            reservaModal.show();
+        }
+
+
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

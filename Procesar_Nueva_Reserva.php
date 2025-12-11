@@ -1,7 +1,9 @@
 <?php
 // Procesar_Nueva_Reserva.php
+session_start(); 
 
-session_start();
+require_once 'funciones/corroborar_usuario.php'; 
+Corroborar_Usuario(); 
 
 // 1. Incluir conexión
 require_once "conn/conexion.php";

@@ -2,6 +2,10 @@
 <?php
 // Este archivo toma la "fechaInicioContrato" en la tabla "contratos-alquiler" para pasársela a "entregaVehiculo.php" y colocarla en
 // el modal de registro de una nueva entrega, cada vez que el usuario cambia el contrato en el combo box desplegable
+session_start(); 
+
+require_once 'funciones/corroborar_usuario.php'; 
+Corroborar_Usuario(); 
 
 require_once "conn/conexion.php";
 $conexion = ConexionBD();

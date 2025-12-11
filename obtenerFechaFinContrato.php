@@ -1,5 +1,14 @@
 
 <?php
+
+session_start(); 
+
+require_once 'funciones/corroborar_usuario.php'; 
+Corroborar_Usuario(); 
+
+require_once 'funciones/corroborar_usuario.php'; 
+Corroborar_Usuario(); 
+
 // Este archivo toma la "fechaFinContrato" en la tabla "contratos-alquiler" para pasársela a "devolucionVehiculo.php" y colocarla en
 // el modal de registro de una nueva devolución, cada vez que el usuario cambia el contrato en el combo box desplegable
 

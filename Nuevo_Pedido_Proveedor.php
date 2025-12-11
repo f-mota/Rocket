@@ -1,6 +1,9 @@
 <?php
 
-session_start();
+session_start(); 
+
+require_once 'funciones/corroborar_usuario.php'; 
+Corroborar_Usuario(); 
 require_once 'conn/conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

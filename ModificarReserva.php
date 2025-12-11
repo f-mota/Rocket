@@ -16,7 +16,7 @@ if (isset($_GET['id'])) {
 
     $reserva = array();
 
-    // Obtener los datos de la reserva
+    // Obtener los datos de la reserva (Se añade r.activo)
     $ConsultaReservas = "SELECT r.idReserva,
                         r.numeroReserva as NumeroReserva,
                         r.fechaInicioReserva as FechaRetiro,
@@ -25,6 +25,7 @@ if (isset($_GET['id'])) {
                         r.idCliente as IDCliente,
                         r.idVehiculo as IDVehiculo,
                         r.idContrato as IDContrato,
+                        r.activo as ActivoReserva,      /* <--- CAMBIO: AÑADIDO CAMPO ACTIVO */
                         c.idCliente,
                         c.nombreCliente as NombreCliente,
                         c.apellidoCliente as ApellidoCliente,
@@ -52,6 +53,10 @@ if (isset($_GET['id'])) {
     $rs = mysqli_query($conexion, $ConsultaReservas);
 
     $reserva = mysqli_fetch_array($rs);
+    
+    // Determinar si la reserva está cancelada (0 = Cancelada)
+    $esCancelada = ($reserva['ActivoReserva'] == 0);
+
 
     // Además se trae el contrato asociado a la reserva, en caso de existir, para corroborar si el estado es "En Preparación"
     $estadoContrato = "";
@@ -101,6 +106,36 @@ else {
 
 // A continuación se hace UPDATE de los datos luego de cliquear el botón "Guardar Cambios" (los elementos POST proceden de este mismo archivo)
 $mensajeError = "";
+
+// -------------------------------------------------------------
+// NUEVO: Lógica para REACTIVAR la Reserva (activo = 1)
+// -------------------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['BotonReactivarReserva'])) {
+    
+    // El ID de la reserva se pasa como campo oculto
+    $idReserva = $_POST['idReservaReactivar']; 
+    $numreserva = $reserva['NumeroReserva']; 
+    
+    // Consulta para reactivar: activo=1 y limpiar el comentario de cancelación
+    $SQLupdate = "UPDATE `reservas-vehiculos` 
+                  SET activo = 1, comentario = NULL 
+                  WHERE idReserva = $idReserva";
+
+    $rs = mysqli_query($conexion, $SQLupdate);
+    
+    if (!$rs) {
+        $mensajeError = "No se pudo acceder a la base de datos. Error al intentar reactivar la reserva.";
+    } else {
+        $mensajeError = "Reserva número " . trim($numreserva) . " reactivada exitosamente. Ahora está activa.";
+        // Redirigir para recargar la página con el nuevo estado
+        header("Location: ModificarReserva.php?id=$idReserva&mensaje=" . urlencode($mensajeError));
+        exit();
+    }
+}
+// -------------------------------------------------------------
+// FIN: Lógica para REACTIVAR la Reserva
+// -------------------------------------------------------------
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva'])) {
 
@@ -199,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
         else {
 
             // Redirigir después de la actualización
-            $mensajeError = "Reserva número {$numreserva} modificada exitosamente.";
+            $mensajeError = "Reserva número " . trim($numreserva) . " modificada exitosamente.";
             echo "<script> 
                 alert('$mensajeError');
                 window.location.href = 'reservas.php?NumeroReserva={$numreserva}&MatriculaReserva=&ApellidoReserva=&NombreReserva=&DocReserva=&RetiroDesde=&RetiroHasta=&BotonFiltrar=FiltrandoReservas';
@@ -213,6 +248,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
     }
 }
 
+
+// -------------------------------------------------------------
+// Lógica para deshabilitar campos y botones:
+// -------------------------------------------------------------
+
+// Determinar la condición general de deshabilitación de campos
+$isDisabledGeneral = false;
+// 1. Contrato firmado (lógica existente)
+$contratoFirmado = ($estadoContrato != "En Preparación" && $estadoContrato != "No existe"); 
+
+// 2. Si el contrato está firmado O si la reserva está cancelada, deshabilitar
+if ($contratoFirmado || $esCancelada) {
+    $isDisabledGeneral = true;
+}
+
+$disabledAttr = $isDisabledGeneral ? 'disabled' : '';
 
 ?>
 
@@ -239,77 +290,71 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
                     ?>        
                 </div>
             <?php } 
+            
+            if (isset($_GET['mensaje'])) { ?>
+                <div class="alert alert-success mt-3"> 
+                    <?php 
+                        echo htmlspecialchars($_GET['mensaje']); 
+                    ?>        
+                </div>
+            <?php } 
+
             ?>
 
             <h5 class="mb-4 text-secondary"><strong>Modificar Reserva</strong></h5>
 
-            <!-- ALERTA -->
             <?php 
-                $alerta = "";
+                $alerta = "success";
+                $mensajeAlerta = "";
 
-                if($estadoContrato == "En Preparación" || $estadoContrato == "No existe") {
-                    $alerta = "success";
-                }
-                else {
+                if ($esCancelada) {
                     $alerta = "danger";
+                    $mensajeAlerta = "Esta reserva figura como CANCELADA. Para realizar modificaciones, primero debe reactivarla.";
+                } elseif ($contratoFirmado) {
+                    $alerta = "danger";
+                    $mensajeAlerta = "El contrato ya fue firmado o cancelado. Los campos están deshabilitados.";
+                } else {
+                    $alerta = "success";
+                    $mensajeAlerta = "Todos los campos son obligatorios para la modificación.";
                 }
             ?> 
             <div class="alert alert-<?php echo $alerta; ?> mt-5"> 
-                <?php 
-                    // Si aún no hay contrato asociado a la reserva o el estado es "En Preparación", entonces 
-                    // obligatorio llenar el campo
-                    if ($estadoContrato == "En Preparación" || $estadoContrato == "No existe") {
-                        echo "<br><h6 class='mb-4 text-secondary' >Todos los campos son obligatorios </h6>";
-                    }
-                    // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                    else {
-                        echo "<br><h6 class='mb-4' style='color: #d62606;' >El contrato ya fue firmado o cancelado </h6>";
-                    }
-                ?>     
+                <br><h6 class='mb-4 text-secondary' ><?php echo $mensajeAlerta; ?></h6>
             </div><br><br>
 
-            <!-- Formulario para modificar la reserva -->
             <form method="POST">
+                <input type="hidden" name="idReservaReactivar" value="<?php echo $idReserva; ?>">
 
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre</label>
                     <input type="text" class="form-control" id="nombre" name="NombreCliente" 
-                        value=" <?php echo htmlspecialchars($reserva['NombreCliente']); ?> " disabled>
+                        value="<?php echo htmlspecialchars(trim($reserva['NombreCliente'])); ?> " disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="apellido" class="form-label">Apellido</label>
                     <input type="text" class="form-control" id="apellido" name="ApellidoCliente" 
-                        value=" <?php echo htmlspecialchars($reserva['ApellidoCliente']); ?>" disabled>
+                        value="<?php echo htmlspecialchars(trim($reserva['ApellidoCliente'])); ?>" disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="documento" class="form-label">Documento</label>
                     <input type="text" class="form-control" id="documento" name="DocumentoCliente" 
-                        value=" <?php echo htmlspecialchars($reserva['DocumentoCliente']); ?> " disabled>
+                        value="<?php echo htmlspecialchars(trim($reserva['DocumentoCliente'])); ?> " disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="numero" class="form-label">Número de Reserva</label>
                     <input type="text" class="form-control" id="numero" name="NumeroReserva" 
-                        value=" <?php echo htmlspecialchars($reserva['NumeroReserva']); ?> " disabled>
+                        value="<?php echo htmlspecialchars(trim($reserva['NumeroReserva'])); ?> " disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="vehiculosdisponibles" class="form-label"> Vehículos disponibles </label>
                     <select class="form-select" aria-label="Selector" id="vehiculosdisponibles" 
                             name="VehiculosDisponibles" 
-                            <?php 
-                                // Si no hay contrato asociado a la reserva o el estado es "En Preparación", entonces 
-                                // obligatorio llenar el campo
-                                if ($estadoContrato == "En Preparación" || $estadoContrato == "No existe") {
-                                    echo "required";
-                                }
-                                // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                                else {
-                                    echo "title='El contrato ya fue firmado o cancelado' disabled";
-                                }
-                            ?>
+                            <?php echo $disabledAttr; ?>
+                            <?php if (!$isDisabledGeneral) { echo "required"; } ?>
                     >
                         <option value="" selected>Selecciona una opción</option>
 
@@ -336,17 +381,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
                     <label for="fecharetiro" class="form-label">Fecha de Retiro</label>
                     <input type="date" class="form-control" id="fecharetiro" name="FechaRetiro" 
                         value="<?php echo htmlspecialchars($reserva['FechaRetiro']); ?>"  
-                        <?php 
-                            // Si no hay contrato asociado a la reserva o el estado es "En Preparación", entonces 
-                            // obligatorio llenar el campo
-                            if ($estadoContrato == "En Preparación" || $estadoContrato == "No existe") {
-                                echo "required";
-                            }
-                            // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                            else {
-                                echo "title='El contrato ya fue firmado o cancelado' disabled";
-                            }
-                        ?>
+                        <?php echo $disabledAttr; ?>
+                        <?php if (!$isDisabledGeneral) { echo "required"; } ?>
                     >
                 </div>
 
@@ -354,37 +390,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
                     <label for="fechadevolucion" class="form-label">Fecha de Devolución</label>
                     <input type="date" class="form-control" id="fechadevolucion" name="FechaDevolucion" 
                         value="<?php echo htmlspecialchars($reserva['FechaDevolucion']); ?>" 
-                        <?php 
-                            // Si no hay contrato asociado a la reserva o el estado es "En Preparación", entonces 
-                            // obligatorio llenar el campo
-                            if ($estadoContrato == "En Preparación" || $estadoContrato == "No existe") {
-                                echo "required";
-                            }
-                            // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                            else {
-                                echo "title='El contrato ya fue firmado o cancelado' disabled";
-                            }
-                        ?>
+                        <?php echo $disabledAttr; ?>
+                        <?php if (!$isDisabledGeneral) { echo "required"; } ?>
                     >
                 </div>
 
-                <button type="submit" class="btn btn-primary" name="BotonModificarReserva" 
-                        value="modificandoReserva"; 
-                        <?php 
-                            // Si no hay contrato asociado a la reserva o el estado es "En Preparación", entonces 
-                            // obligatorio llenar el campo
-                            if ($estadoContrato == "En Preparación" || $estadoContrato == "No existe") {
-                                echo " ";
-                            }
-                            // Caso contrario (contrato firmado, activo, etc), campo deshabilitado:
-                            else {
-                                echo "disabled";
-                            }
-                        ?>
-                >
-                    Guardar Cambios
-                </button>
-            </form>
+                <div class="d-flex justify-content-start gap-2 mt-5">
+                    
+                    <?php if (!$esCancelada): ?>
+                        
+                        <button type="submit" class="btn btn-primary" name="BotonModificarReserva" 
+                                value="modificandoReserva"
+                                <?php echo $disabledAttr; ?>
+                        >
+                            Guardar Cambios
+                        </button>
+                        
+                
+                        
+                    <?php else: ?>
+                        
+                        <button type="submit" class="btn btn-success" name="BotonReactivarReserva" 
+                                value="reactivandoReserva">
+                            Reactivar Reserva
+                        </button>
+
+                    <?php endif; ?>
+
+                    <a href="reservas.php" class="btn btn-secondary">Volver</a>
+                </div>
+                </form>
 
         </div>
 
@@ -393,6 +428,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
         </div>
 
     </div>
+
+    <script>
+        function cancelarReserva(idReserva) {
+            if (confirm('¿Estás seguro de que quieres CANCELAR esta reserva? Se le solicitará un motivo obligatorio.')) {
+                
+                let comentario = null;
+                let esValido = false;
+
+                // Bucle para obligar a ingresar un comentario
+                while (!esValido) {
+                    comentario = prompt('⚠️ Ingrese el motivo de la cancelación (campo obligatorio):');
+
+                    if (comentario === null) {
+                        return; // El usuario presionó "Cancelar"
+                    }
+
+                    if (comentario.trim() === '') {
+                        alert('El motivo de la cancelación es obligatorio. Por favor, ingrese un comentario válido.');
+                    } else {
+                        esValido = true;
+                    }
+                }
+                
+                let comentarioCodificado = encodeURIComponent(comentario.trim());
+                
+                // Redirigir a EliminarReserva.php con el ID y el comentario
+                window.location.href = 'EliminarReserva.php?id=' + idReserva + '&comentario=' + comentarioCodificado;
+            }
+        }
+    </script>
 
 </body>
 </html>

@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jun 03, 2025 at 01:02 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 11-12-2025 a las 03:56:53
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `rocket`
+-- Base de datos: `rocket`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `accesorios-vehiculos`
+-- Estructura de tabla para la tabla `accesorios-vehiculos`
 --
 
 CREATE TABLE `accesorios-vehiculos` (
@@ -41,7 +41,7 @@ CREATE TABLE `accesorios-vehiculos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `accesorios-vehiculos`
+-- Volcado de datos para la tabla `accesorios-vehiculos`
 --
 
 INSERT INTO `accesorios-vehiculos` (`idAccesorio`, `nombreAccesorio`, `descripcionAccesorio`, `cantidadEnDeposito`, `precioAccesorio`, `estadoAccesorio`, `idTipoInsumo`, `idProveedor`, `disponibilidadAccesorio`, `vehiculosHospedantes`) VALUES
@@ -57,7 +57,7 @@ INSERT INTO `accesorios-vehiculos` (`idAccesorio`, `nombreAccesorio`, `descripci
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cargo`
+-- Estructura de tabla para la tabla `cargo`
 --
 
 CREATE TABLE `cargo` (
@@ -66,7 +66,7 @@ CREATE TABLE `cargo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 --
--- Dumping data for table `cargo`
+-- Volcado de datos para la tabla `cargo`
 --
 
 INSERT INTO `cargo` (`id`, `descripcion`) VALUES
@@ -86,7 +86,7 @@ INSERT INTO `cargo` (`id`, `descripcion`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clientes`
+-- Estructura de tabla para la tabla `clientes`
 --
 
 CREATE TABLE `clientes` (
@@ -94,7 +94,7 @@ CREATE TABLE `clientes` (
   `nombreCliente` varchar(50) NOT NULL,
   `apellidoCliente` varchar(50) NOT NULL,
   `nacionalidadCliente` varchar(50) DEFAULT NULL,
-  `dniCliente` int(12) DEFAULT NULL,
+  `dniCliente` int(10) NOT NULL,
   `nroPasaporteCliente` int(11) DEFAULT NULL,
   `mailCliente` varchar(50) DEFAULT NULL,
   `telefonoCliente` int(20) DEFAULT NULL,
@@ -110,35 +110,34 @@ CREATE TABLE `clientes` (
   `tarjetaCredito_codSeguridad` int(11) DEFAULT NULL,
   `seguroCliente_nombre` varchar(100) DEFAULT NULL,
   `seguroCliente_tipo` varchar(100) DEFAULT NULL,
-  `seguroCliente_descripcion` varchar(100) DEFAULT NULL
+  `seguroCliente_descripcion` varchar(100) DEFAULT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `clientes`
+-- Volcado de datos para la tabla `clientes`
 --
 
-INSERT INTO `clientes` (`idCliente`, `nombreCliente`, `apellidoCliente`, `nacionalidadCliente`, `dniCliente`, `nroPasaporteCliente`, `mailCliente`, `telefonoCliente`, `ciudadCliente`, `direccionCliente`, `comprobanteDomicilio`, `propositoAlquiler`, `licenciaConducir`, `licenciaInternacionalConducir`, `tarjetaCredito_titular`, `tarjetaCredito_numero`, `tarjetaCredito_vencim`, `tarjetaCredito_codSeguridad`, `seguroCliente_nombre`, `seguroCliente_tipo`, `seguroCliente_descripcion`) VALUES
-(1, 'Bruno', 'Carossi', 'Argentina', 38103736, NULL, 'brunocarossi@hotmail.com', 2147483647, 'JUAN ANCHORENA', '829 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa BRUNO CAROSSI', 3323332, '2024-12-01', NULL, 'Zurich Argentina', 'A', NULL),
-(2, 'Lucia', 'HRASTE', 'Argentina', 31741578, NULL, 'lucia@hotmail.com', 214748368, 'URQUIZA', '829 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa LUCIA HRASTE', 2233323, '2024-11-30', NULL, 'San Cristobal', 'A', NULL),
-(3, 'Eduardo Facundo', 'Mota', 'Argentina', 38343866, NULL, 'facundo@hotmail.com', 31474836, 'SIERRA DE LA VENTANA', '828 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa EDUARDO FACUNDO MOTA', 8949389, '2025-07-30', NULL, 'Seguros Rivadavia', 'A', NULL),
-(4, 'Roberto', 'Sanchez', 'Argentina', 77433645, NULL, 'roberto@gmail.com', 55147483, 'CABA', '821 Av Malvinas Argentinas', 0, NULL, 'B2', NULL, NULL, NULL, NULL, NULL, 'San Cristobal', 'C', NULL),
-(5, 'Maria', 'Lopez', 'Argentina', 33224445, NULL, 'maria@email.com', 314748111, 'CABA', '323 Av Sarmiento', 0, NULL, 'B2', NULL, NULL, NULL, NULL, NULL, 'Seguros Rivadavia', 'A', NULL),
-(6, 'Ana', 'Smith', 'Argentina', 33244232, NULL, 'ana@gmail.com', 77474839, 'CABA', '223 Av Malvinas Argentinas', 0, NULL, 'B2', NULL, NULL, NULL, NULL, NULL, 'San Cristobal', 'A', NULL),
-(7, 'Gabriel', 'Garcia', 'Argentina', 44555999, NULL, 'gabriel@hotmail.com', 41474831, 'MAR DEL PLATA', '332 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Mastercard GABRIEL GARCIA', NULL, '2024-11-14', NULL, 'Zurich Argentina', 'B', NULL),
-(8, 'Rosa', 'Alonso', 'Argentina', 33222444, NULL, 'rosa@hotmail.com', 51474832, 'MAR DEL PLATA', '444 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa ROSA ALONSO', NULL, '2024-11-15', NULL, 'Seguros Rivadavia', 'D', NULL),
-(9, 'Rosario', 'Acosta', 'Argentina', 77888444, NULL, 'rosario@hotmail.com', 61474833, 'CORDOBA', '555 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa ROSARIO ACOSTA', NULL, '2024-11-15', NULL, 'Seguros Rivadavia', 'A', NULL),
-(10, 'Francisco Juan', 'Lopez', 'Argentina', 66332557, NULL, 'francisco@hotmail.com', 71474834, 'CORDOBA', '666 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Mastercard FRANCISCO JUAN LOPEZ', NULL, '2024-11-15', NULL, 'San Cristobal', 'B', NULL),
-(11, 'Lorena', 'Berlusconi', 'Argentina', 443332555, NULL, 'lorena@hotmail.com', 81474891, 'VILLA CARLOS PAZ', '777 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa LORENA BERLUSCONI', NULL, '2024-12-15', NULL, 'Zurich Argentina', 'A', NULL),
-(12, 'Nicolás', 'Servidio', 'Argentina', 33222558, NULL, 'nicolas@hotmail.com', 91474892, 'BAHIA BLANCA', '888 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa NICOLAS SERVIDIO', NULL, '2024-11-25', NULL, 'Zurich Argentina', 'A', NULL),
-(15, 'Padme', 'Amidala', NULL, 33222557, NULL, 'padme@gmail.com', 44656324, NULL, '323 Organa, Naboo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(17, 'Ana', 'Rossi', NULL, 33256642, NULL, 'anarossi@gmail.com', 455887241, NULL, '1498 Cuyo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(23, 'Eduardo', 'Perez', NULL, 829092293, NULL, 'eperez@email.com', 329393022, NULL, '52 Nicaragua', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(24, 'Ruben', 'Gonzales', NULL, 73782929, NULL, 'rubgon@email.com', 2147483647, NULL, '1293 Av. Libertad', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `clientes` (`idCliente`, `nombreCliente`, `apellidoCliente`, `nacionalidadCliente`, `dniCliente`, `nroPasaporteCliente`, `mailCliente`, `telefonoCliente`, `ciudadCliente`, `direccionCliente`, `comprobanteDomicilio`, `propositoAlquiler`, `licenciaConducir`, `licenciaInternacionalConducir`, `tarjetaCredito_titular`, `tarjetaCredito_numero`, `tarjetaCredito_vencim`, `tarjetaCredito_codSeguridad`, `seguroCliente_nombre`, `seguroCliente_tipo`, `seguroCliente_descripcion`, `activo`) VALUES
+(1, 'Bruno', 'Carossi', 'Argentina', 38103736, NULL, 'brunocarossi@hotmail.com', 2147483647, 'JUAN ANCHORENA', '829 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa BRUNO CAROSSI', 3323332, '2024-12-01', NULL, 'Zurich Argentina', 'A', NULL, 0),
+(2, 'Lucia', 'HRASTE', 'Argentina', 31741578, NULL, 'lucia@hotmail.com', 214748368, 'URQUIZA', '829 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa LUCIA HRASTE', 2233323, '2024-11-30', NULL, 'San Cristobal', 'A', NULL, 1),
+(3, 'Eduardo Facundo', 'Mota', 'Argentina', 38343866, NULL, 'facundo@hotmail.com', 31474836, 'SIERRA DE LA VENTANA', '828 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa EDUARDO FACUNDO MOTA', 8949389, '2025-07-30', NULL, 'Seguros Rivadavia', 'A', NULL, 1),
+(4, 'Roberto', 'Sanchez', 'Argentina', 77433645, NULL, 'roberto@gmail.com', 55147483, 'CABA', '821 Av Malvinas Argentinas', 0, NULL, 'B2', NULL, NULL, NULL, NULL, NULL, 'San Cristobal', 'C', NULL, 1),
+(5, 'Maria', 'Ricardi', 'Argentina', 33224445, NULL, 'maria@gmail.com', 31474838, 'CABA', '222 Av Malvinas Argentinas', 0, NULL, 'B2', NULL, NULL, NULL, NULL, NULL, 'Seguros Rivadavia', 'A', NULL, 1),
+(6, 'Ana', 'Smith', 'Argentina', 33244232, NULL, 'ana@gmail.com', 77474839, 'CABA', '223 Av Malvinas Argentinas', 0, NULL, 'B2', NULL, NULL, NULL, NULL, NULL, 'San Cristobal', 'A', NULL, 1),
+(7, 'Gabriel', 'Garcia', 'Argentina', 44555999, NULL, 'gabriel@hotmail.com', 41474831, 'MAR DEL PLATA', '332 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Mastercard GABRIEL GARCIA', NULL, '2024-11-14', NULL, 'Zurich Argentina', 'B', NULL, 1),
+(8, 'Rosa', 'Alonso', 'Argentina', 33222444, NULL, 'rosa@hotmail.com', 51474832, 'MAR DEL PLATA', '444 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa ROSA ALONSO', NULL, '2024-11-15', NULL, 'Seguros Rivadavia', 'D', NULL, 1),
+(9, 'Rosario', 'Acosta', 'Argentina', 77888444, NULL, 'rosario@hotmail.com', 61474833, 'CORDOBA', '555 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa ROSARIO ACOSTA', NULL, '2024-11-15', NULL, 'Seguros Rivadavia', 'A', NULL, 0),
+(10, 'Francisco Juan', 'Lopez', 'Argentina', 66332557, NULL, 'francisco@hotmail.com', 71474834, 'CORDOBA', '666 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Mastercard FRANCISCO JUAN LOPEZ', NULL, '2024-11-15', NULL, 'San Cristobal', 'B', NULL, 1),
+(11, 'Lorena', 'Berlusconi', 'Argentina', 443332555, NULL, 'lorena@hotmail.com', 81474891, 'VILLA CARLOS PAZ', '777 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa LORENA BERLUSCONI', NULL, '2024-12-15', NULL, 'Zurich Argentina', 'A', NULL, 1),
+(12, 'Nicolás', 'Servidio', 'Argentina', 33222558, NULL, 'nicolas@hotmail.com', 91474892, 'BAHIA BLANCA', '888 Av Malvinas Argentinas', 1, NULL, 'B2', NULL, 'Visa NICOLAS SERVIDIO', NULL, '2024-11-25', NULL, 'Zurich Argentina', 'A', NULL, 1),
+(15, 'Padme', 'Amidala', NULL, 33222557, NULL, 'padme@gmail.com', 44656324, NULL, '323 Organa, Naboo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(17, 'Ana', 'Rossi', NULL, 33256642, NULL, 'anarossi@gmail.com', 455887241, NULL, '1498 Cuyo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `combustibles`
+-- Estructura de tabla para la tabla `combustibles`
 --
 
 CREATE TABLE `combustibles` (
@@ -147,7 +146,7 @@ CREATE TABLE `combustibles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `combustibles`
+-- Volcado de datos para la tabla `combustibles`
 --
 
 INSERT INTO `combustibles` (`idCombustible`, `tipoCombustible`) VALUES
@@ -164,7 +163,7 @@ INSERT INTO `combustibles` (`idCombustible`, `tipoCombustible`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `contratos-alquiler`
+-- Estructura de tabla para la tabla `contratos-alquiler`
 --
 
 CREATE TABLE `contratos-alquiler` (
@@ -181,7 +180,7 @@ CREATE TABLE `contratos-alquiler` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `contratos-alquiler`
+-- Volcado de datos para la tabla `contratos-alquiler`
 --
 
 INSERT INTO `contratos-alquiler` (`idContrato`, `fechaInicioContrato`, `fechaFinContrato`, `fechaEntrega`, `fechaDevolucion`, `idCliente`, `idVehiculo`, `idVendedor`, `idDetalleContrato`, `idEstadoContrato`) VALUES
@@ -202,6 +201,8 @@ INSERT INTO `contratos-alquiler` (`idContrato`, `fechaInicioContrato`, `fechaFin
 (17, '2025-01-01', '2025-01-03', NULL, '2025-01-05', 1, 24, NULL, 17, 6),
 (18, '2025-01-02', '2025-01-04', NULL, NULL, 3, 1, NULL, 18, 6),
 (19, '2024-01-01', '2024-01-05', NULL, NULL, 6, 2, NULL, 19, 6),
+(20, '2024-01-02', '2024-01-07', NULL, NULL, 4, 32, NULL, 20, 6),
+(21, '2024-01-02', '2024-01-05', NULL, NULL, 5, 3, NULL, 21, 6),
 (22, '2024-01-03', '2024-01-11', NULL, NULL, 7, 35, NULL, 22, 6),
 (23, '2024-01-05', '2024-01-10', NULL, NULL, 1, 7, NULL, 23, 6),
 (24, '2024-01-05', '2024-01-10', NULL, NULL, 2, 19, NULL, 24, 6),
@@ -214,6 +215,7 @@ INSERT INTO `contratos-alquiler` (`idContrato`, `fechaInicioContrato`, `fechaFin
 (31, '2024-01-25', '2024-01-27', NULL, NULL, 15, 23, NULL, 31, 6),
 (32, '2024-01-27', '2024-01-30', NULL, NULL, 17, 24, NULL, 32, 6),
 (33, '2024-01-27', '2024-01-29', NULL, NULL, 1, 36, NULL, 33, 6),
+(34, '2024-01-29', '2024-02-02', NULL, NULL, 2, 20, NULL, 34, 3),
 (35, '2024-02-01', '2024-02-03', NULL, NULL, 3, 2, NULL, 35, 6),
 (36, '2024-02-02', '2024-02-03', NULL, NULL, 4, 32, NULL, 36, 6),
 (37, '2024-02-03', '2024-02-05', NULL, NULL, 5, 3, NULL, 37, 6),
@@ -302,7 +304,7 @@ INSERT INTO `contratos-alquiler` (`idContrato`, `fechaInicioContrato`, `fechaFin
 (120, '2024-08-23', '2024-08-25', NULL, NULL, 10, 36, NULL, 120, 6),
 (121, '2024-08-29', '2024-08-31', NULL, NULL, 15, 23, NULL, 121, 6),
 (122, '2024-09-05', '2024-09-09', NULL, NULL, 1, 1, NULL, 122, 6),
-(123, '2024-10-07', '2024-10-10', '2024-10-08', '2024-10-09', 15, 19, NULL, 123, 6),
+(123, '2024-10-07', '2024-10-10', NULL, NULL, 15, 19, NULL, 123, 2),
 (124, '2024-10-09', '2024-10-14', NULL, NULL, 1, 25, NULL, 124, 6),
 (125, '2024-10-16', '2024-10-19', NULL, NULL, 3, 18, NULL, 125, 6),
 (126, '2024-11-02', '2024-11-07', NULL, NULL, 12, 2, NULL, 126, 6),
@@ -313,24 +315,16 @@ INSERT INTO `contratos-alquiler` (`idContrato`, `fechaInicioContrato`, `fechaFin
 (131, '2025-01-02', '2025-01-09', NULL, NULL, 12, 19, NULL, 131, 6),
 (132, '2025-01-02', '2025-01-02', NULL, NULL, 15, 25, NULL, 132, 4),
 (134, '2025-05-23', '2025-05-28', NULL, NULL, 6, 19, NULL, 134, 2),
-(135, '2025-05-22', '2025-05-29', NULL, NULL, 12, 6, NULL, 135, 3),
+(135, '2025-05-22', '2025-05-29', NULL, NULL, 12, 6, NULL, 135, 1),
 (136, '2025-05-24', '2025-05-28', NULL, NULL, 10, 45, NULL, 136, 3),
 (137, '2025-05-23', '2025-05-29', NULL, NULL, 15, 45, NULL, 137, 6),
-(139, '2025-03-13', '2025-03-18', '2025-03-14', '2025-03-17', 9, 44, NULL, 139, 6),
-(140, '2025-01-01', '2025-01-06', NULL, NULL, 3, 45, NULL, 140, 6),
-(141, '2024-01-01', '2025-01-03', '2024-01-02', NULL, 7, 35, NULL, 141, 4),
-(142, '2025-04-05', '2025-04-10', NULL, NULL, 24, 7, NULL, 142, 1),
-(143, '2025-04-01', '2025-04-10', NULL, NULL, 23, 19, NULL, 143, 1),
-(144, '2025-02-10', '2025-02-15', NULL, NULL, 23, 35, NULL, 144, 1),
-(145, '2025-05-05', '2025-05-12', '2025-05-05', NULL, 23, 6, NULL, 145, 5),
-(146, '2025-05-05', '2025-05-20', NULL, NULL, 23, 30, NULL, 146, 5),
-(147, '2025-05-08', '2025-05-14', NULL, NULL, 23, 48, NULL, 147, 1),
-(148, '2025-05-12', '2025-05-18', NULL, NULL, 24, 2, NULL, 148, 1);
+(138, '2025-03-20', '2025-03-27', NULL, NULL, 12, 35, NULL, 138, 1),
+(139, '2025-03-13', '2025-03-18', '2025-03-14', '2025-03-17', 9, 44, NULL, 139, 6);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cuentas-clientes`
+-- Estructura de tabla para la tabla `cuentas-clientes`
 --
 
 CREATE TABLE `cuentas-clientes` (
@@ -342,7 +336,7 @@ CREATE TABLE `cuentas-clientes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `cuentas-clientes`
+-- Volcado de datos para la tabla `cuentas-clientes`
 --
 
 INSERT INTO `cuentas-clientes` (`idCuentaCliente`, `nombreUsuarioCliente`, `passwordCliente`, `idCliente`, `idEstadoCuentaCliente`) VALUES
@@ -354,7 +348,7 @@ INSERT INTO `cuentas-clientes` (`idCuentaCliente`, `nombreUsuarioCliente`, `pass
 -- --------------------------------------------------------
 
 --
--- Table structure for table `detalle-contratos`
+-- Estructura de tabla para la tabla `detalle-contratos`
 --
 
 CREATE TABLE `detalle-contratos` (
@@ -369,7 +363,7 @@ CREATE TABLE `detalle-contratos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `detalle-contratos`
+-- Volcado de datos para la tabla `detalle-contratos`
 --
 
 INSERT INTO `detalle-contratos` (`idDetalleContrato`, `precioPorDiaContrato`, `cantidadDiasContrato`, `montoTotalContrato`, `condicionesContrato`, `estadoContrato`, `idEntregaVehiculo`, `idDevVehiculo`) VALUES
@@ -390,6 +384,8 @@ INSERT INTO `detalle-contratos` (`idDetalleContrato`, `precioPorDiaContrato`, `c
 (17, 80, 2, 160, NULL, 'El estado ha sido modificado', NULL, NULL),
 (18, 90.6, 2, 181.2, NULL, NULL, NULL, NULL),
 (19, 55, 4, 220, NULL, 'El estado ha sido modificado', NULL, NULL),
+(20, 61, 5, 305, NULL, 'El estado ha sido modificado', NULL, NULL),
+(21, 73.2, 3, 219.6, NULL, 'El estado ha sido modificado', NULL, NULL),
 (22, 89, 8, 712, NULL, 'El estado ha sido modificado', NULL, NULL),
 (23, 48.61, 5, 243.05, NULL, 'El estado ha sido modificado', NULL, NULL),
 (24, 58.43, 5, 292.15, NULL, 'El estado ha sido modificado', NULL, NULL),
@@ -402,6 +398,7 @@ INSERT INTO `detalle-contratos` (`idDetalleContrato`, `precioPorDiaContrato`, `c
 (31, 75, 2, 150, NULL, 'El estado ha sido modificado', NULL, NULL),
 (32, 89.3, 3, 267.9, NULL, 'El estado ha sido modificado', NULL, NULL),
 (33, 89, 2, 178, NULL, 'El estado ha sido modificado', NULL, NULL),
+(34, 73, 4, 292, NULL, 'El estado ha sido modificado', NULL, NULL),
 (35, 46.8, 2, 93.6, NULL, 'El estado ha sido modificado', NULL, NULL),
 (36, 70, 1, 70, NULL, 'El estado ha sido modificado', NULL, NULL),
 (37, 79.3, 2, 158.6, NULL, 'El estado ha sido modificado', NULL, NULL),
@@ -501,24 +498,16 @@ INSERT INTO `detalle-contratos` (`idDetalleContrato`, `precioPorDiaContrato`, `c
 (131, 45, 7, 315, NULL, 'El estado ha sido modificado', NULL, NULL),
 (132, 55, 0, 0, NULL, 'El estado ha sido modificado', NULL, NULL),
 (134, 101.12, 5, 505.6, NULL, 'El estado ha sido modificado', NULL, NULL),
-(135, 81.5, 7, 570.5, NULL, 'El estado ha sido modificado', NULL, NULL),
+(135, 81.5, 7, 570.5, NULL, NULL, NULL, NULL),
 (136, 55.6, 4, 222.4, NULL, 'El estado ha sido modificado', NULL, NULL),
 (137, 71.7, 6, 430.2, NULL, 'El estado ha sido modificado', NULL, NULL),
-(139, 55.71, 5, 278.55, NULL, 'El estado ha sido modificado', NULL, NULL),
-(140, 40, 5, 200, NULL, 'El estado ha sido modificado', NULL, NULL),
-(141, 40, 368, 14720, NULL, 'El estado ha sido modificado', NULL, NULL),
-(142, 75, 5, 375, NULL, NULL, NULL, NULL),
-(143, 47.2, 9, 424.8, NULL, NULL, NULL, NULL),
-(144, 67.1, 5, 335.5, NULL, NULL, NULL, NULL),
-(145, 78.1, 7, 546.7, NULL, 'El estado ha sido modificado', NULL, NULL),
-(146, 71.4, 15, 1071, NULL, 'El estado ha sido modificado', NULL, NULL),
-(147, 61.3, 6, 367.8, NULL, 'El estado ha sido modificado', NULL, NULL),
-(148, 55, 6, 330, NULL, 'El estado ha sido modificado', NULL, NULL);
+(138, 88.1, 7, 616.7, NULL, NULL, NULL, NULL),
+(139, 55.71, 5, 278.55, NULL, 'El estado ha sido modificado', NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `detalle-pedidoaproveedor`
+-- Estructura de tabla para la tabla `detalle-pedidoaproveedor`
 --
 
 CREATE TABLE `detalle-pedidoaproveedor` (
@@ -533,7 +522,7 @@ CREATE TABLE `detalle-pedidoaproveedor` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `detalle-pedidoaproveedor`
+-- Volcado de datos para la tabla `detalle-pedidoaproveedor`
 --
 
 INSERT INTO `detalle-pedidoaproveedor` (`idDetallePedidoAProveedor`, `idPedido`, `precioPorUnidad`, `cantidadUnidades`, `subtotal`, `idRepuestoVehiculo`, `idProductoVehiculo`, `idAccesorioVehiculo`) VALUES
@@ -559,21 +548,12 @@ INSERT INTO `detalle-pedidoaproveedor` (`idDetallePedidoAProveedor`, `idPedido`,
 (20, 9, 45, 10, 450, 11, NULL, NULL),
 (21, 9, 23.2, 4, 92.8, 12, NULL, NULL),
 (22, 10, 125, 1, 125, NULL, NULL, 7),
-(23, 10, 13.2, 10, 132, NULL, NULL, 8),
-(24, 11, 11.5, 3, 34.5, 13, NULL, NULL),
-(25, 11, 23, 5, 115, NULL, 4, NULL),
-(26, 12, 550, 1, 550, 14, NULL, NULL),
-(27, 13, 1000, 1, 1000, 15, NULL, NULL),
-(28, 14, 1240, 1, 1240, 16, NULL, NULL),
-(29, 15, 1300, 1, 1300, 17, NULL, NULL),
-(30, 16, 982, 3, 2946, 18, NULL, NULL),
-(31, 17, 1200, 1, 1200, 19, NULL, NULL),
-(32, 18, 700, 3, 2100, 20, NULL, NULL);
+(23, 10, 13.2, 10, 132, NULL, NULL, 8);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `devoluciones-vehiculos`
+-- Estructura de tabla para la tabla `devoluciones-vehiculos`
 --
 
 CREATE TABLE `devoluciones-vehiculos` (
@@ -593,7 +573,7 @@ CREATE TABLE `devoluciones-vehiculos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `devoluciones-vehiculos`
+-- Volcado de datos para la tabla `devoluciones-vehiculos`
 --
 
 INSERT INTO `devoluciones-vehiculos` (`idDevolucion`, `fechaDevolucion`, `horaDevolucion`, `estadoDevolucion`, `aclaracionesDevolucion`, `infraccionesDevolucion`, `costosInfracciones`, `montoExtra`, `idCliente`, `idContrato`, `idVerificacion`, `idVendedorReceptor`, `actualizacion`) VALUES
@@ -611,13 +591,12 @@ INSERT INTO `devoluciones-vehiculos` (`idDevolucion`, `fechaDevolucion`, `horaDe
 (13, '2024-08-30', '21:52', 'Sin cambios', 'Sin aclaraciones necesarias', 'Cubiertas por el usuario', 0, 0, 15, 121, NULL, NULL, 'S'),
 (14, '2025-03-17', '11:11', 'Sin cambios', 'Sin aclaraciones', 'Ninguna', 0, 0, 9, 139, NULL, NULL, 'N'),
 (15, '2025-01-05', '10:24', 'Sin cambios', 'Sin aclaraciones', 'Ninguna', 0, 100, 1, 17, NULL, NULL, 'S'),
-(16, '2024-11-14', '14:00', 'Sin cambios', 'Sin aclaraciones', 'Ninguna', 0, 0, 6, 128, NULL, NULL, 'N'),
-(17, '2024-10-09', '09:00', 'Sin cambios', 'Sin aclaraciones', 'Ninguna', 0, 0, 15, 123, NULL, NULL, 'S');
+(16, '2024-11-14', '14:00', 'Sin cambios', 'Sin aclaraciones', 'Ninguna', 0, 0, 6, 128, NULL, NULL, 'N');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `empleados`
+-- Estructura de tabla para la tabla `empleados`
 --
 
 CREATE TABLE `empleados` (
@@ -637,7 +616,7 @@ CREATE TABLE `empleados` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `entregas-vehiculos`
+-- Estructura de tabla para la tabla `entregas-vehiculos`
 --
 
 CREATE TABLE `entregas-vehiculos` (
@@ -649,7 +628,7 @@ CREATE TABLE `entregas-vehiculos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `entregas-vehiculos`
+-- Volcado de datos para la tabla `entregas-vehiculos`
 --
 
 INSERT INTO `entregas-vehiculos` (`idEntrega`, `fechaEntrega`, `horaEntrega`, `idCliente`, `idContrato`) VALUES
@@ -672,15 +651,12 @@ INSERT INTO `entregas-vehiculos` (`idEntrega`, `fechaEntrega`, `horaEntrega`, `i
 (17, '2025-05-23', '15:11', 15, 137),
 (18, '2025-04-10', '04:29', 5, 127),
 (19, '2024-08-30', '19:00', 15, 121),
-(20, '2025-03-14', '09:08', 9, 139),
-(21, '2024-01-02', '08:00', 7, 141),
-(22, '2025-05-05', '08:00', 23, 145),
-(23, '2024-10-08', '08:00', 15, 123);
+(20, '2025-03-14', '09:08', 9, 139);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estados-contratos`
+-- Estructura de tabla para la tabla `estados-contratos`
 --
 
 CREATE TABLE `estados-contratos` (
@@ -690,7 +666,7 @@ CREATE TABLE `estados-contratos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `estados-contratos`
+-- Volcado de datos para la tabla `estados-contratos`
 --
 
 INSERT INTO `estados-contratos` (`idEstadoContrato`, `estadoContrato`, `descripcionEstadoContrato`) VALUES
@@ -704,7 +680,7 @@ INSERT INTO `estados-contratos` (`idEstadoContrato`, `estadoContrato`, `descripc
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estados-cuentacliente`
+-- Estructura de tabla para la tabla `estados-cuentacliente`
 --
 
 CREATE TABLE `estados-cuentacliente` (
@@ -713,7 +689,7 @@ CREATE TABLE `estados-cuentacliente` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `estados-cuentacliente`
+-- Volcado de datos para la tabla `estados-cuentacliente`
 --
 
 INSERT INTO `estados-cuentacliente` (`idEstadoCuenta`, `Denominacion`) VALUES
@@ -723,7 +699,7 @@ INSERT INTO `estados-cuentacliente` (`idEstadoCuenta`, `Denominacion`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estados-pedidoaproveedor`
+-- Estructura de tabla para la tabla `estados-pedidoaproveedor`
 --
 
 CREATE TABLE `estados-pedidoaproveedor` (
@@ -733,7 +709,7 @@ CREATE TABLE `estados-pedidoaproveedor` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `estados-pedidoaproveedor`
+-- Volcado de datos para la tabla `estados-pedidoaproveedor`
 --
 
 INSERT INTO `estados-pedidoaproveedor` (`idEstadoPedido`, `estadoPedido`, `descripcionEstadoPedido`) VALUES
@@ -748,7 +724,7 @@ INSERT INTO `estados-pedidoaproveedor` (`idEstadoPedido`, `estadoPedido`, `descr
 -- --------------------------------------------------------
 
 --
--- Table structure for table `feedbacks-clientes`
+-- Estructura de tabla para la tabla `feedbacks-clientes`
 --
 
 CREATE TABLE `feedbacks-clientes` (
@@ -760,7 +736,7 @@ CREATE TABLE `feedbacks-clientes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `feedbacks-clientes`
+-- Volcado de datos para la tabla `feedbacks-clientes`
 --
 
 INSERT INTO `feedbacks-clientes` (`idFeedbackCliente`, `descripcionFeedback`, `puntuacionFeedback`, `idVehiculo`, `idCuentaCliente`) VALUES
@@ -770,7 +746,7 @@ INSERT INTO `feedbacks-clientes` (`idFeedbackCliente`, `descripcionFeedback`, `p
 -- --------------------------------------------------------
 
 --
--- Table structure for table `grupos-vehiculos`
+-- Estructura de tabla para la tabla `grupos-vehiculos`
 --
 
 CREATE TABLE `grupos-vehiculos` (
@@ -780,7 +756,7 @@ CREATE TABLE `grupos-vehiculos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `grupos-vehiculos`
+-- Volcado de datos para la tabla `grupos-vehiculos`
 --
 
 INSERT INTO `grupos-vehiculos` (`idGrupo`, `nombreGrupo`, `descripcionGrupo`) VALUES
@@ -801,7 +777,7 @@ INSERT INTO `grupos-vehiculos` (`idGrupo`, `nombreGrupo`, `descripcionGrupo`) VA
 -- --------------------------------------------------------
 
 --
--- Table structure for table `intereses-clientes`
+-- Estructura de tabla para la tabla `intereses-clientes`
 --
 
 CREATE TABLE `intereses-clientes` (
@@ -812,7 +788,7 @@ CREATE TABLE `intereses-clientes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `intereses-clientes`
+-- Volcado de datos para la tabla `intereses-clientes`
 --
 
 INSERT INTO `intereses-clientes` (`idInteresCliente`, `motivoDeInteres`, `idVehiculo`, `idCuentaCliente`) VALUES
@@ -822,7 +798,7 @@ INSERT INTO `intereses-clientes` (`idInteresCliente`, `motivoDeInteres`, `idVehi
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mantenimientos-vehiculos`
+-- Estructura de tabla para la tabla `mantenimientos-vehiculos`
 --
 
 CREATE TABLE `mantenimientos-vehiculos` (
@@ -840,7 +816,7 @@ CREATE TABLE `mantenimientos-vehiculos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `modelos`
+-- Estructura de tabla para la tabla `modelos`
 --
 
 CREATE TABLE `modelos` (
@@ -850,7 +826,7 @@ CREATE TABLE `modelos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `modelos`
+-- Volcado de datos para la tabla `modelos`
 --
 
 INSERT INTO `modelos` (`idModelo`, `nombreModelo`, `descripcionModelo`) VALUES
@@ -868,7 +844,7 @@ INSERT INTO `modelos` (`idModelo`, `nombreModelo`, `descripcionModelo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pedido-a-proveedor`
+-- Estructura de tabla para la tabla `pedido-a-proveedor`
 --
 
 CREATE TABLE `pedido-a-proveedor` (
@@ -883,32 +859,24 @@ CREATE TABLE `pedido-a-proveedor` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `pedido-a-proveedor`
+-- Volcado de datos para la tabla `pedido-a-proveedor`
 --
 
 INSERT INTO `pedido-a-proveedor` (`idPedido`, `fechaPedido`, `fechaEntregaPedido`, `idProveedor`, `idEstadoPedido`, `aclaracionesEstadoPedido`, `condicionesDeEntrega`, `totalPedido`) VALUES
-(1, '2024-11-01', '2024-11-05', 4, 3, 'Ninguna', '5 de noviembre a las 8 AM en puerta, previo aviso telefónico', 2400),
+(1, '2024-11-01', '2024-11-05', 4, 1, 'Ninguna', '5 de noviembre a las 8 AM en puerta, previo aviso telefónico', 2400),
 (2, '2024-11-01', '2024-11-11', 4, 1, '', '', 7612.38),
 (3, '2024-11-03', '2024-11-08', 11, 1, '', '', 188),
 (4, '2024-11-12', '2024-11-26', 9, 6, 'Pedido se retrasó 2 días previo aviso', '', 331.1),
 (6, '2024-12-03', '2024-12-06', 1, 1, 'Ninguna', 'Llega con antelación previo aviso', 279.8),
-(7, '2024-11-20', '2024-11-23', 8, 5, 'Cambio varias veces a pendiente', 'Buenas', 90),
+(7, '2024-11-20', '2024-11-23', 8, 1, 'Cambio varias veces a pendiente', 'Buenas', 90),
 (8, '2024-12-04', '2024-12-07', 6, 1, 'Ninguna', 'Las mejores', 4036),
-(9, '2025-01-01', '2025-02-05', 8, 2, 'Ninguna de relevancia', 'Ir a buscar a negocio', 542.8),
-(10, '2025-12-04', '2025-12-04', 9, 1, 'Sin aclaraciones', 'Hacen llamado previo', 257),
-(11, '2025-06-01', '2025-06-05', 4, 6, 'Ninguno [Bloqueado para devolución]', 'Buscar en sucursal', 149.5),
-(12, '2025-01-01', '2025-07-01', 11, 1, 'ninguna', 'ninguna', 550),
-(13, '2025-01-01', '2025-01-20', 19, 3, 'Se decidió cancelarlo por tardanza en la gestión', 'Se canceló antes de la entrega', 1000),
-(14, '2025-01-01', '2025-07-01', 19, 1, 'Ninguna aclaración', 'Las comunes', 1240),
-(15, '2025-01-01', '2025-05-01', 19, 7, 'Se retrasó varias veces, llegó con defectos, se optó por devolver', 'Mala', 1300),
-(16, '2025-06-01', '2025-06-27', 2, 6, 'El pedido se encuentra en camino y será recibido el 27 de junio [Bloqueado para devolución] ', 'Se recibe en instalaciones de la empresa', 2946),
-(17, '2025-01-01', '2025-02-01', 11, 1, '', '', 1200),
-(18, '2025-01-01', '2025-02-01', 19, 1, '', '', 2100);
+(9, '2025-01-01', '2025-01-05', 8, 1, 'Ninguna de relevancia', 'Ir a buscar a negocio', 542.8),
+(10, '2025-12-04', '2025-12-04', 9, 1, 'Sin aclaraciones', 'Hacen llamado previo', 257);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `preparaciones-vehiculos`
+-- Estructura de tabla para la tabla `preparaciones-vehiculos`
 --
 
 CREATE TABLE `preparaciones-vehiculos` (
@@ -924,7 +892,7 @@ CREATE TABLE `preparaciones-vehiculos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `productos-vehiculo`
+-- Estructura de tabla para la tabla `productos-vehiculo`
 --
 
 CREATE TABLE `productos-vehiculo` (
@@ -940,19 +908,18 @@ CREATE TABLE `productos-vehiculo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `productos-vehiculo`
+-- Volcado de datos para la tabla `productos-vehiculo`
 --
 
 INSERT INTO `productos-vehiculo` (`idProducto`, `nombreProducto`, `descripcionProducto`, `cantidadEnDeposito`, `precioProducto`, `estadoProducto`, `idTipoInsumo`, `idProveedor`, `vehiculosDestinatarios`) VALUES
 (1, 'Limpiador de llantas REVIGAL', 'Bajo precio', 1, 11, 'Aún no recibido', 2, 11, NULL),
 (2, 'Cera marca VONIXX', 'Calidad elevada', 3, 22.3, 'Aún no recibido', 2, 9, NULL),
-(3, 'Guantes de microfibra genéricos', 'Paquete con 40 unidades', 1, 25, 'Aún no recibido', 2, 1, NULL),
-(4, 'Aceite', 'Marca XKXK', 5, 23, 'Aún no recibido', 2, 4, NULL);
+(3, 'Guantes de microfibra genéricos', 'Paquete con 40 unidades', 1, 25, 'Aún no recibido', 2, 1, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `proveedores`
+-- Estructura de tabla para la tabla `proveedores`
 --
 
 CREATE TABLE `proveedores` (
@@ -968,7 +935,7 @@ CREATE TABLE `proveedores` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `proveedores`
+-- Volcado de datos para la tabla `proveedores`
 --
 
 INSERT INTO `proveedores` (`idProveedor`, `nombreProveedor`, `mailProveedor`, `direccionProveedor`, `localidadProveedor`, `telefonoProveedor`, `cuitProveedor`, `ivaProveedor`, `idTipoInsumo`) VALUES
@@ -982,13 +949,12 @@ INSERT INTO `proveedores` (`idProveedor`, `nombreProveedor`, `mailProveedor`, `d
 (8, 'InsumOsCar SA', 'insumos-oscar@oscar.com', '88176 Guemes', 'Cordoba Capital, Argentina', 888299927166, 88165353511, 'Responsable Inscripto', NULL),
 (9, 'TechnoVehiculos SA', 'proveedor@techonvehiculos.com', '1020 Guemes', 'Cordoba Capital, Argentina', 9991828888, 99100938777, 'Responsable Inscripto', NULL),
 (11, 'TuVehiculo SA', 'proveedores@tvsa.com', '8389 Cuyo', 'CABA, Argentina', 8822228889, 99922200002, 'Responsable Inscripto', NULL),
-(14, 'Proveedor SA', 'provedorsa@gmail.com', '1999 Alem', 'Bahía Blanca', 54545999, 878888, 'Responsable Inscripto', NULL),
-(19, 'Nuevo Proveedor', 'nuevopro@email.com', '32 Nicaragua', 'Córdoba', 83892111, 88281111, 'Responsable Inscripto', NULL);
+(14, 'Proveedor SA', 'provedorsa@gmail.com', '1999 Alem', 'Bahía Blanca', 54545999, 878888, 'Responsable Inscripto', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `repuestos-vehiculos`
+-- Estructura de tabla para la tabla `repuestos-vehiculos`
 --
 
 CREATE TABLE `repuestos-vehiculos` (
@@ -1005,7 +971,7 @@ CREATE TABLE `repuestos-vehiculos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `repuestos-vehiculos`
+-- Volcado de datos para la tabla `repuestos-vehiculos`
 --
 
 INSERT INTO `repuestos-vehiculos` (`idRepuesto`, `nombreRepuesto`, `descripcionRepuesto`, `cantidadEnDeposito`, `precioRepuesto`, `estadoRepuesto`, `idTipoInsumo`, `idProveedor`, `disponibilidadRepuesto`, `vehiculosHospedantes`) VALUES
@@ -1020,20 +986,12 @@ INSERT INTO `repuestos-vehiculos` (`idRepuesto`, `nombreRepuesto`, `descripcionR
 (9, 'Alternador marca BMW', 'Gama alta', 3, 901, 'Aún no recibido', 1, 6, NULL, NULL),
 (10, 'Rótulas de suspensión marca LEMFÖRDER', 'Gama media', 10, 99.9, 'Aún no recibido', 1, 6, NULL, NULL),
 (11, 'Bujías marca NGK', 'Genéricas', 10, 45, 'Aún no recibido', 1, 8, NULL, NULL),
-(12, 'Filtros de aceite marca PURFLUX', 'alta calidad, tecnología de plegado Chevron para mayor área de filtración, diseño compacto y ligero, y compromiso con la protección ambiental', 4, 23.2, 'Aún no recibido', 1, 8, NULL, NULL),
-(13, 'Correas', 'Ninguna', 3, 11.5, 'Aún no recibido', 1, 4, NULL, NULL),
-(14, 'motor', 'jkdlj', 1, 550, 'Aún no recibido', 1, 11, NULL, NULL),
-(15, 'motor', 'jkfdljf', 1, 1000, 'Aún no recibido', 1, 19, NULL, NULL),
-(16, 'Motor', 'Ninguna descripción', 1, 1240, 'Aún no recibido', 1, 19, NULL, NULL),
-(17, 'motor', 'jdklsj', 1, 1300, 'Aún no recibido', 1, 19, NULL, NULL),
-(18, 'Motor', 'Motor genérico', 3, 982, 'Aún no recibido', 1, 2, NULL, NULL),
-(19, 'Motor', '', 1, 1200, 'Aún no recibido', 1, 11, NULL, NULL),
-(20, 'Motor', '', 3, 700, 'Aún no recibido', 1, 19, NULL, NULL);
+(12, 'Filtros de aceite marca PURFLUX', 'alta calidad, tecnología de plegado Chevron para mayor área de filtración, diseño compacto y ligero, y compromiso con la protección ambiental', 4, 23.2, 'Aún no recibido', 1, 8, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `reservas-vehiculos`
+-- Estructura de tabla para la tabla `reservas-vehiculos`
 --
 
 CREATE TABLE `reservas-vehiculos` (
@@ -1048,155 +1006,154 @@ CREATE TABLE `reservas-vehiculos` (
   `idCliente` int(11) DEFAULT NULL,
   `idContrato` int(11) DEFAULT NULL,
   `idSucursal` int(11) DEFAULT NULL,
-  `idVehiculo` int(11) DEFAULT NULL
+  `idVehiculo` int(11) DEFAULT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
+  `comentario` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `reservas-vehiculos`
+-- Volcado de datos para la tabla `reservas-vehiculos`
 --
 
-INSERT INTO `reservas-vehiculos` (`idReserva`, `numeroReserva`, `fechaReserva`, `fechaInicioReserva`, `FechaFinReserva`, `precioPorDiaReserva`, `cantidadDiasReserva`, `totalReserva`, `idCliente`, `idContrato`, `idSucursal`, `idVehiculo`) VALUES
-(1, 12, '2024-11-01', '2024-11-02', '2024-11-05', 30, 3, 90, 8, NULL, 1, 18),
-(2, 5, '2024-11-01', '2024-11-05', '2024-11-07', 20, 2, 40, 15, NULL, 1, 20),
-(3, 8, '2024-11-01', '2024-11-04', '2024-11-08', 50, 4, 200, 4, NULL, 2, 32),
-(5, 9, '2024-11-01', '2024-11-13', '2024-11-20', 20, 7, 140, 12, NULL, NULL, 1),
-(6, 10, '2024-11-01', '2024-11-07', '2024-11-10', 20, 3, 60, 11, NULL, NULL, 3),
-(7, 15, '2024-11-29', '2024-11-20', '2024-11-23', 20, 3, 60, 6, NULL, NULL, 24),
-(8, 1, '2025-05-25', '2024-11-12', '2024-11-16', 20, 4, 80, 10, NULL, NULL, 42),
-(9, 3, '2025-06-02', '2024-11-15', '2024-11-19', 20, 4, 80, 11, NULL, NULL, 2),
-(10, 2, '2024-11-01', '2024-11-22', '2024-11-25', 20, 3, 60, 1, NULL, NULL, 2),
-(14, 22, '2024-11-30', '2024-12-03', '2024-12-05', 20, 4, 80, 4, NULL, NULL, 2),
-(17, 4, '2024-12-04', '2024-12-17', '2024-12-23', 20.5, 3, 61.5, 7, NULL, NULL, 19),
-(18, 21, '2024-12-04', '2024-12-25', '2024-12-27', 20, 21, 420, 9, NULL, NULL, 2),
-(19, 20, '2024-12-04', '2024-12-10', '2024-12-11', 20, 6, 120, 17, NULL, NULL, 7),
-(20, 11, '2024-12-04', '2024-12-06', '2024-12-07', 20, 2, 40, 5, NULL, NULL, 23),
-(21, 6, '2024-12-04', '2024-12-05', '2024-12-08', 20, 1, 20, 11, NULL, NULL, 23),
-(22, 23, '2024-12-06', '2024-12-11', '2024-12-13', 20, 5, 100, 17, 8, NULL, 2),
-(24, 24, '2024-12-07', '2024-12-14', '2024-12-16', 20, 7, 140, 7, 10, NULL, 1),
-(25, 25, '2024-12-07', '2024-12-17', '2024-12-19', 50.1, 2, 100.2, 7, 12, 4, 32),
-(26, 26, '2024-12-07', '2024-12-17', '2024-12-19', 33.3, 2, 66.6, 8, 13, 2, 6),
-(27, 27, '2024-12-07', '2024-12-11', '2024-12-27', 90, 16, 1440, 6, 14, 4, 19),
-(28, 28, '2024-12-07', '2024-12-14', '2025-01-04', 50, 21, 1050, 12, 15, 4, 36),
-(29, 29, '2024-12-07', '2025-01-02', '2025-01-04', 90.6, 2, 181.2, 3, 18, 1, 1),
-(30, 30, '2024-12-07', '2024-01-02', '2024-01-07', 61, 5, 305, 4, NULL, 4, 32),
-(31, 31, '2024-12-07', '2024-01-02', '2024-01-05', 73.2, 3, 219.6, 5, NULL, 1, 3),
-(32, 32, '2024-12-07', '2024-01-03', '2024-01-11', 89, 8, 712, 7, 22, 4, 35),
-(33, 33, '2024-12-07', '2024-01-05', '2024-01-10', 48.61, 5, 243.05, 1, 23, 2, 7),
-(34, 34, '2024-12-07', '2024-01-05', '2024-01-10', 58.43, 5, 292.15, 2, 24, 4, 19),
-(35, 35, '2024-12-07', '2024-01-09', '2024-01-12', 72.49, 3, 217.47, 3, 25, 3, 30),
-(36, 36, '2024-12-07', '2024-01-11', '2024-01-17', 34.27, 6, 205.62, 8, 26, 2, 6),
-(37, 37, '2024-12-07', '2024-01-16', '2024-01-19', 88.9, 3, 266.7, 9, 27, 1, 1),
-(38, 38, '2024-12-07', '2024-01-18', '2024-01-23', 81.6, 5, 408, 10, 28, 3, 28),
-(39, 39, '2024-12-07', '2024-01-20', '2024-01-24', 99.1, 4, 396.4, 11, 29, 3, 18),
-(40, 40, '2024-12-07', '2024-01-21', '2024-01-29', 71.8, 8, 574.4, 12, 30, 2, 21),
-(41, 41, '2024-12-07', '2024-01-25', '2024-01-27', 75, 2, 150, 15, 31, 1, 23),
-(42, 42, '2024-12-07', '2024-01-27', '2024-01-30', 89.3, 3, 267.9, 17, 32, 1, 24),
-(43, 43, '2024-12-07', '2024-01-27', '2024-01-29', 89, 2, 178, 1, 33, 4, 36),
-(44, 44, '2024-12-07', '2024-01-29', '2024-02-02', 73, 4, 292, 2, NULL, 3, 20),
-(45, 45, '2024-12-07', '2024-02-01', '2024-02-03', 46.8, 2, 93.6, 3, 35, 2, 2),
-(46, 46, '2024-12-07', '2024-02-02', '2024-02-03', 70, 1, 70, 4, 36, 4, 32),
-(47, 47, '2024-12-07', '2024-02-03', '2024-02-05', 79.3, 2, 158.6, 5, 37, 1, 3),
-(48, 48, '2024-12-07', '2024-02-05', '2024-02-06', 65.81, 1, 65.81, 6, 38, 4, 35),
-(49, 49, '2024-12-07', '2024-02-05', '2024-02-10', 69.81, 5, 349.05, 7, 39, 2, 7),
-(50, 50, '2024-12-07', '2024-02-07', '2024-02-09', 78.3, 2, 156.6, 8, 40, 4, 19),
-(51, 51, '2024-12-07', '2024-02-09', '2024-02-12', 98.1, 3, 294.3, 9, 41, 3, 30),
-(52, 52, '2024-12-07', '2024-02-10', '2024-02-14', 110.32, 4, 441.28, 10, 42, 2, 6),
-(53, 53, '2024-12-07', '2024-02-12', '2024-02-15', 87, 3, 261, 11, 43, 2, 25),
-(54, 54, '2024-12-07', '2024-02-13', '2024-02-16', 82.99, 3, 248.97, 12, 44, 1, 1),
-(55, 55, '2024-12-07', '2024-02-15', '2024-02-17', 87.39, 2, 174.78, 15, 45, 3, 28),
-(56, 56, '2024-12-07', '2024-02-17', '2024-02-20', 91.15, 3, 273.45, 17, 46, 3, 18),
-(57, 57, '2024-12-07', '2024-02-20', '2024-02-24', 86.87, 4, 347.48, 1, 47, 2, 21),
-(58, 58, '2024-12-07', '2024-02-20', '2024-02-29', 78.2, 9, 703.8, 2, 48, 1, 23),
-(59, 59, '2024-12-07', '2024-02-21', '2024-02-23', 98.2, 2, 196.4, 3, 49, 1, 24),
-(60, 60, '2024-12-07', '2024-02-24', '2024-02-27', 110.25, 3, 330.75, 4, 50, 4, 36),
-(61, 61, '2024-12-07', '2024-02-24', '2024-02-27', 105.4, 3, 316.2, 5, 51, 3, 20),
-(62, 62, '2024-12-07', '2024-02-25', '2024-02-27', 67, 2, 134, 6, 52, 2, 2),
-(63, 63, '2024-12-07', '2024-02-25', '2024-02-28', 68, 3, 204, 7, 53, 4, 32),
-(64, 64, '2024-12-07', '2024-02-27', '2024-02-29', 78, 2, 156, 8, 54, 4, 35),
-(65, 65, '2024-12-07', '2024-02-29', '2024-03-05', 71.11, 5, 355.55, 12, 55, 1, 3),
-(66, 66, '2024-12-07', '2024-02-29', '2024-03-04', 78.12, 4, 312.48, 11, 56, 4, 35),
-(67, 67, '2024-12-07', '2024-03-01', '2024-03-02', 88.7, 1, 88.7, 15, 57, 2, 7),
-(68, 68, '2024-12-07', '2024-03-01', '2024-03-04', 91.3, 3, 273.9, 17, 58, 4, 19),
-(69, 69, '2024-12-07', '2024-03-02', '2024-03-05', 67.88, 3, 203.64, 9, 59, 2, 2),
-(70, 70, '2024-12-07', '2024-03-02', '2024-03-07', 78.28, 5, 391.4, 10, 60, 4, 32),
-(71, 71, '2024-12-07', '2024-03-02', '2024-03-05', 76.9, 3, 230.7, 11, 61, 1, 3),
-(72, 72, '2024-12-07', '2024-03-03', '2024-03-07', 89.88, 4, 359.52, 12, 62, 4, 35),
-(73, 73, '2024-12-07', '2024-03-03', '2024-03-09', 91.9, 6, 551.4, 15, 63, 2, 7),
-(74, 74, '2024-12-07', '2024-03-04', '2024-03-05', 81.71, 1, 81.71, 1, 64, 4, 19),
-(75, 75, '2024-12-07', '2024-03-05', '2024-03-06', 86.8, 1, 86.8, 2, 65, 3, 30),
-(76, 76, '2024-12-07', '2024-03-06', '2024-03-11', 101.3, 5, 506.5, 3, 66, 2, 6),
-(77, 77, '2024-12-07', '2024-03-07', '2024-03-10', 201, 3, 603, 4, 67, 2, 25),
-(78, 78, '2024-12-07', '2024-03-07', '2024-03-10', 120.8, 3, 362.4, 5, 68, 1, 1),
-(79, 79, '2024-12-07', '2024-03-08', '2024-03-11', 110.9, 3, 332.7, 6, 69, 3, 28),
-(80, 80, '2024-12-07', '2024-03-09', '2024-03-11', 99.9, 2, 199.8, 7, 70, 3, 18),
-(81, 81, '2024-12-07', '2024-03-09', '2024-03-12', 110.99, 3, 332.97, 8, 71, 2, 21),
-(82, 82, '2024-12-07', '2024-03-12', '2024-03-14', 110.9, 2, 221.8, 9, 72, 1, 23),
-(83, 83, '2024-12-07', '2024-03-15', '2024-03-17', 105.99, 2, 211.98, 10, 73, 1, 24),
-(84, 84, '2024-12-07', '2024-03-16', '2024-03-18', 110, 2, 220, 11, 74, 4, 36),
-(85, 85, '2024-12-07', '2024-03-18', '2024-03-21', 115.88, 3, 347.64, 12, 75, 3, 20),
-(86, 86, '2024-12-07', '2024-03-19', '2024-03-22', 113.99, 3, 341.97, 15, 76, 2, 25),
-(87, 87, '2024-12-07', '2024-03-24', '2024-03-25', 120, 1, 120, 17, 77, 4, 32),
-(88, 88, '2024-12-07', '2024-04-01', '2024-04-03', 120.99, 2, 241.98, 1, 78, 1, 3),
-(89, 89, '2024-12-07', '2024-04-03', '2024-04-05', 110, 2, 220, 4, 79, 2, 2),
-(90, 90, '2024-12-07', '2024-04-05', '2024-04-08', 120, 3, 360, 7, 80, 4, 35),
-(91, 91, '2024-12-07', '2024-04-07', '2024-04-09', 130, 2, 260, 10, 81, 2, 7),
-(92, 92, '2024-12-07', '2024-04-07', '2024-04-10', 120, 3, 360, 11, 82, 4, 19),
-(93, 93, '2024-12-07', '2024-04-10', '2024-04-12', 125, 2, 250, 15, 83, 1, 1),
-(94, 94, '2024-12-07', '2024-04-12', '2024-04-15', 130, 3, 390, 17, 84, 1, 23),
-(95, 95, '2024-12-07', '2024-04-14', '2024-04-16', 100, 2, 200, 4, 85, 2, 2),
-(96, 96, '2024-12-07', '2024-04-19', '2024-04-23', 120, 4, 480, 5, 86, 4, 19),
-(97, 97, '2024-12-07', '2024-04-26', '2024-04-30', 120, 4, 480, 6, 87, 1, 23),
-(98, 98, '2024-12-07', '2024-05-03', '2024-05-06', 125, 3, 375, 1, 88, 1, 1),
-(99, 99, '2024-12-07', '2024-05-06', '2024-05-09', 113, 3, 339, 2, 89, 4, 19),
-(100, 100, '2024-12-07', '2024-05-07', '2024-05-10', 135, 3, 405, 3, 90, 3, 18),
-(101, 101, '2024-12-07', '2024-05-09', '2024-05-11', 117, 2, 234, 6, 91, 1, 23),
-(102, 102, '2024-12-07', '2024-05-11', '2024-05-15', 140, 4, 560, 10, 92, 4, 36),
-(103, 103, '2024-12-07', '2024-05-14', '2024-05-17', 130, 3, 390, 12, 93, 2, 2),
-(104, 104, '2024-12-07', '2024-05-22', '2024-05-25', 120, 3, 360, 17, 94, 1, 3),
-(105, 105, '2024-12-07', '2024-05-24', '2024-05-26', 135, 2, 270, 5, 95, 2, 7),
-(106, 106, '2024-12-07', '2024-05-26', '2024-05-29', 110, 3, 330, 8, 96, 3, 18),
-(107, 107, '2024-12-07', '2024-06-01', '2024-06-03', 135, 2, 270, 9, 97, 2, 2),
-(108, 108, '2024-12-07', '2024-06-03', '2024-06-04', 145, 1, 145, 10, 98, 1, 3),
-(109, 109, '2024-12-07', '2024-06-04', '2024-06-07', 150, 3, 450, 11, 99, 2, 7),
-(110, 110, '2024-12-07', '2024-06-05', '2024-06-09', 140, 4, 560, 12, 100, 4, 36),
-(111, 111, '2024-12-07', '2024-06-07', '2024-06-10', 130, 3, 390, 17, 101, 4, 19),
-(112, 112, '2024-12-07', '2024-06-09', '2024-06-12', 140, 3, 420, 1, 102, 4, 36),
-(113, 113, '2024-12-07', '2024-06-12', '2024-06-15', 135, 3, 405, 4, 103, 4, 32),
-(114, 114, '2024-12-07', '2024-06-15', '2024-06-18', 145, 3, 435, 3, 104, 3, 20),
-(115, 115, '2024-12-07', '2024-06-20', '2024-06-22', 135, 2, 270, 6, 105, 1, 3),
-(116, 116, '2024-12-07', '2024-06-22', '2024-06-25', 125, 3, 375, 7, 106, 4, 32),
-(117, 117, '2024-12-07', '2024-06-25', '2024-06-27', 155, 2, 310, 10, 107, 2, 21),
-(118, 118, '2024-12-07', '2024-07-03', '2024-07-06', 135, 3, 405, 2, 108, 4, 35),
-(119, 119, '2024-12-07', '2024-07-05', '2024-07-08', 145, 3, 435, 6, 109, 2, 7),
-(120, 120, '2024-12-07', '2024-07-09', '2024-07-12', 128, 3, 384, 5, 110, 2, 2),
-(121, 121, '2024-12-07', '2024-07-10', '2024-07-13', 145, 3, 435, 1, 111, 2, 6),
-(122, 122, '2024-12-07', '2024-07-13', '2024-07-16', 135, 3, 405, 8, 112, 4, 35),
-(123, 123, '2024-12-07', '2024-07-13', '2024-07-18', 145, 5, 725, 12, 113, 3, 30),
-(124, 124, '2024-12-07', '2024-07-15', '2024-07-18', 150, 3, 450, 17, 114, 1, 1),
-(125, 125, '2024-12-07', '2024-07-16', '2024-07-20', 130, 4, 520, 3, 115, 1, 3),
-(126, 126, '2024-12-07', '2024-08-03', '2024-08-06', 145, 3, 435, 4, 116, 2, 2),
-(127, 127, '2024-12-07', '2024-08-07', '2024-08-09', 165, 2, 330, 5, 117, 2, 6),
-(128, 128, '2024-12-07', '2024-08-10', '2024-08-12', 165, 2, 330, 6, 118, 2, 25),
-(129, 129, '2024-12-07', '2024-08-13', '2024-08-16', 165, 3, 495, 7, 119, 3, 18),
-(130, 130, '2024-12-07', '2024-08-23', '2024-08-25', 200, 2, 400, 10, 120, 4, 36),
-(131, 131, '2024-12-07', '2024-08-29', '2024-08-31', 180, 2, 360, 15, 121, 1, 23),
-(132, 132, '2024-12-07', '2024-09-05', '2024-09-09', 205, 4, 820, 1, 122, 1, 1),
-(133, 133, '2024-12-07', '2024-10-07', '2024-10-10', 120, 3, 360, 15, 123, 4, 19),
-(134, 134, '2024-12-07', '2024-10-09', '2024-10-14', 138.9, 5, 694.5, 1, 124, 2, 25),
-(135, 135, '2024-12-07', '2024-10-16', '2024-10-19', 135.7, 3, 407.1, 3, 125, 3, 18),
-(136, 136, '2024-12-07', '2024-11-02', '2024-11-07', 110, 5, 550, 12, 126, 2, 2),
-(137, 139, '2024-12-07', '2024-11-07', '2024-11-10', 125, 3, 375, 5, 127, 1, 23),
-(138, 140, '2024-12-07', '2024-11-12', '2024-11-14', 125, 2, 250, 6, 128, 1, 24),
-(139, 141, '2024-12-07', '2024-11-13', '2024-11-15', 135, 2, 270, 11, 129, 1, 24),
-(140, 142, '2025-04-05', '2025-01-02', '2025-01-09', 45, 7, 315, 12, 131, 4, 19),
-(142, 143, '2025-06-02', '2025-04-05', '2025-04-11', 75, 6, 450, 24, 142, 2, 23),
-(143, 145, '2025-06-02', '2025-02-10', '2025-02-15', 67.1, 5, 335.5, 23, 144, 4, 35),
-(145, 146, '2025-06-03', '2025-05-12', '2025-05-18', 55, 6, 330, 24, 148, 1, 1);
+INSERT INTO `reservas-vehiculos` (`idReserva`, `numeroReserva`, `fechaReserva`, `fechaInicioReserva`, `FechaFinReserva`, `precioPorDiaReserva`, `cantidadDiasReserva`, `totalReserva`, `idCliente`, `idContrato`, `idSucursal`, `idVehiculo`, `activo`, `comentario`) VALUES
+(1, 12, '2024-11-01', '2024-11-02', '2024-11-05', 30, 3, 90, 8, NULL, 1, 18, 1, NULL),
+(2, 5, '2024-11-01', '2024-11-05', '2024-11-07', 20, 2, 40, 15, NULL, 1, 20, 1, NULL),
+(3, 8, '2024-11-01', '2024-11-04', '2024-11-08', 50, 4, 200, 4, NULL, 2, 32, 1, NULL),
+(5, 9, '2024-11-01', '2024-11-13', '2024-11-20', 20, 7, 140, 12, NULL, NULL, 1, 1, NULL),
+(6, 10, '2024-11-01', '2024-11-07', '2024-11-10', 20, 3, 60, 11, NULL, NULL, 3, 1, NULL),
+(7, 15, '2024-11-29', '2024-11-20', '2024-11-23', 20, 3, 60, 6, NULL, NULL, 24, 1, NULL),
+(8, 1, '2025-05-25', '2024-11-12', '2024-11-16', 20, 4, 80, 10, NULL, NULL, 42, 1, NULL),
+(9, 3, '2024-11-01', '2024-11-15', '2024-11-18', 20, 3, 60, 11, NULL, NULL, 2, 1, NULL),
+(10, 2, '2024-11-01', '2024-11-22', '2024-11-25', 20, 3, 60, 1, NULL, NULL, 2, 1, NULL),
+(14, 22, '2024-11-30', '2024-12-03', '2024-12-05', 20, 4, 80, 4, NULL, NULL, 2, 1, NULL),
+(17, 4, '2024-12-04', '2024-12-17', '2024-12-23', 20.5, 3, 61.5, 7, NULL, NULL, 19, 1, NULL),
+(18, 21, '2024-12-04', '2024-12-25', '2024-12-27', 20, 21, 420, 9, NULL, NULL, 2, 1, NULL),
+(19, 20, '2024-12-04', '2024-12-10', '2024-12-11', 20, 6, 120, 17, NULL, NULL, 7, 1, NULL),
+(20, 11, '2024-12-04', '2024-12-06', '2024-12-07', 20, 2, 40, 5, NULL, NULL, 23, 1, NULL),
+(21, 6, '2024-12-04', '2024-12-05', '2024-12-08', 20, 1, 20, 11, NULL, NULL, 23, 1, NULL),
+(22, 23, '2024-12-06', '2024-12-11', '2024-12-13', 20, 5, 100, 17, 8, NULL, 2, 1, NULL),
+(24, 24, '2024-12-07', '2024-12-14', '2024-12-16', 20, 7, 140, 7, 10, NULL, 1, 1, NULL),
+(25, 25, '2024-12-07', '2024-12-17', '2024-12-19', 50.1, 2, 100.2, 7, 12, 4, 32, 1, NULL),
+(26, 26, '2024-12-07', '2024-12-17', '2024-12-19', 33.3, 2, 66.6, 8, 13, 2, 6, 1, NULL),
+(27, 27, '2024-12-07', '2024-12-11', '2024-12-27', 90, 16, 1440, 6, 14, 4, 19, 1, NULL),
+(28, 28, '2024-12-07', '2024-12-14', '2025-01-04', 50, 21, 1050, 12, 15, 4, 36, 1, NULL),
+(29, 29, '2024-12-07', '2025-01-02', '2025-01-04', 90.6, 2, 181.2, 3, 18, 1, 1, 1, NULL),
+(30, 30, '2024-12-07', '2024-01-02', '2024-01-07', 61, 5, 305, 4, 20, 4, 32, 1, NULL),
+(31, 31, '2024-12-07', '2024-01-02', '2024-01-05', 73.2, 3, 219.6, 5, 21, 1, 3, 1, NULL),
+(32, 32, '2024-12-07', '2024-01-03', '2024-01-11', 89, 8, 712, 7, 22, 4, 35, 1, NULL),
+(33, 33, '2024-12-07', '2024-01-05', '2024-01-10', 48.61, 5, 243.05, 1, 23, 2, 7, 1, NULL),
+(34, 34, '2024-12-07', '2024-01-05', '2024-01-10', 58.43, 5, 292.15, 2, 24, 4, 19, 1, NULL),
+(35, 35, '2024-12-07', '2024-01-09', '2024-01-12', 72.49, 3, 217.47, 3, 25, 3, 30, 1, NULL),
+(36, 36, '2024-12-07', '2024-01-11', '2024-01-17', 34.27, 6, 205.62, 8, 26, 2, 6, 1, NULL),
+(37, 37, '2024-12-07', '2024-01-16', '2024-01-19', 88.9, 3, 266.7, 9, 27, 1, 1, 1, NULL),
+(38, 38, '2024-12-07', '2024-01-18', '2024-01-23', 81.6, 5, 408, 10, 28, 3, 28, 1, NULL),
+(39, 39, '2024-12-07', '2024-01-20', '2024-01-24', 99.1, 4, 396.4, 11, 29, 3, 18, 1, NULL),
+(40, 40, '2024-12-07', '2024-01-21', '2024-01-29', 71.8, 8, 574.4, 12, 30, 2, 21, 1, NULL),
+(41, 41, '2024-12-07', '2024-01-25', '2024-01-27', 75, 2, 150, 15, 31, 1, 23, 1, NULL),
+(42, 42, '2024-12-07', '2024-01-27', '2024-01-30', 89.3, 3, 267.9, 17, 32, 1, 24, 1, NULL),
+(43, 43, '2024-12-07', '2024-01-27', '2024-01-29', 89, 2, 178, 1, 33, 4, 36, 1, NULL),
+(44, 44, '2024-12-07', '2024-01-29', '2024-02-02', 73, 4, 292, 2, 34, 3, 20, 1, NULL),
+(45, 45, '2024-12-07', '2024-02-01', '2024-02-03', 46.8, 2, 93.6, 3, 35, 2, 2, 1, NULL),
+(46, 46, '2024-12-07', '2024-02-02', '2024-02-03', 70, 1, 70, 4, 36, 4, 32, 1, NULL),
+(47, 47, '2024-12-07', '2024-02-03', '2024-02-05', 79.3, 2, 158.6, 5, 37, 1, 3, 1, NULL),
+(48, 48, '2024-12-07', '2024-02-05', '2024-02-06', 65.81, 1, 65.81, 6, 38, 4, 35, 1, NULL),
+(49, 49, '2024-12-07', '2024-02-05', '2024-02-10', 69.81, 5, 349.05, 7, 39, 2, 7, 1, NULL),
+(50, 50, '2024-12-07', '2024-02-07', '2024-02-09', 78.3, 2, 156.6, 8, 40, 4, 19, 1, NULL),
+(51, 51, '2024-12-07', '2024-02-09', '2024-02-12', 98.1, 3, 294.3, 9, 41, 3, 30, 1, NULL),
+(52, 52, '2024-12-07', '2024-02-10', '2024-02-14', 110.32, 4, 441.28, 10, 42, 2, 6, 1, NULL),
+(53, 53, '2024-12-07', '2024-02-12', '2024-02-15', 87, 3, 261, 11, 43, 2, 25, 1, NULL),
+(54, 54, '2024-12-07', '2024-02-13', '2024-02-16', 82.99, 3, 248.97, 12, 44, 1, 1, 1, NULL),
+(55, 55, '2024-12-07', '2024-02-15', '2024-02-17', 87.39, 2, 174.78, 15, 45, 3, 28, 1, NULL),
+(56, 56, '2024-12-07', '2024-02-17', '2024-02-20', 91.15, 3, 273.45, 17, 46, 3, 18, 1, NULL),
+(57, 57, '2024-12-07', '2024-02-20', '2024-02-24', 86.87, 4, 347.48, 1, 47, 2, 21, 1, NULL),
+(58, 58, '2024-12-07', '2024-02-20', '2024-02-29', 78.2, 9, 703.8, 2, 48, 1, 23, 1, NULL),
+(59, 59, '2024-12-07', '2024-02-21', '2024-02-23', 98.2, 2, 196.4, 3, 49, 1, 24, 1, NULL),
+(60, 60, '2024-12-07', '2024-02-24', '2024-02-27', 110.25, 3, 330.75, 4, 50, 4, 36, 1, NULL),
+(61, 61, '2024-12-07', '2024-02-24', '2024-02-27', 105.4, 3, 316.2, 5, 51, 3, 20, 1, NULL),
+(62, 62, '2024-12-07', '2024-02-25', '2024-02-27', 67, 2, 134, 6, 52, 2, 2, 1, NULL),
+(63, 63, '2024-12-07', '2024-02-25', '2024-02-28', 68, 3, 204, 7, 53, 4, 32, 1, NULL),
+(64, 64, '2024-12-07', '2024-02-27', '2024-02-29', 78, 2, 156, 8, 54, 4, 35, 1, NULL),
+(65, 65, '2024-12-07', '2024-02-29', '2024-03-05', 71.11, 5, 355.55, 12, 55, 1, 3, 1, NULL),
+(66, 66, '2024-12-07', '2024-02-29', '2024-03-04', 78.12, 4, 312.48, 11, 56, 4, 35, 1, NULL),
+(67, 67, '2024-12-07', '2024-03-01', '2024-03-02', 88.7, 1, 88.7, 15, 57, 2, 7, 1, NULL),
+(68, 68, '2024-12-07', '2024-03-01', '2024-03-04', 91.3, 3, 273.9, 17, 58, 4, 19, 1, NULL),
+(69, 69, '2024-12-07', '2024-03-02', '2024-03-05', 67.88, 3, 203.64, 9, 59, 2, 2, 1, NULL),
+(70, 70, '2024-12-07', '2024-03-02', '2024-03-07', 78.28, 5, 391.4, 10, 60, 4, 32, 1, NULL),
+(71, 71, '2024-12-07', '2024-03-02', '2024-03-05', 76.9, 3, 230.7, 11, 61, 1, 3, 1, NULL),
+(72, 72, '2024-12-07', '2024-03-03', '2024-03-07', 89.88, 4, 359.52, 12, 62, 4, 35, 1, NULL),
+(73, 73, '2024-12-07', '2024-03-03', '2024-03-09', 91.9, 6, 551.4, 15, 63, 2, 7, 1, NULL),
+(74, 74, '2024-12-07', '2024-03-04', '2024-03-05', 81.71, 1, 81.71, 1, 64, 4, 19, 1, NULL),
+(75, 75, '2024-12-07', '2024-03-05', '2024-03-06', 86.8, 1, 86.8, 2, 65, 3, 30, 1, NULL),
+(76, 76, '2024-12-07', '2024-03-06', '2024-03-11', 101.3, 5, 506.5, 3, 66, 2, 6, 1, NULL),
+(77, 77, '2024-12-07', '2024-03-07', '2024-03-10', 201, 3, 603, 4, 67, 2, 25, 1, NULL),
+(78, 78, '2024-12-07', '2024-03-07', '2024-03-10', 120.8, 3, 362.4, 5, 68, 1, 1, 1, NULL),
+(79, 79, '2024-12-07', '2024-03-08', '2024-03-11', 110.9, 3, 332.7, 6, 69, 3, 28, 1, NULL),
+(80, 80, '2024-12-07', '2024-03-09', '2024-03-11', 99.9, 2, 199.8, 7, 70, 3, 18, 1, NULL),
+(81, 81, '2024-12-07', '2024-03-09', '2024-03-12', 110.99, 3, 332.97, 8, 71, 2, 21, 1, NULL),
+(82, 82, '2024-12-07', '2024-03-12', '2024-03-14', 110.9, 2, 221.8, 9, 72, 1, 23, 1, NULL),
+(83, 83, '2024-12-07', '2024-03-15', '2024-03-17', 105.99, 2, 211.98, 10, 73, 1, 24, 1, NULL),
+(84, 84, '2024-12-07', '2024-03-16', '2024-03-18', 110, 2, 220, 11, 74, 4, 36, 1, NULL),
+(85, 85, '2024-12-07', '2024-03-18', '2024-03-21', 115.88, 3, 347.64, 12, 75, 3, 20, 1, NULL),
+(86, 86, '2024-12-07', '2024-03-19', '2024-03-22', 113.99, 3, 341.97, 15, 76, 2, 25, 1, NULL),
+(87, 87, '2024-12-07', '2024-03-24', '2024-03-25', 120, 1, 120, 17, 77, 4, 32, 1, NULL),
+(88, 88, '2024-12-07', '2024-04-01', '2024-04-03', 120.99, 2, 241.98, 1, 78, 1, 3, 1, NULL),
+(89, 89, '2024-12-07', '2024-04-03', '2024-04-05', 110, 2, 220, 4, 79, 2, 2, 1, NULL),
+(90, 90, '2024-12-07', '2024-04-05', '2024-04-08', 120, 3, 360, 7, 80, 4, 35, 1, NULL),
+(91, 91, '2024-12-07', '2024-04-07', '2024-04-09', 130, 2, 260, 10, 81, 2, 7, 1, NULL),
+(92, 92, '2024-12-07', '2024-04-07', '2024-04-10', 120, 3, 360, 11, 82, 4, 19, 1, NULL),
+(93, 93, '2024-12-07', '2024-04-10', '2024-04-12', 125, 2, 250, 15, 83, 1, 1, 1, NULL),
+(94, 94, '2024-12-07', '2024-04-12', '2024-04-15', 130, 3, 390, 17, 84, 1, 23, 1, NULL),
+(95, 95, '2024-12-07', '2024-04-14', '2024-04-16', 100, 2, 200, 4, 85, 2, 2, 1, NULL),
+(96, 96, '2024-12-07', '2024-04-19', '2024-04-23', 120, 4, 480, 5, 86, 4, 19, 1, NULL),
+(97, 97, '2024-12-07', '2024-04-26', '2024-04-30', 120, 4, 480, 6, 87, 1, 23, 1, NULL),
+(98, 98, '2024-12-07', '2024-05-03', '2024-05-06', 125, 3, 375, 1, 88, 1, 1, 1, NULL),
+(99, 99, '2024-12-07', '2024-05-06', '2024-05-09', 113, 3, 339, 2, 89, 4, 19, 1, NULL),
+(100, 100, '2024-12-07', '2024-05-07', '2024-05-10', 135, 3, 405, 3, 90, 3, 18, 1, NULL),
+(101, 101, '2024-12-07', '2024-05-09', '2024-05-11', 117, 2, 234, 6, 91, 1, 23, 1, NULL),
+(102, 102, '2024-12-07', '2024-05-11', '2024-05-15', 140, 4, 560, 10, 92, 4, 36, 1, NULL),
+(103, 103, '2024-12-07', '2024-05-14', '2024-05-17', 130, 3, 390, 12, 93, 2, 2, 1, NULL),
+(104, 104, '2024-12-07', '2024-05-22', '2024-05-25', 120, 3, 360, 17, 94, 1, 3, 1, NULL),
+(105, 105, '2024-12-07', '2024-05-24', '2024-05-26', 135, 2, 270, 5, 95, 2, 7, 1, NULL),
+(106, 106, '2024-12-07', '2024-05-26', '2024-05-29', 110, 3, 330, 8, 96, 3, 18, 1, NULL),
+(107, 107, '2024-12-07', '2024-06-01', '2024-06-03', 135, 2, 270, 9, 97, 2, 2, 1, NULL),
+(108, 108, '2024-12-07', '2024-06-03', '2024-06-04', 145, 1, 145, 10, 98, 1, 3, 1, NULL),
+(109, 109, '2024-12-07', '2024-06-04', '2024-06-07', 150, 3, 450, 11, 99, 2, 7, 1, NULL),
+(110, 110, '2024-12-07', '2024-06-05', '2024-06-09', 140, 4, 560, 12, 100, 4, 36, 1, NULL),
+(111, 111, '2024-12-07', '2024-06-07', '2024-06-10', 130, 3, 390, 17, 101, 4, 19, 1, NULL),
+(112, 112, '2024-12-07', '2024-06-09', '2024-06-12', 140, 3, 420, 1, 102, 4, 36, 1, NULL),
+(113, 113, '2024-12-07', '2024-06-12', '2024-06-15', 135, 3, 405, 4, 103, 4, 32, 1, NULL),
+(114, 114, '2024-12-07', '2024-06-15', '2024-06-18', 145, 3, 435, 3, 104, 3, 20, 1, NULL),
+(115, 115, '2024-12-07', '2024-06-20', '2024-06-22', 135, 2, 270, 6, 105, 1, 3, 1, NULL),
+(116, 116, '2024-12-07', '2024-06-22', '2024-06-25', 125, 3, 375, 7, 106, 4, 32, 1, NULL),
+(117, 117, '2024-12-07', '2024-06-25', '2024-06-27', 155, 2, 310, 10, 107, 2, 21, 1, NULL),
+(118, 118, '2024-12-07', '2024-07-03', '2024-07-06', 135, 3, 405, 2, 108, 4, 35, 1, NULL),
+(119, 119, '2024-12-07', '2024-07-05', '2024-07-08', 145, 3, 435, 6, 109, 2, 7, 1, NULL),
+(120, 120, '2024-12-07', '2024-07-09', '2024-07-12', 128, 3, 384, 5, 110, 2, 2, 1, NULL),
+(121, 121, '2024-12-07', '2024-07-10', '2024-07-13', 145, 3, 435, 1, 111, 2, 6, 1, NULL),
+(122, 122, '2024-12-07', '2024-07-13', '2024-07-16', 135, 3, 405, 8, 112, 4, 35, 1, NULL),
+(123, 123, '2024-12-07', '2024-07-13', '2024-07-18', 145, 5, 725, 12, 113, 3, 30, 1, NULL),
+(124, 124, '2024-12-07', '2024-07-15', '2024-07-18', 150, 3, 450, 17, 114, 1, 1, 1, NULL),
+(125, 125, '2024-12-07', '2024-07-16', '2024-07-20', 130, 4, 520, 3, 115, 1, 3, 1, NULL),
+(126, 126, '2024-12-07', '2024-08-03', '2024-08-06', 145, 3, 435, 4, 116, 2, 2, 1, NULL),
+(127, 127, '2024-12-07', '2024-08-07', '2024-08-09', 165, 2, 330, 5, 117, 2, 6, 1, NULL),
+(128, 128, '2024-12-07', '2024-08-10', '2024-08-12', 165, 2, 330, 6, 118, 2, 25, 1, NULL),
+(129, 129, '2024-12-07', '2024-08-13', '2024-08-16', 165, 3, 495, 7, 119, 3, 18, 1, NULL),
+(130, 130, '2024-12-07', '2024-08-23', '2024-08-25', 200, 2, 400, 10, 120, 4, 36, 1, NULL),
+(131, 131, '2024-12-07', '2024-08-29', '2024-08-31', 180, 2, 360, 15, 121, 1, 23, 1, NULL),
+(132, 132, '2024-12-07', '2024-09-05', '2024-09-09', 205, 4, 820, 1, 122, 1, 1, 1, NULL),
+(133, 133, '2024-12-07', '2024-10-07', '2024-10-10', 120, 3, 360, 15, 123, 4, 19, 1, NULL),
+(134, 134, '2024-12-07', '2024-10-09', '2024-10-14', 138.9, 5, 694.5, 1, 124, 2, 25, 1, NULL),
+(135, 135, '2024-12-07', '2024-10-16', '2024-10-19', 135.7, 3, 407.1, 3, 125, 3, 18, 1, NULL),
+(136, 136, '2024-12-07', '2024-11-02', '2024-11-07', 110, 5, 550, 12, 126, 2, 2, 1, NULL),
+(137, 139, '2024-12-07', '2024-11-07', '2024-11-10', 125, 3, 375, 5, 127, 1, 23, 1, NULL),
+(138, 140, '2024-12-07', '2024-11-12', '2024-11-14', 125, 2, 250, 6, 128, 1, 24, 1, NULL),
+(139, 141, '2024-12-07', '2024-11-13', '2024-11-15', 135, 2, 270, 11, 129, 1, 24, 1, NULL),
+(140, 142, '2025-04-05', '2025-01-02', '2025-01-09', 45, 7, 315, 12, 131, 4, 19, 1, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sucursales`
+-- Estructura de tabla para la tabla `sucursales`
 --
 
 CREATE TABLE `sucursales` (
@@ -1208,7 +1165,7 @@ CREATE TABLE `sucursales` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `sucursales`
+-- Volcado de datos para la tabla `sucursales`
 --
 
 INSERT INTO `sucursales` (`idSucursal`, `numeroSucursal`, `direccionSucursal`, `ciudadSucursal`, `telefonoSucursal`) VALUES
@@ -1221,7 +1178,7 @@ INSERT INTO `sucursales` (`idSucursal`, `numeroSucursal`, `direccionSucursal`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tipo-insumo`
+-- Estructura de tabla para la tabla `tipo-insumo`
 --
 
 CREATE TABLE `tipo-insumo` (
@@ -1231,7 +1188,7 @@ CREATE TABLE `tipo-insumo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Dumping data for table `tipo-insumo`
+-- Volcado de datos para la tabla `tipo-insumo`
 --
 
 INSERT INTO `tipo-insumo` (`idTipoInsumo`, `tipoInsumo`, `descripcionTipoInsumo`) VALUES
@@ -1243,7 +1200,7 @@ INSERT INTO `tipo-insumo` (`idTipoInsumo`, `tipoInsumo`, `descripcionTipoInsumo`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuarios`
+-- Estructura de tabla para la tabla `usuarios`
 --
 
 CREATE TABLE `usuarios` (
@@ -1255,7 +1212,7 @@ CREATE TABLE `usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 --
--- Dumping data for table `usuarios`
+-- Volcado de datos para la tabla `usuarios`
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `contrasena`, `id_cargo`) VALUES
@@ -1270,7 +1227,7 @@ INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `contrasena`, `id_cargo`) VAL
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vehiculos`
+-- Estructura de tabla para la tabla `vehiculos`
 --
 
 CREATE TABLE `vehiculos` (
@@ -1293,45 +1250,43 @@ CREATE TABLE `vehiculos` (
   `idModelo` int(11) DEFAULT NULL,
   `idCombustible` int(11) DEFAULT NULL,
   `idGrupoVehiculo` int(11) DEFAULT NULL,
-  `idSucursal` int(11) DEFAULT NULL
+  `idSucursal` int(11) DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `vehiculos`
+-- Volcado de datos para la tabla `vehiculos`
 --
 
-INSERT INTO `vehiculos` (`idVehiculo`, `matricula`, `color`, `anio`, `fechaCompra`, `precioCompra`, `numeroMotor`, `numeroChasis`, `puertas`, `asientos`, `esAutomatico`, `aireAcondicionado`, `dirHidraulica`, `estadoFisicoDelVehiculo`, `kilometraje`, `disponibilidad`, `idModelo`, `idCombustible`, `idGrupoVehiculo`, `idSucursal`) VALUES
-(1, 'AB468FG', 'Rojo', 2010, NULL, NULL, '5453543', 'aaaaaa888888bbbbb', 4, 5, 'S', 'S', 'S', NULL, '20051 km al 2024-05-06', 'N', 6, 8, 13, 1),
-(2, 'AA070DE', 'Negro', 2013, NULL, NULL, '5545', 'aaaaaa888888ccccc', 4, 5, 'N', 'S', 'S', NULL, '251 km al 2024-05-06', 'S', 1, 4, 12, 2),
-(3, 'AC340FY', 'Negro', 2018, NULL, 7439, '54224', 'aaaaaa888888ddddd', 4, 4, 'N', 'S', 'S', NULL, 'No medido', 'S', 2, 7, 12, 1),
-(6, 'ADCS', 'Negro', 2015, NULL, NULL, '545', 'aaaaaa888888eeeee', 2, 5, 'N', 'S', 'S', NULL, '927 km al 2024-05-06', 'S', 5, 3, 6, 2),
-(7, 'HWUW9', 'Gris', 2012, NULL, NULL, '7575', 'aaaaaa888888fffff', 4, 4, 'N', 'S', 'S', NULL, 'No medido', 'S', 3, 4, 7, 2),
-(18, 'HH667S', 'Negro', 2020, NULL, NULL, '586', 'aaaaaa888888ggggg', 2, 2, 'S', 'S', 'N', NULL, '839 km al 2024-05-06', 'S', 7, 9, 4, 3),
-(19, 'FFFDAS', 'Negro', 2022, NULL, NULL, '475', 'aaaaaa888888hhhhh', 4, 5, 'S', 'S', 'S', NULL, '35728 km al 2024-05-06', 'S', 3, 9, 7, 2),
-(20, 'ASASA3', 'Rojo', 2021, NULL, NULL, '57775', 'aaaaaa888888iiiii', 2, 2, 'N', 'N', 'S', NULL, '3290 km al 2024-05-06', 'S', 10, 9, 1, 3),
-(21, 'HABN32', 'Blanco', 2015, '2024-10-01', 15393.8, '57475', 'bbbbbb888888bbbbb', 4, 4, 'N', 'N', 'S', NULL, '6051 km al 2024-05-06', 'S', 8, 9, 2, 2),
-(23, 'JHGP77F', 'Amarillo', NULL, '2024-10-02', NULL, '57474', 'bbbbbb888888ccccc', 4, 4, 'N', 'S', 'N', NULL, '3211 km al 2024-05-06', 'S', 8, 4, 10, 5),
-(24, 'NE32SR', 'Rojo', 2018, '2024-10-08', NULL, '362', 'bbbbbb888888ddddd', 2, 4, 'N', 'N', 'S', NULL, 'No medido', 'S', 8, 9, 2, 5),
-(25, 'XY909BM', 'Negro', 2020, '2024-10-04', NULL, '868', 'bbbbbb888888eeeee', 4, 5, 'S', 'S', 'N', NULL, '8392 km al 2024-05-06', 'S', 5, 2, 1, 2),
-(28, 'WYS88A', 'Negro', 2022, '2024-11-03', NULL, '2775', 'bbbbbb888888fffff', 4, 5, 'N', 'S', 'N', NULL, '6283 km al 2024-05-06', 'N', 6, 9, 1, 2),
-(30, 'XY33BM', 'Gris', 2017, '2024-11-02', NULL, '7557', 'cccccc888888bbbbb', 4, 5, 'N', 'S', 'S', NULL, 'No medido', 'S', 4, 9, 3, 3),
-(32, 'BLABLA9', 'Negro', 2021, '2024-12-01', NULL, '7525', 'bbbbbb999999bbbbb', 4, 5, 'S', 'S', 'S', NULL, '9838 km al 2024-07-21', 'S', 1, 6, 12, 4),
-(35, 'ROR99C', 'Verde', 2020, '2024-12-03', NULL, '2288', 'bbbbbb999999ccccc', 2, 4, 'N', 'S', 'S', NULL, 'No medido', 'S', 2, 3, 4, 4),
-(36, 'RBA11R', 'Blanco', 2016, '2024-12-07', NULL, '17557', 'bbbbbb999999ddddd', 4, 5, 'N', 'S', 'S', NULL, '3828 km al 2024-08-28', 'S', 9, 7, 8, 1),
-(37, 'ZP19JD', 'Negro', 2021, '2025-04-23', NULL, '157', 'bbbbbb999999eeeee', 4, 7, 'N', 'S', 'S', NULL, '7328 km al 2025-01-17', 'S', 6, 1, 2, 1),
-(38, '0000000', 'Gris', 2024, '2025-04-23', NULL, '1657', 'bbbbbb999999fffff', 4, 6, 'N', 'S', 'S', NULL, '6253 km al 2024-11-13', 'N', 2, 9, 4, 3),
-(39, 'Z83KAJE', NULL, NULL, '2025-05-10', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'N', 9, 9, 9, 3),
-(42, '11ARNOK', 'Naranja', 2023, '2025-01-01', 13001.4, 'AJ8329KLNE902930LKNE', '999JNANANA828NN', 4, 4, 'N', 'S', 'S', 'Adquirido nuevo, sin defectos.', '200 km al 2025-02-02', 'S', 6, 8, 9, 5),
-(44, 'KN82CHA', 'Amarillo', 2021, '2024-02-02', 9032.4, 'HJKA920PPPP929999', 'NHAHHAKEJEJ77777', 2, 2, 'S', 'S', 'S', 'No se adquirió 0K y presenta algunos defectos en carrocería', '4554km al 04-04-2024', 'S', 5, 5, 11, 2),
-(45, 'zzzzzz', 'Amarillo', 2017, '2025-05-10', 23000, '3890283902', '3892833992', 4, 5, 'N', 'S', 'S', 'Ninguna', '0', 'S', 1, 9, 12, 5),
-(47, '123456789kln', NULL, NULL, '2025-06-01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'N', 4, 9, 2, 3),
-(48, '123456789kln', NULL, NULL, '2025-06-01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'S', 4, 9, 3, 3),
-(49, '123456789k', NULL, NULL, '2025-06-01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'N', 2, 9, 2, 3);
+INSERT INTO `vehiculos` (`idVehiculo`, `matricula`, `color`, `anio`, `fechaCompra`, `precioCompra`, `numeroMotor`, `numeroChasis`, `puertas`, `asientos`, `esAutomatico`, `aireAcondicionado`, `dirHidraulica`, `estadoFisicoDelVehiculo`, `kilometraje`, `disponibilidad`, `idModelo`, `idCombustible`, `idGrupoVehiculo`, `idSucursal`, `activo`) VALUES
+(1, 'AB468FG', 'Rojo', 2010, '0000-00-00', 0, '5453543', 'aaaaaa888888bbbbb', 4, 5, 'S', 'S', 'S', '', '', 'N', 6, 8, 13, 1, 1),
+(2, 'AA070DE', 'Negro', 2013, '0000-00-00', 0, '5545', 'aaaaaa888888ccccc', 4, 5, 'N', 'S', 'S', '', '', 'N', 1, 4, 12, 2, 1),
+(3, 'AC340FY', 'Negro', 2018, '0000-00-00', 7439, '54224', 'aaaaaa888888ddddd', 4, 4, 'N', 'S', 'S', '', '', 'N', 2, 7, 12, 1, 1),
+(6, 'ADCS', 'Negro', 2015, NULL, NULL, '545', 'aaaaaa888888eeeee', 2, 5, 'N', 'S', 'S', NULL, '927 km al 2024-05-06', 'S', 5, 3, 6, 4, 1),
+(7, 'HWUW9', 'Gris', 2012, NULL, NULL, '7575', 'aaaaaa888888fffff', 4, 4, 'N', 'S', 'S', NULL, 'No medido', 'S', 3, 4, 7, 2, 1),
+(18, 'HH667S', 'Negro', 2020, NULL, NULL, '586', 'aaaaaa888888ggggg', 2, 2, 'S', 'S', 'N', NULL, '839 km al 2024-05-06', 'S', 7, 9, 4, 3, 1),
+(19, 'FFFDAS', 'Negro', 2022, NULL, NULL, '475', 'aaaaaa888888hhhhh', 4, 5, 'S', 'S', 'S', NULL, '35728 km al 2024-05-06', 'S', 3, 9, 7, 5, 1),
+(20, 'ASASA3', 'Rojo', 2021, NULL, NULL, '57775', 'aaaaaa888888iiiii', 2, 2, 'N', 'N', 'S', NULL, '3290 km al 2024-05-06', 'S', 10, 9, 1, 3, 1),
+(21, 'HABN32', 'Blanco', 2015, '2024-10-01', 15393.8, '57475', 'bbbbbb888888bbbbb', 4, 4, 'N', 'N', 'S', NULL, '6051 km al 2024-05-06', 'S', 8, 9, 2, 2, 1),
+(23, 'JHGP77F', 'Amarillo', NULL, '2024-10-02', NULL, '57474', 'bbbbbb888888ccccc', 4, 4, 'N', 'S', 'N', NULL, '3211 km al 2024-05-06', 'S', 8, 4, 10, 5, 1),
+(24, 'NE32SR', 'Rojo', 2018, '2024-10-08', NULL, '362', 'bbbbbb888888ddddd', 2, 4, 'N', 'N', 'S', NULL, 'No medido', 'S', 8, 9, 2, 5, 1),
+(25, 'XY909BM', 'Negro', 2020, '2024-10-04', NULL, '868', 'bbbbbb888888eeeee', 4, 5, 'S', 'S', 'N', NULL, '8392 km al 2024-05-06', 'S', 5, 2, 1, 2, 1),
+(28, 'WYS88A', 'Negro', 2022, '2024-11-03', NULL, '2775', 'bbbbbb888888fffff', 4, 5, 'N', 'S', 'N', NULL, '6283 km al 2024-05-06', 'N', 6, 9, 1, 2, 1),
+(30, 'XY33BM', 'Gris', 2017, '2024-11-02', NULL, '7557', 'cccccc888888bbbbb', 4, 5, 'N', 'S', 'S', NULL, 'No medido', 'S', 4, 9, 3, 3, 1),
+(32, 'BLABLA9', 'Negro', 2021, '2024-12-01', NULL, '7525', 'bbbbbb999999bbbbb', 4, 5, 'S', 'S', 'S', NULL, '9838 km al 2024-07-21', 'S', 1, 6, 12, 4, 1),
+(35, 'ROR99C', 'Verde', 2020, '2024-12-03', NULL, '2288', 'bbbbbb999999ccccc', 2, 4, 'N', 'S', 'S', NULL, 'No medido', 'S', 2, 3, 4, 4, 1),
+(36, 'RBA11R', 'Blanco', 2016, '2024-12-07', NULL, '17557', 'bbbbbb999999ddddd', 4, 5, 'N', 'S', 'S', NULL, '3828 km al 2024-08-28', 'S', 9, 7, 8, 1, 1),
+(37, 'ZP19JD', 'Negro', 2021, '2025-04-23', NULL, '157', 'bbbbbb999999eeeee', 4, 7, 'N', 'S', 'S', NULL, '7328 km al 2025-01-17', 'S', 6, 1, 2, 1, 1),
+(38, '0000000', 'Gris', 2024, '2025-04-23', 0, '1657', 'bbbbbb999999fffff', 4, 6, 'N', 'S', 'S', '', '', 'N', 2, 9, 4, 3, 1),
+(39, 'Z83KAJE', NULL, NULL, '2025-05-10', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'N', 9, 9, 9, 3, 1),
+(42, '11ARNOK', 'Naranja', 2023, '2025-01-01', 13001.4, 'AJ8329KLNE902930LKNE', '999JNANANA828NN', 4, 4, 'N', 'S', 'S', 'Adquirido nuevo, sin defectos.', '200 km al 2025-02-02', 'S', 6, 8, 9, 5, 1),
+(44, 'KN82CHA', 'Amarillo', 2021, '2024-02-02', 9032.4, 'HJKA920PPPP929999', 'NHAHHAKEJEJ77777', 2, 2, 'S', 'S', 'S', 'No se adquirió 0K y presenta algunos defectos en carrocería', '4554km al 04-04-2024', 'S', 5, 5, 11, 2, 1),
+(45, 'zzzzzz', NULL, NULL, '2025-05-10', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'S', 1, 9, 12, 2, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vendedores`
+-- Estructura de tabla para la tabla `vendedores`
 --
 
 CREATE TABLE `vendedores` (
@@ -1342,7 +1297,7 @@ CREATE TABLE `vendedores` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `verificaciones-vehiculos`
+-- Estructura de tabla para la tabla `verificaciones-vehiculos`
 --
 
 CREATE TABLE `verificaciones-vehiculos` (
@@ -1356,11 +1311,11 @@ CREATE TABLE `verificaciones-vehiculos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `accesorios-vehiculos`
+-- Indices de la tabla `accesorios-vehiculos`
 --
 ALTER TABLE `accesorios-vehiculos`
   ADD PRIMARY KEY (`idAccesorio`),
@@ -1368,25 +1323,25 @@ ALTER TABLE `accesorios-vehiculos`
   ADD KEY `idProveedor` (`idProveedor`);
 
 --
--- Indexes for table `cargo`
+-- Indices de la tabla `cargo`
 --
 ALTER TABLE `cargo`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `clientes`
+-- Indices de la tabla `clientes`
 --
 ALTER TABLE `clientes`
   ADD PRIMARY KEY (`idCliente`);
 
 --
--- Indexes for table `combustibles`
+-- Indices de la tabla `combustibles`
 --
 ALTER TABLE `combustibles`
   ADD PRIMARY KEY (`idCombustible`);
 
 --
--- Indexes for table `contratos-alquiler`
+-- Indices de la tabla `contratos-alquiler`
 --
 ALTER TABLE `contratos-alquiler`
   ADD PRIMARY KEY (`idContrato`),
@@ -1397,7 +1352,7 @@ ALTER TABLE `contratos-alquiler`
   ADD KEY `idEstadoContrato` (`idEstadoContrato`);
 
 --
--- Indexes for table `cuentas-clientes`
+-- Indices de la tabla `cuentas-clientes`
 --
 ALTER TABLE `cuentas-clientes`
   ADD PRIMARY KEY (`idCuentaCliente`),
@@ -1405,7 +1360,7 @@ ALTER TABLE `cuentas-clientes`
   ADD KEY `estado cuenta` (`idEstadoCuentaCliente`);
 
 --
--- Indexes for table `detalle-contratos`
+-- Indices de la tabla `detalle-contratos`
 --
 ALTER TABLE `detalle-contratos`
   ADD PRIMARY KEY (`idDetalleContrato`),
@@ -1413,7 +1368,7 @@ ALTER TABLE `detalle-contratos`
   ADD KEY `idDevVehiculo` (`idDevVehiculo`);
 
 --
--- Indexes for table `detalle-pedidoaproveedor`
+-- Indices de la tabla `detalle-pedidoaproveedor`
 --
 ALTER TABLE `detalle-pedidoaproveedor`
   ADD PRIMARY KEY (`idDetallePedidoAProveedor`),
@@ -1423,7 +1378,7 @@ ALTER TABLE `detalle-pedidoaproveedor`
   ADD KEY `idPedido` (`idPedido`);
 
 --
--- Indexes for table `devoluciones-vehiculos`
+-- Indices de la tabla `devoluciones-vehiculos`
 --
 ALTER TABLE `devoluciones-vehiculos`
   ADD PRIMARY KEY (`idDevolucion`),
@@ -1433,14 +1388,14 @@ ALTER TABLE `devoluciones-vehiculos`
   ADD KEY `idVerificacion` (`idVerificacion`);
 
 --
--- Indexes for table `empleados`
+-- Indices de la tabla `empleados`
 --
 ALTER TABLE `empleados`
   ADD PRIMARY KEY (`idEmpleado`),
   ADD KEY `idSucursal` (`idSucursal`);
 
 --
--- Indexes for table `entregas-vehiculos`
+-- Indices de la tabla `entregas-vehiculos`
 --
 ALTER TABLE `entregas-vehiculos`
   ADD PRIMARY KEY (`idEntrega`),
@@ -1448,25 +1403,25 @@ ALTER TABLE `entregas-vehiculos`
   ADD KEY `idContrato` (`idContrato`);
 
 --
--- Indexes for table `estados-contratos`
+-- Indices de la tabla `estados-contratos`
 --
 ALTER TABLE `estados-contratos`
   ADD PRIMARY KEY (`idEstadoContrato`);
 
 --
--- Indexes for table `estados-cuentacliente`
+-- Indices de la tabla `estados-cuentacliente`
 --
 ALTER TABLE `estados-cuentacliente`
   ADD PRIMARY KEY (`idEstadoCuenta`);
 
 --
--- Indexes for table `estados-pedidoaproveedor`
+-- Indices de la tabla `estados-pedidoaproveedor`
 --
 ALTER TABLE `estados-pedidoaproveedor`
   ADD PRIMARY KEY (`idEstadoPedido`);
 
 --
--- Indexes for table `feedbacks-clientes`
+-- Indices de la tabla `feedbacks-clientes`
 --
 ALTER TABLE `feedbacks-clientes`
   ADD PRIMARY KEY (`idFeedbackCliente`),
@@ -1474,13 +1429,13 @@ ALTER TABLE `feedbacks-clientes`
   ADD KEY `idCuentaCliente` (`idCuentaCliente`);
 
 --
--- Indexes for table `grupos-vehiculos`
+-- Indices de la tabla `grupos-vehiculos`
 --
 ALTER TABLE `grupos-vehiculos`
   ADD PRIMARY KEY (`idGrupo`);
 
 --
--- Indexes for table `intereses-clientes`
+-- Indices de la tabla `intereses-clientes`
 --
 ALTER TABLE `intereses-clientes`
   ADD PRIMARY KEY (`idInteresCliente`),
@@ -1488,7 +1443,7 @@ ALTER TABLE `intereses-clientes`
   ADD KEY `cuenta del cliente` (`idCuentaCliente`);
 
 --
--- Indexes for table `mantenimientos-vehiculos`
+-- Indices de la tabla `mantenimientos-vehiculos`
 --
 ALTER TABLE `mantenimientos-vehiculos`
   ADD PRIMARY KEY (`idMantenimiento`),
@@ -1497,13 +1452,13 @@ ALTER TABLE `mantenimientos-vehiculos`
   ADD KEY `idProductoUsado` (`idProductoUsado`);
 
 --
--- Indexes for table `modelos`
+-- Indices de la tabla `modelos`
 --
 ALTER TABLE `modelos`
   ADD PRIMARY KEY (`idModelo`);
 
 --
--- Indexes for table `pedido-a-proveedor`
+-- Indices de la tabla `pedido-a-proveedor`
 --
 ALTER TABLE `pedido-a-proveedor`
   ADD PRIMARY KEY (`idPedido`),
@@ -1511,7 +1466,7 @@ ALTER TABLE `pedido-a-proveedor`
   ADD KEY `idEstadoPedido` (`idEstadoPedido`);
 
 --
--- Indexes for table `preparaciones-vehiculos`
+-- Indices de la tabla `preparaciones-vehiculos`
 --
 ALTER TABLE `preparaciones-vehiculos`
   ADD PRIMARY KEY (`idPreparacion`),
@@ -1520,7 +1475,7 @@ ALTER TABLE `preparaciones-vehiculos`
   ADD KEY `idProductoUsado` (`idProductoUsado`);
 
 --
--- Indexes for table `productos-vehiculo`
+-- Indices de la tabla `productos-vehiculo`
 --
 ALTER TABLE `productos-vehiculo`
   ADD PRIMARY KEY (`idProducto`),
@@ -1528,14 +1483,14 @@ ALTER TABLE `productos-vehiculo`
   ADD KEY `idProveedor` (`idProveedor`);
 
 --
--- Indexes for table `proveedores`
+-- Indices de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
   ADD PRIMARY KEY (`idProveedor`),
   ADD KEY `idTipoInsumo` (`idTipoInsumo`);
 
 --
--- Indexes for table `repuestos-vehiculos`
+-- Indices de la tabla `repuestos-vehiculos`
 --
 ALTER TABLE `repuestos-vehiculos`
   ADD PRIMARY KEY (`idRepuesto`),
@@ -1543,7 +1498,7 @@ ALTER TABLE `repuestos-vehiculos`
   ADD KEY `idProveedor` (`idProveedor`);
 
 --
--- Indexes for table `reservas-vehiculos`
+-- Indices de la tabla `reservas-vehiculos`
 --
 ALTER TABLE `reservas-vehiculos`
   ADD PRIMARY KEY (`idReserva`),
@@ -1553,19 +1508,19 @@ ALTER TABLE `reservas-vehiculos`
   ADD KEY `idVehiculo` (`idVehiculo`);
 
 --
--- Indexes for table `sucursales`
+-- Indices de la tabla `sucursales`
 --
 ALTER TABLE `sucursales`
   ADD PRIMARY KEY (`idSucursal`);
 
 --
--- Indexes for table `tipo-insumo`
+-- Indices de la tabla `tipo-insumo`
 --
 ALTER TABLE `tipo-insumo`
   ADD PRIMARY KEY (`idTipoInsumo`);
 
 --
--- Indexes for table `usuarios`
+-- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`),
@@ -1573,7 +1528,7 @@ ALTER TABLE `usuarios`
   ADD KEY `id_cargo_2` (`id_cargo`);
 
 --
--- Indexes for table `vehiculos`
+-- Indices de la tabla `vehiculos`
 --
 ALTER TABLE `vehiculos`
   ADD PRIMARY KEY (`idVehiculo`),
@@ -1583,222 +1538,222 @@ ALTER TABLE `vehiculos`
   ADD KEY `sucursal` (`idSucursal`);
 
 --
--- Indexes for table `vendedores`
+-- Indices de la tabla `vendedores`
 --
 ALTER TABLE `vendedores`
   ADD PRIMARY KEY (`idVendedor`),
   ADD KEY `idEmpleado` (`idEmpleado`);
 
 --
--- Indexes for table `verificaciones-vehiculos`
+-- Indices de la tabla `verificaciones-vehiculos`
 --
 ALTER TABLE `verificaciones-vehiculos`
   ADD PRIMARY KEY (`idVerificacion`),
   ADD KEY `idVehiculo` (`idVehiculo`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `accesorios-vehiculos`
+-- AUTO_INCREMENT de la tabla `accesorios-vehiculos`
 --
 ALTER TABLE `accesorios-vehiculos`
   MODIFY `idAccesorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `cargo`
+-- AUTO_INCREMENT de la tabla `cargo`
 --
 ALTER TABLE `cargo`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `clientes`
+-- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `idCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `idCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `combustibles`
+-- AUTO_INCREMENT de la tabla `combustibles`
 --
 ALTER TABLE `combustibles`
   MODIFY `idCombustible` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `contratos-alquiler`
+-- AUTO_INCREMENT de la tabla `contratos-alquiler`
 --
 ALTER TABLE `contratos-alquiler`
-  MODIFY `idContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=149;
+  MODIFY `idContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=140;
 
 --
--- AUTO_INCREMENT for table `cuentas-clientes`
+-- AUTO_INCREMENT de la tabla `cuentas-clientes`
 --
 ALTER TABLE `cuentas-clientes`
   MODIFY `idCuentaCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `detalle-contratos`
+-- AUTO_INCREMENT de la tabla `detalle-contratos`
 --
 ALTER TABLE `detalle-contratos`
-  MODIFY `idDetalleContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=149;
+  MODIFY `idDetalleContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=140;
 
 --
--- AUTO_INCREMENT for table `detalle-pedidoaproveedor`
+-- AUTO_INCREMENT de la tabla `detalle-pedidoaproveedor`
 --
 ALTER TABLE `detalle-pedidoaproveedor`
-  MODIFY `idDetallePedidoAProveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `idDetallePedidoAProveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
--- AUTO_INCREMENT for table `devoluciones-vehiculos`
+-- AUTO_INCREMENT de la tabla `devoluciones-vehiculos`
 --
 ALTER TABLE `devoluciones-vehiculos`
-  MODIFY `idDevolucion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `idDevolucion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT for table `empleados`
+-- AUTO_INCREMENT de la tabla `empleados`
 --
 ALTER TABLE `empleados`
   MODIFY `idEmpleado` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `entregas-vehiculos`
+-- AUTO_INCREMENT de la tabla `entregas-vehiculos`
 --
 ALTER TABLE `entregas-vehiculos`
-  MODIFY `idEntrega` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `idEntrega` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT for table `estados-contratos`
+-- AUTO_INCREMENT de la tabla `estados-contratos`
 --
 ALTER TABLE `estados-contratos`
   MODIFY `idEstadoContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `estados-cuentacliente`
+-- AUTO_INCREMENT de la tabla `estados-cuentacliente`
 --
 ALTER TABLE `estados-cuentacliente`
   MODIFY `idEstadoCuenta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `estados-pedidoaproveedor`
+-- AUTO_INCREMENT de la tabla `estados-pedidoaproveedor`
 --
 ALTER TABLE `estados-pedidoaproveedor`
   MODIFY `idEstadoPedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `feedbacks-clientes`
+-- AUTO_INCREMENT de la tabla `feedbacks-clientes`
 --
 ALTER TABLE `feedbacks-clientes`
   MODIFY `idFeedbackCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `grupos-vehiculos`
+-- AUTO_INCREMENT de la tabla `grupos-vehiculos`
 --
 ALTER TABLE `grupos-vehiculos`
   MODIFY `idGrupo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `intereses-clientes`
+-- AUTO_INCREMENT de la tabla `intereses-clientes`
 --
 ALTER TABLE `intereses-clientes`
   MODIFY `idInteresCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `mantenimientos-vehiculos`
+-- AUTO_INCREMENT de la tabla `mantenimientos-vehiculos`
 --
 ALTER TABLE `mantenimientos-vehiculos`
   MODIFY `idMantenimiento` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `modelos`
+-- AUTO_INCREMENT de la tabla `modelos`
 --
 ALTER TABLE `modelos`
   MODIFY `idModelo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `pedido-a-proveedor`
+-- AUTO_INCREMENT de la tabla `pedido-a-proveedor`
 --
 ALTER TABLE `pedido-a-proveedor`
-  MODIFY `idPedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `idPedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `preparaciones-vehiculos`
+-- AUTO_INCREMENT de la tabla `preparaciones-vehiculos`
 --
 ALTER TABLE `preparaciones-vehiculos`
   MODIFY `idPreparacion` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `productos-vehiculo`
+-- AUTO_INCREMENT de la tabla `productos-vehiculo`
 --
 ALTER TABLE `productos-vehiculo`
-  MODIFY `idProducto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idProducto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `proveedores`
+-- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `idProveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `idProveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT for table `repuestos-vehiculos`
+-- AUTO_INCREMENT de la tabla `repuestos-vehiculos`
 --
 ALTER TABLE `repuestos-vehiculos`
-  MODIFY `idRepuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `idRepuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `reservas-vehiculos`
+-- AUTO_INCREMENT de la tabla `reservas-vehiculos`
 --
 ALTER TABLE `reservas-vehiculos`
-  MODIFY `idReserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
+  MODIFY `idReserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=142;
 
 --
--- AUTO_INCREMENT for table `sucursales`
+-- AUTO_INCREMENT de la tabla `sucursales`
 --
 ALTER TABLE `sucursales`
   MODIFY `idSucursal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `tipo-insumo`
+-- AUTO_INCREMENT de la tabla `tipo-insumo`
 --
 ALTER TABLE `tipo-insumo`
   MODIFY `idTipoInsumo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `usuarios`
+-- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `vehiculos`
+-- AUTO_INCREMENT de la tabla `vehiculos`
 --
 ALTER TABLE `vehiculos`
-  MODIFY `idVehiculo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `idVehiculo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
--- AUTO_INCREMENT for table `vendedores`
+-- AUTO_INCREMENT de la tabla `vendedores`
 --
 ALTER TABLE `vendedores`
   MODIFY `idVendedor` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `verificaciones-vehiculos`
+-- AUTO_INCREMENT de la tabla `verificaciones-vehiculos`
 --
 ALTER TABLE `verificaciones-vehiculos`
   MODIFY `idVerificacion` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for dumped tables
+-- Restricciones para tablas volcadas
 --
 
 --
--- Constraints for table `accesorios-vehiculos`
+-- Filtros para la tabla `accesorios-vehiculos`
 --
 ALTER TABLE `accesorios-vehiculos`
   ADD CONSTRAINT `accesorios-vehiculos_ibfk_1` FOREIGN KEY (`idTipoInsumo`) REFERENCES `tipo-insumo` (`idTipoInsumo`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `accesorios-vehiculos_ibfk_2` FOREIGN KEY (`idProveedor`) REFERENCES `proveedores` (`idProveedor`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `contratos-alquiler`
+-- Filtros para la tabla `contratos-alquiler`
 --
 ALTER TABLE `contratos-alquiler`
   ADD CONSTRAINT `contratos-alquiler_ibfk_1` FOREIGN KEY (`idCliente`) REFERENCES `clientes` (`idCliente`) ON DELETE SET NULL ON UPDATE SET NULL,
@@ -1808,21 +1763,21 @@ ALTER TABLE `contratos-alquiler`
   ADD CONSTRAINT `contratos-alquiler_ibfk_5` FOREIGN KEY (`idEstadoContrato`) REFERENCES `estados-contratos` (`idEstadoContrato`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `cuentas-clientes`
+-- Filtros para la tabla `cuentas-clientes`
 --
 ALTER TABLE `cuentas-clientes`
   ADD CONSTRAINT `cliente` FOREIGN KEY (`idCliente`) REFERENCES `clientes` (`idCliente`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `estado cuenta` FOREIGN KEY (`idEstadoCuentaCliente`) REFERENCES `estados-cuentacliente` (`idEstadoCuenta`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `detalle-contratos`
+-- Filtros para la tabla `detalle-contratos`
 --
 ALTER TABLE `detalle-contratos`
   ADD CONSTRAINT `detalle-contratos_ibfk_1` FOREIGN KEY (`idEntregaVehiculo`) REFERENCES `entregas-vehiculos` (`idEntrega`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `detalle-contratos_ibfk_2` FOREIGN KEY (`idDevVehiculo`) REFERENCES `devoluciones-vehiculos` (`idDevolucion`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `detalle-pedidoaproveedor`
+-- Filtros para la tabla `detalle-pedidoaproveedor`
 --
 ALTER TABLE `detalle-pedidoaproveedor`
   ADD CONSTRAINT `detalle-pedidoaproveedor_ibfk_1` FOREIGN KEY (`idRepuestoVehiculo`) REFERENCES `repuestos-vehiculos` (`idRepuesto`) ON DELETE SET NULL ON UPDATE SET NULL,
@@ -1831,7 +1786,7 @@ ALTER TABLE `detalle-pedidoaproveedor`
   ADD CONSTRAINT `detalle-pedidoaproveedor_ibfk_4` FOREIGN KEY (`idPedido`) REFERENCES `pedido-a-proveedor` (`idPedido`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `devoluciones-vehiculos`
+-- Filtros para la tabla `devoluciones-vehiculos`
 --
 ALTER TABLE `devoluciones-vehiculos`
   ADD CONSTRAINT `devoluciones-vehiculos_ibfk_1` FOREIGN KEY (`idCliente`) REFERENCES `clientes` (`idCliente`) ON DELETE SET NULL ON UPDATE SET NULL,
@@ -1840,34 +1795,34 @@ ALTER TABLE `devoluciones-vehiculos`
   ADD CONSTRAINT `devoluciones-vehiculos_ibfk_4` FOREIGN KEY (`idVerificacion`) REFERENCES `verificaciones-vehiculos` (`idVerificacion`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `empleados`
+-- Filtros para la tabla `empleados`
 --
 ALTER TABLE `empleados`
   ADD CONSTRAINT `empleados_ibfk_1` FOREIGN KEY (`idSucursal`) REFERENCES `sucursales` (`idSucursal`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `entregas-vehiculos`
+-- Filtros para la tabla `entregas-vehiculos`
 --
 ALTER TABLE `entregas-vehiculos`
   ADD CONSTRAINT `entregas-vehiculos_ibfk_1` FOREIGN KEY (`idCliente`) REFERENCES `clientes` (`idCliente`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `entregas-vehiculos_ibfk_2` FOREIGN KEY (`idContrato`) REFERENCES `contratos-alquiler` (`idContrato`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `feedbacks-clientes`
+-- Filtros para la tabla `feedbacks-clientes`
 --
 ALTER TABLE `feedbacks-clientes`
   ADD CONSTRAINT `feedbacks-clientes_ibfk_1` FOREIGN KEY (`idVehiculo`) REFERENCES `vehiculos` (`idVehiculo`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `feedbacks-clientes_ibfk_2` FOREIGN KEY (`idCuentaCliente`) REFERENCES `cuentas-clientes` (`idCuentaCliente`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `intereses-clientes`
+-- Filtros para la tabla `intereses-clientes`
 --
 ALTER TABLE `intereses-clientes`
   ADD CONSTRAINT `cuenta del cliente` FOREIGN KEY (`idCuentaCliente`) REFERENCES `cuentas-clientes` (`idCuentaCliente`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `vehiculo` FOREIGN KEY (`idVehiculo`) REFERENCES `vehiculos` (`idVehiculo`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `mantenimientos-vehiculos`
+-- Filtros para la tabla `mantenimientos-vehiculos`
 --
 ALTER TABLE `mantenimientos-vehiculos`
   ADD CONSTRAINT `mantenimientos-vehiculos_ibfk_1` FOREIGN KEY (`idVehiculo`) REFERENCES `vehiculos` (`idVehiculo`) ON DELETE SET NULL ON UPDATE SET NULL,
@@ -1875,14 +1830,14 @@ ALTER TABLE `mantenimientos-vehiculos`
   ADD CONSTRAINT `mantenimientos-vehiculos_ibfk_3` FOREIGN KEY (`idProductoUsado`) REFERENCES `productos-vehiculo` (`idProducto`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `pedido-a-proveedor`
+-- Filtros para la tabla `pedido-a-proveedor`
 --
 ALTER TABLE `pedido-a-proveedor`
   ADD CONSTRAINT `pedido-a-proveedor_ibfk_2` FOREIGN KEY (`idProveedor`) REFERENCES `proveedores` (`idProveedor`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `pedido-a-proveedor_ibfk_3` FOREIGN KEY (`idEstadoPedido`) REFERENCES `estados-pedidoaproveedor` (`idEstadoPedido`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `preparaciones-vehiculos`
+-- Filtros para la tabla `preparaciones-vehiculos`
 --
 ALTER TABLE `preparaciones-vehiculos`
   ADD CONSTRAINT `preparaciones-vehiculos_ibfk_1` FOREIGN KEY (`idVehiculo`) REFERENCES `vehiculos` (`idVehiculo`) ON DELETE SET NULL ON UPDATE SET NULL,
@@ -1890,27 +1845,27 @@ ALTER TABLE `preparaciones-vehiculos`
   ADD CONSTRAINT `preparaciones-vehiculos_ibfk_3` FOREIGN KEY (`idProductoUsado`) REFERENCES `productos-vehiculo` (`idProducto`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `productos-vehiculo`
+-- Filtros para la tabla `productos-vehiculo`
 --
 ALTER TABLE `productos-vehiculo`
   ADD CONSTRAINT `productos-vehiculo_ibfk_1` FOREIGN KEY (`idTipoInsumo`) REFERENCES `tipo-insumo` (`idTipoInsumo`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `productos-vehiculo_ibfk_2` FOREIGN KEY (`idProveedor`) REFERENCES `proveedores` (`idProveedor`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `proveedores`
+-- Filtros para la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
   ADD CONSTRAINT `proveedores_ibfk_1` FOREIGN KEY (`idTipoInsumo`) REFERENCES `tipo-insumo` (`idTipoInsumo`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `repuestos-vehiculos`
+-- Filtros para la tabla `repuestos-vehiculos`
 --
 ALTER TABLE `repuestos-vehiculos`
   ADD CONSTRAINT `repuestos-vehiculos_ibfk_1` FOREIGN KEY (`idTipoInsumo`) REFERENCES `tipo-insumo` (`idTipoInsumo`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `repuestos-vehiculos_ibfk_2` FOREIGN KEY (`idProveedor`) REFERENCES `proveedores` (`idProveedor`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `reservas-vehiculos`
+-- Filtros para la tabla `reservas-vehiculos`
 --
 ALTER TABLE `reservas-vehiculos`
   ADD CONSTRAINT `reservas-vehiculos_ibfk_1` FOREIGN KEY (`idCliente`) REFERENCES `clientes` (`idCliente`) ON DELETE SET NULL ON UPDATE SET NULL,
@@ -1919,13 +1874,13 @@ ALTER TABLE `reservas-vehiculos`
   ADD CONSTRAINT `reservas-vehiculos_ibfk_4` FOREIGN KEY (`idVehiculo`) REFERENCES `vehiculos` (`idVehiculo`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `usuarios`
+-- Filtros para la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`id_cargo`) REFERENCES `cargo` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `vehiculos`
+-- Filtros para la tabla `vehiculos`
 --
 ALTER TABLE `vehiculos`
   ADD CONSTRAINT `combustible` FOREIGN KEY (`idCombustible`) REFERENCES `combustibles` (`idCombustible`) ON DELETE SET NULL ON UPDATE SET NULL,
@@ -1934,13 +1889,13 @@ ALTER TABLE `vehiculos`
   ADD CONSTRAINT `sucursal` FOREIGN KEY (`idSucursal`) REFERENCES `sucursales` (`idSucursal`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `vendedores`
+-- Filtros para la tabla `vendedores`
 --
 ALTER TABLE `vendedores`
   ADD CONSTRAINT `vendedores_ibfk_1` FOREIGN KEY (`idEmpleado`) REFERENCES `empleados` (`idEmpleado`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
--- Constraints for table `verificaciones-vehiculos`
+-- Filtros para la tabla `verificaciones-vehiculos`
 --
 ALTER TABLE `verificaciones-vehiculos`
   ADD CONSTRAINT `verificaciones-vehiculos_ibfk_1` FOREIGN KEY (`idVehiculo`) REFERENCES `vehiculos` (`idVehiculo`) ON DELETE SET NULL ON UPDATE SET NULL;

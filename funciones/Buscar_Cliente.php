@@ -13,7 +13,7 @@ if (isset($_GET['query'])) {
     // Buscar por documento O por apellido
     $sql = "SELECT idCliente as id, dniCliente as documento, apellidoCliente as apellido, nombreCliente as nombre 
             FROM clientes 
-            WHERE dniCliente LIKE '%$query%' OR apellidoCliente LIKE '%$query%'
+            WHERE dniCliente LIKE '$query%' OR apellidoCliente LIKE '$query%'
             LIMIT 10";
 
     $result = mysqli_query($conexion, $sql);

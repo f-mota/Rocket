@@ -240,12 +240,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
             <?php
 
             if ($mensajeError) { ?>
-                <div class="alert alert-danger mt-3">
-                    <?php
+            <div class="alert alert-danger mt-3">
+                <?php
                     echo "Error al intentar modificar el contrato. <br><br>";
                     echo $mensajeError;
                     ?>
-                </div>
+            </div>
             <?php }
             ?>
 
@@ -286,7 +286,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
 
                 <div class="mb-3">
                     <label for="cliente" class="form-label">Cliente</label>
-                    <input type="text" class="form-control" id="cliente" name="NombreCompletoCliente" value="<?php echo htmlspecialchars($contrato['clApellidoCliente']);
+                    <input type="text" class="form-control" id="cliente" name="NombreCompletoCliente"
+                        value="<?php echo htmlspecialchars($contrato['clApellidoCliente']);
                                                                                                                 echo ", ";
                                                                                                                 echo htmlspecialchars($contrato['clNombreCliente']); ?>" disabled>
                 </div>
@@ -361,11 +362,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
                 </div>
 
                 <style>
-                    .input-container {
+                .input-container {
 
-                        display: flex;
-                        align-items: center;
-                    }
+                    display: flex;
+                    align-items: center;
+                }
                 </style>
 
                 <div class="mb-3">
@@ -387,6 +388,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
                                                                                                             ?>>
                         <span style="padding: 0 0 0 10px;"> $ USD por día </span>
 
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="montototal" class="form-label">Importe Total del Contrato</label>
+                    <div class="input-container">
+                        <input type="text" class="form-control" style="max-width: 150px; background-color: #f8f9fa;"
+                            id="montototal" name="MontoTotalContrato"
+                            value="<?php echo htmlspecialchars(number_format($contrato['dcMontoTotalContrato'], 2, '.', '')); ?>"
+                            disabled readonly>
+                        <span style="padding: 0 0 0 10px;"> $ USD </span>
                     </div>
                 </div>
 
@@ -447,6 +459,100 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarContrat
         </div>
 
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Referencias a los elementos del formulario ---
+        const selectorVehiculos = document.getElementById('vehiculosdisponibles');
+        const inputPrecioPorDia = document.getElementById('preciopordia');
+        const inputFechaRetiro = document.getElementById('fecharetiro');
+        const inputFechaDevolucion = document.getElementById('fechadevolucion');
+        const inputMontoTotal = document.getElementById('montototal'); // Nuevo campo
+
+        // --- Función de CÁLCULO DE DÍAS ---
+        function calcularDiferenciaDias() {
+            const fechaRetiro = inputFechaRetiro.value;
+            const fechaDevolucion = inputFechaDevolucion.value;
+
+            if (fechaRetiro && fechaDevolucion) {
+                const date1 = new Date(fechaRetiro);
+                const date2 = new Date(fechaDevolucion);
+
+                // Calcular la diferencia en milisegundos
+                const diffTime = Math.abs(date2 - date1);
+                // Convertir milisegundos a días (1000 ms/s * 60 s/min * 60 min/h * 24 h/día)
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                // Si la fecha de retiro es posterior a la de devolución, el cálculo será 0 o negativo (que el script Math.abs convierte a positivo), 
+                // pero si usamos directamente la diferencia para validar, el resultado es más preciso.
+                if (date1 > date2) {
+                     return 0; // Si la fecha de retiro es posterior, la diferencia de días es 0 (o manejo de error)
+                }
+                return diffDays;
+            }
+            return 0; // Si falta alguna fecha
+        }
+
+        // --- Función principal para ACTUALIZAR EL MONTO TOTAL ---
+        function actualizarMontoTotal() {
+            const dias = calcularDiferenciaDias();
+            const precio = parseFloat(inputPrecioPorDia.value);
+            
+            let montoTotal = 0;
+            if (!isNaN(precio) && precio > 0 && dias > 0) {
+                montoTotal = dias * precio;
+            }
+
+            // Actualizar el campo Monto Total con el resultado
+            // .toFixed(2) asegura dos decimales para formato de moneda
+            inputMontoTotal.value = montoTotal.toFixed(2);
+        }
+
+        // --- Función para CARGAR PRECIO POR DÍA desde obtener_precio_grupo.php ---
+        function cargarPrecioPorDia() {
+            const idVehiculo = selectorVehiculos.value;
+            if (idVehiculo) {
+                const formData = new FormData();
+                formData.append('idVehiculo', idVehiculo);
+
+                fetch('obtener_precio_grupo.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 1. Actualiza el campo "Precio por día"
+                        inputPrecioPorDia.value = parseFloat(data.precio).toFixed(2);
+                        // 2. Llama a la función para recalcular el monto total
+                        actualizarMontoTotal(); 
+                    } else {
+                        console.error('Error al obtener precio:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la solicitud AJAX:', error);
+                    alert('Hubo un error al intentar obtener el precio del vehículo.');
+                });
+            }
+        }
+
+        // --- Asignar Event Listeners ---
+
+        // 1. Cuando se cambia el vehículo, actualiza el precio por día y el monto total
+        if (selectorVehiculos) {
+            selectorVehiculos.addEventListener('change', cargarPrecioPorDia);
+        }
+
+        // 2. Cuando se cambia el precio por día o las fechas, solo actualiza el monto total
+        inputPrecioPorDia.addEventListener('input', actualizarMontoTotal);
+        inputFechaRetiro.addEventListener('change', actualizarMontoTotal);
+        inputFechaDevolucion.addEventListener('change', actualizarMontoTotal);
+
+        // Llamar a actualizarMontoTotal al cargar la página para que el campo inicial sea correcto
+        actualizarMontoTotal(); 
+    });
+</script>
 
 </body>
 

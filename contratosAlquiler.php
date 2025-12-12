@@ -73,9 +73,9 @@ include('head.php');
 <body style="margin: 0 auto;">
 
     <style>
-        .form-control:focus {
-            border-color: #c7240e;
-        }
+    .form-control:focus {
+        border-color: #c7240e;
+    }
     </style>
 
     <div class="wrapper" style="margin-bottom: 100px; min-height: 100%;">
@@ -95,50 +95,50 @@ include('head.php');
 
             <!-- Algunos efectos moderno para el form de consultas ;) -->
             <style>
-                @keyframes fadeInUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(30px);
-                    }
-
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
                 }
 
-                .filtro-consultas {
-                    transition: all 0.4s ease-in-out;
-                    border-radius: 15px;
-                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-                    animation: fadeInUp 0.8s ease-in-out;
-                    /* Hace que el cuadro "aparezca suavemente" */
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
                 }
+            }
 
-                .filtro-consultas:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0px 10px 20px rgba(198, 167, 31, 0.5);
-                }
+            .filtro-consultas {
+                transition: all 0.4s ease-in-out;
+                border-radius: 15px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                animation: fadeInUp 0.8s ease-in-out;
+                /* Hace que el cuadro "aparezca suavemente" */
+            }
 
-                .form-control {
-                    transition: all 0.3s ease-in-out;
-                    border: 1px solid;
-                }
+            .filtro-consultas:hover {
+                transform: translateY(-5px);
+                box-shadow: 0px 10px 20px rgba(198, 167, 31, 0.5);
+            }
 
-                .form-control:focus {
-                    border: 2px solid rgb(160, 4, 4);
-                    /* Resalta con dorado */
-                    box-shadow: rgba(152, 10, 10, 0.81);
-                }
+            .form-control {
+                transition: all 0.3s ease-in-out;
+                border: 1px solid;
+            }
 
-                .btn-filtrar {
-                    transition: transform 0.3s ease-in-out;
-                }
+            .form-control:focus {
+                border: 2px solid rgb(160, 4, 4);
+                /* Resalta con dorado */
+                box-shadow: rgba(152, 10, 10, 0.81);
+            }
 
-                .btn-filtrar:hover {
-                    transform: scale(1.1);
-                    /* Botón se agranda ligeramente */
-                }
+            .btn-filtrar {
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .btn-filtrar:hover {
+                transform: scale(1.1);
+                /* Botón se agranda ligeramente */
+            }
             </style>
 
             <div class="filtro-consultas"
@@ -303,15 +303,15 @@ include('head.php');
 
                             for ($i = 0; $i < $CantidadContratos; $i++) { ?>
 
-                                <tr class='contrato' data-id='<?php echo $ListadoContratos[$i]['IdContrato']; ?>'
-                                    onclick="selectRow(this, '<?= $ListadoContratos[$i]['IdContrato'] ?>')">
+                            <tr class='contrato' data-id='<?php echo $ListadoContratos[$i]['IdContrato']; ?>'
+                                onclick="selectRow(this, '<?= $ListadoContratos[$i]['IdContrato'] ?>')">
 
-                                    <!-- <td><span style='color: #c7240e;'>
+                                <!-- <td><span style='color: #c7240e;'>
                                             <h4> <?php echo $contador; ?> </h4>
                                         </span></td> -->
 
-                                    <td> <?php echo $ListadoContratos[$i]['IdContrato']; ?> </td>
-                                    <td><?php
+                                <td> <?php echo $ListadoContratos[$i]['IdContrato']; ?> </td>
+                                <td><?php
                                         $estado = strtolower($ListadoContratos[$i]['EstadoContrato']);
                                         $clase = '';
 
@@ -336,39 +336,39 @@ include('head.php');
                                                 break;
                                         }
                                         echo "<span class='badge badge-$clase'>" . $ListadoContratos[$i]['EstadoContrato'] . "</span>"; ?>
-                                    </td>
-                                    <td
-                                        title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
-                                        <?php echo $ListadoContratos[$i]['FechaInicioContrato']; ?>
-                                    </td>
-                                    <td
-                                        title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
-                                        <?php echo $ListadoContratos[$i]['FechaFinContrato']; ?>
-                                    </td>
-                                    <td> <?php echo $ListadoContratos[$i]['apellidoCliente']; ?> </td>
-                                    <td> <?php echo $ListadoContratos[$i]['nombreCliente']; ?> </td>
-                                    <td> <?php echo $ListadoContratos[$i]['dniCliente']; ?> </td>
-                                    <td> <?php echo $ListadoContratos[$i]['vehiculoMatricula']; ?> </td>
-                                    <td> <?php echo "{$ListadoContratos[$i]['vehiculoModelo']}, {$ListadoContratos[$i]['vehiculoGrupo']}"; ?>
-                                    </td>
-                                    <td> <?php echo "{$ListadoContratos[$i]['CiudadSucursal']}, {$ListadoContratos[$i]['DireccionSucursal']}"; ?>
-                                    </td>
-                                    <td> <?php echo "{$ListadoContratos[$i]['CiudadSucursal']}, {$ListadoContratos[$i]['DireccionSucursal']}"; ?>
-                                    </td>
-                                    <td> <?php echo "{$ListadoContratos[$i]['PrecioPorDiaContrato']} US$"; ?> </td>
-                                    <td> <?php echo "{$ListadoContratos[$i]['CantidadDiasContrato']} días"; ?> </td>
-                                    <td> <?php echo "{$ListadoContratos[$i]['MontoTotalContrato']} US$"; ?> </td>
-                                    <td>
-                                        <?php
+                                </td>
+                                <td
+                                    title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
+                                    <?php echo $ListadoContratos[$i]['FechaInicioContrato']; ?>
+                                </td>
+                                <td
+                                    title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
+                                    <?php echo $ListadoContratos[$i]['FechaFinContrato']; ?>
+                                </td>
+                                <td> <?php echo $ListadoContratos[$i]['apellidoCliente']; ?> </td>
+                                <td> <?php echo $ListadoContratos[$i]['nombreCliente']; ?> </td>
+                                <td> <?php echo $ListadoContratos[$i]['dniCliente']; ?> </td>
+                                <td> <?php echo $ListadoContratos[$i]['vehiculoMatricula']; ?> </td>
+                                <td> <?php echo "{$ListadoContratos[$i]['vehiculoModelo']}, {$ListadoContratos[$i]['vehiculoGrupo']}"; ?>
+                                </td>
+                                <td> <?php echo "{$ListadoContratos[$i]['CiudadSucursal']}, {$ListadoContratos[$i]['DireccionSucursal']}"; ?>
+                                </td>
+                                <td> <?php echo "{$ListadoContratos[$i]['CiudadSucursal']}, {$ListadoContratos[$i]['DireccionSucursal']}"; ?>
+                                </td>
+                                <td> <?php echo "{$ListadoContratos[$i]['PrecioPorDiaContrato']} US$"; ?> </td>
+                                <td> <?php echo "{$ListadoContratos[$i]['CantidadDiasContrato']} días"; ?> </td>
+                                <td> <?php echo "{$ListadoContratos[$i]['MontoTotalContrato']} US$"; ?> </td>
+                                <td>
+                                    <?php
                                         if ($ListadoContratos[$i]['IdReserva'] == "No existe") {
                                             echo "<span class='badge badge-danger'>{$ListadoContratos[$i]['NumReserva']}</span>";
                                         } else {
                                             echo "<span class='badge badge-warning'><a href='reservas.php?NumeroReserva={$ListadoContratos[$i]['NumReserva']}&MatriculaReserva=&ApellidoReserva=&NombreReserva=&DocReserva=&RetiroDesde=&RetiroHasta=&BotonFiltrar=FiltrandoReservas'>Nº: {$ListadoContratos[$i]['NumReserva']}</a></span>";
                                         }
                                         ?>
-                                    </td>
-                                </tr>
-                                <?php $contador++; ?>
+                                </td>
+                            </tr>
+                            <?php $contador++; ?>
                             <?php
                             }
                             ?>
@@ -380,14 +380,14 @@ include('head.php');
                 <br><br>
                 <!-- Recuadro con cantidad total de registros encontrados -->
                 <style>
-                    .no-btn-effect {
-                        pointer-events: none;
-                        /* Evita que se comporte como un botón */
-                        box-shadow: none !important;
-                        cursor: default !important;
-                        /* Hace que el cursor no cambie */
-                        border: none;
-                    }
+                .no-btn-effect {
+                    pointer-events: none;
+                    /* Evita que se comporte como un botón */
+                    box-shadow: none !important;
+                    cursor: default !important;
+                    /* Hace que el cursor no cambie */
+                    border: none;
+                }
                 </style>
                 <p class="btn no-btn-effect"
                     style="background-color: rgb(153, 6, 6); color: #ffffff; margin-left: 25px;">
@@ -428,21 +428,21 @@ include('head.php');
                 </div>
 
                 <style>
-                    .hoverImage {
-                        position: relative;
-                        align-self: stretch;
-                        height: 650px;
-                        flex-shrink: 0;
-                        object-fit: cover;
-                        border-radius: 10px;
-                        max-width: 100%;
-                    }
+                .hoverImage {
+                    position: relative;
+                    align-self: stretch;
+                    height: 650px;
+                    flex-shrink: 0;
+                    object-fit: cover;
+                    border-radius: 10px;
+                    max-width: 100%;
+                }
 
-                    .centrar {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                    }
+                .centrar {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
                 </style>
 
                 <div style="margin: auto; max-width: 95%; padding: 10px 0 40px 0;">
@@ -461,27 +461,27 @@ include('head.php');
                         </a>
 
                         <style>
-                            .btn-inversion {
-                                padding-left: 30px;
-                                padding-right: 30px;
-                                background-color: #262626;
-                                color: #e04709;
-                                font-weight: 500;
-                                border: 1px solid #d64004;
-                                border-radius: 20px;
+                        .btn-inversion {
+                            padding-left: 30px;
+                            padding-right: 30px;
+                            background-color: #262626;
+                            color: #e04709;
+                            font-weight: 500;
+                            border: 1px solid #d64004;
+                            border-radius: 20px;
 
-                                transition: all 0.5s ease-in-out;
-                                -webkit-transition: all 0.5s ease-in-out;
-                                -moz-transition: all 0.5s ease-in-out;
-                                -o-transition: all 0.5s ease-in-out;
-                            }
+                            transition: all 0.5s ease-in-out;
+                            -webkit-transition: all 0.5s ease-in-out;
+                            -moz-transition: all 0.5s ease-in-out;
+                            -o-transition: all 0.5s ease-in-out;
+                        }
 
-                            .btn-inversion:hover {
-                                background-color: #a80a0a;
-                                color: white;
-                                font-weight: 100;
-                                border: 1px solid #a80a0a;
-                            }
+                        .btn-inversion:hover {
+                            background-color: #a80a0a;
+                            color: white;
+                            font-weight: 100;
+                            border: 1px solid #a80a0a;
+                        }
                         </style>
 
                         <div class="container d-flex justify-content-center" style="margin: 70px 0 50px 0;">
@@ -520,80 +520,80 @@ include('head.php');
                                     aria-label="Close"></button>
                             </div>
 
-                            <!-- Form -->
                             <form action="Nuevo_Contrato.php" method="post">
                                 <div class="modal-body">
 
                                     <div class="mb-3">
                                         <label for="idCliente" class="form-label">Cliente</label>
-                                        <select class="form-select" aria-label="Selector" id="selector" name="idCliente"
-                                            required>
+                                        <select class="form-select" aria-label="Selector" id="selectorClienteNuevo"
+                                            name="idCliente" required>
                                             <option value="" selected>Selecciona una opción</option>
-
                                             <?php
-                                            // Asegúrate de que $ListadoClientes contiene datos antes de procesarlo
-                                            if (!empty($ListadoClientes)) {
-                                                $selected = '';
-                                                for ($i = 0; $i < $CantidadClientes; $i++) {
-                                                    // Lógica para verificar si el grupo debe estar seleccionado
-                                                    $selected = (!empty($_POST['idCliente']) && $_POST['idCliente'] == $ListadoClientes[$i]['idCliente']) ? 'selected' : '';
-                                                    echo "<option value='{$ListadoClientes[$i]['idCliente']}' $selected> 
-                                                        {$ListadoClientes[$i]['apellidoCliente']} {$ListadoClientes[$i]['nombreCliente']} ({$ListadoClientes[$i]['dniCliente']}) <br> 
-                                                        TEL: {$ListadoClientes[$i]['telefonoCliente']} 
-                                                    </option>";
-                                                }
-                                            } else {
-                                                echo "<option value=''>No se encontraron clientes</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                    <!-- 
-                                    <div class="mb-3">
-                                        <label for="numreserva" class="form-label">Número de reserva</label>
-                                        <input type="text" class="form-control" id="numreserva" name="numreserva" required>
-                                    </div>
-                                    -->
-
-                                    <div class="mb-3">
-                                        <label for="idVehiculo" class="form-label">Vehículo</label>
-                                        <select class="form-select" aria-label="Selector" id="selector"
-                                            name="idVehiculo" required>
-                                            <option value="" selected>Selecciona una opción</option>
-
-                                            <?php
-                                            // Asegúrate de que $ListadoVehiculos contiene datos antes de procesarlo
-                                            if (!empty($ListadoVehiculos)) {
-                                                $selected = '';
-                                                for ($i = 0; $i < $CantidadVehiculos; $i++) {
-                                                    // Lógica para verificar si el grupo debe estar seleccionado
-                                                    $selected = (!empty($_POST['idVehiculo']) && $_POST['idVehiculo'] == $ListadoVehiculos[$i]['IdVehiculo']) ? 'selected' : '';
-                                                    echo "<option value='{$ListadoVehiculos[$i]['IdVehiculo']}' $selected> {$ListadoVehiculos[$i]['matricula']} - {$ListadoVehiculos[$i]['modelo']} - {$ListadoVehiculos[$i]['grupo']}  </option>";
-                                                }
-                                            } else {
-                                                echo "<option value=''>No se encontraron vehículos</option>";
-                                            }
-                                            ?>
+                            // Lógica PHP para Clientes (no se toca)
+                            if (!empty($ListadoClientes)) {
+                                $selected = '';
+                                for ($i = 0; $i < $CantidadClientes; $i++) {
+                                    $selected = (!empty($_POST['idCliente']) && $_POST['idCliente'] == $ListadoClientes[$i]['idCliente']) ? 'selected' : '';
+                                    echo "<option value='{$ListadoClientes[$i]['idCliente']}' $selected> 
+                                        {$ListadoClientes[$i]['apellidoCliente']} {$ListadoClientes[$i]['nombreCliente']} ({$ListadoClientes[$i]['dniCliente']}) <br> 
+                                        TEL: {$ListadoClientes[$i]['telefonoCliente']} 
+                                    </option>";
+                                }
+                            } else {
+                                echo "<option value=''>No se encontraron clientes</option>";
+                            }
+                            ?>
                                         </select>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="fecharetiro" class="form-label">Fecha de Retiro</label>
-                                        <input type="date" class="form-control" id="fecharetiro" name="fecharetiro"
-                                            value="" required>
+                                        <label for="idVehiculoNuevo" class="form-label">Vehículo</label>
+                                        <select class="form-select" aria-label="Selector" id="idVehiculoNuevo"
+                                            name="idVehiculo" required onchange="obtenerPrecioSugeridoContratoNuevo()">
+                                            <option value="" selected>Selecciona una opción</option>
+
+                                            <?php
+                            // Lógica PHP para Vehículos (no se toca)
+                            if (!empty($ListadoVehiculos)) {
+                                $selected = '';
+                                for ($i = 0; $i < $CantidadVehiculos; $i++) {
+                                    $selected = (!empty($_POST['idVehiculo']) && $_POST['idVehiculo'] == $ListadoVehiculos[$i]['IdVehiculo']) ? 'selected' : '';
+                                    echo "<option value='{$ListadoVehiculos[$i]['IdVehiculo']}' $selected> {$ListadoVehiculos[$i]['matricula']} - {$ListadoVehiculos[$i]['modelo']} - {$ListadoVehiculos[$i]['grupo']}  </option>";
+                                }
+                            } else {
+                                echo "<option value=''>No se encontraron vehículos</option>";
+                            }
+                            ?>
+                                        </select>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="fechadevolucion" class="form-label">Fecha de Devolución</label>
-                                        <input type="date" class="form-control" id="fechadevolucion"
-                                            name="fechadevolucion" value="" required>
+                                        <label for="fechaRetiroContratoNuevo" class="form-label">Fecha de Retiro</label>
+                                        <input type="date" class="form-control" id="fechaRetiroContratoNuevo"
+                                            name="fecharetiro" value="" required
+                                            onchange="calcularTotalContratoNuevo()">
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="preciopordia" class="form-label">Precio por día</label>
+                                        <label for="fechaDevolucionContratoNuevo" class="form-label">Fecha de
+                                            Devolución</label>
+                                        <input type="date" class="form-control" id="fechaDevolucionContratoNuevo"
+                                            name="fechadevolucion" value="" required
+                                            onchange="calcularTotalContratoNuevo()">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="precioPorDiaNuevo" class="form-label">Precio por día</label>
                                         <input type="number" min="20" max="1000" step="0.01"
                                             title="Mínimo 20 USD y máximo 1000 USD" class="form-control"
-                                            id="preciopordia" name="precioporDia" required>
+                                            id="precioPorDiaNuevo" name="precioporDia" required
+                                            oninput="calcularTotalContratoNuevo()">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="montoTotalNuevo" class="form-label">Monto Total</label>
+                                        <input type="number" class="form-control" id="montoTotalNuevo" name="MontoTotal"
+                                            readonly placeholder="Calculado Automáticamente" required>
                                     </div>
 
                                 </div>
@@ -618,93 +618,199 @@ include('head.php');
 
     <!-- Script que actualiza el href según el año seleccionado -->
     <script>
-        const select = document.getElementById("anioSeleccionado");
-        const link = document.getElementById("reporteLink");
+    const select = document.getElementById("anioSeleccionado");
+    const link = document.getElementById("reporteLink");
 
-        select.addEventListener("change", function() {
-            const anio = this.value;
-            link.href = `ReporteContratos_FrecMensuales.php?anio=${anio}`;
-        });
+    select.addEventListener("change", function() {
+        const anio = this.value;
+        link.href = `ReporteContratos_FrecMensuales.php?anio=${anio}`;
+    });
     </script>
 
     <script>
-        // Efecto sobre la imagen del reporte
-        window.onload = function() {
+    // Efecto sobre la imagen del reporte
+    window.onload = function() {
 
-            const imageElement = document.querySelector('.hoverImage');
+        const imageElement = document.querySelector('.hoverImage');
 
-            if (imageElement) {
-                const handleMouseMove = (e) => {
-                    let rect = imageElement.getBoundingClientRect();
-                    let x = e.clientX - rect.left;
-                    let y = e.clientY - rect.top;
+        if (imageElement) {
+            const handleMouseMove = (e) => {
+                let rect = imageElement.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                let y = e.clientY - rect.top;
 
-                    let dx = (x - rect.width / 2) / (rect.width / 2);
-                    let dy = (y - rect.height / 2) / (rect.height / 2);
+                let dx = (x - rect.width / 2) / (rect.width / 2);
+                let dy = (y - rect.height / 2) / (rect.height / 2);
 
-                    imageElement.style.transform =
-                        `perspective(500px) rotateY(${dx * 5}deg) rotateX(${-dy * 5}deg)`;
-                };
+                imageElement.style.transform =
+                    `perspective(500px) rotateY(${dx * 5}deg) rotateX(${-dy * 5}deg)`;
+            };
 
-                const handleMouseLeave = () => {
-                    imageElement.style.transform = "";
-                };
+            const handleMouseLeave = () => {
+                imageElement.style.transform = "";
+            };
 
-                imageElement.addEventListener('mousemove', handleMouseMove);
-                imageElement.addEventListener('mouseleave', handleMouseLeave);
-            }
+            imageElement.addEventListener('mousemove', handleMouseMove);
+            imageElement.addEventListener('mouseleave', handleMouseLeave);
         }
+    }
     </script>
 
     <script>
-        // Desplazamiento vertical al listado luego de consulta
-        function scrollToTable() {
-            localStorage.setItem('scrollToTable', 'true'); // Guardar indicador antes de enviar
-        }
+    // Desplazamiento vertical al listado luego de consulta
+    function scrollToTable() {
+        localStorage.setItem('scrollToTable', 'true'); // Guardar indicador antes de enviar
+    }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('scrollToTable') === 'true') {
-                setTimeout(() => {
-                    document.getElementById('tablaContratosContenedor').scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    localStorage.removeItem('scrollToTable'); // Limpiar indicador después del scroll
-                }, 500);
-            }
+    document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('scrollToTable') === 'true') {
+            setTimeout(() => {
+                document.getElementById('tablaContratosContenedor').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                localStorage.removeItem('scrollToTable'); // Limpiar indicador después del scroll
+            }, 500);
+        }
+    });
+
+    let reservaSeleccionada = null;
+
+    // Selección de fila en la Tabla de Contratos al hacer clic en la misma
+    document.querySelectorAll('#tablaContratos .contrato').forEach(row => {
+        row.addEventListener('click', () => {
+            // Desmarcar cualquier fila previamente seleccionada
+            document.querySelectorAll('.contrato').forEach(row => row.classList.remove('table-active'));
+            // Marcar la fila seleccionada
+            row.classList.add('table-active');
+            reservaSeleccionada = row.dataset.id;
+            // Habilitar los botones
+            document.getElementById('btnModificar').disabled = false;
+            document.getElementById('btnEliminar').disabled = false;
         });
+    });
 
-        let reservaSeleccionada = null;
+    // Función para redirigir a ModificarCliente.php con el ID del cliente seleccionado
+    function modificarContrato() {
+        if (reservaSeleccionada) {
+            window.location.href = 'ModificarContrato.php?id=' + reservaSeleccionada;
+        }
+    }
 
-        // Selección de fila en la Tabla de Contratos al hacer clic en la misma
-        document.querySelectorAll('#tablaContratos .contrato').forEach(row => {
-            row.addEventListener('click', () => {
-                // Desmarcar cualquier fila previamente seleccionada
-                document.querySelectorAll('.contrato').forEach(row => row.classList.remove('table-active'));
-                // Marcar la fila seleccionada
-                row.classList.add('table-active');
-                reservaSeleccionada = row.dataset.id;
-                // Habilitar los botones
-                document.getElementById('btnModificar').disabled = false;
-                document.getElementById('btnEliminar').disabled = false;
-            });
-        });
-
-        // Función para redirigir a ModificarCliente.php con el ID del cliente seleccionado
-        function modificarContrato() {
-            if (reservaSeleccionada) {
-                window.location.href = 'ModificarContrato.php?id=' + reservaSeleccionada;
+    // Función para redirigir a EliminarCliente.php con el ID del cliente seleccionado
+    function eliminarContrato() {
+        if (reservaSeleccionada) {
+            if (confirm('¿Estás seguro de que quieres eliminar este contrato?')) {
+                window.location.href = 'EliminarContrato.php?id=' + reservaSeleccionada;
             }
         }
+    }
 
-        // Función para redirigir a EliminarCliente.php con el ID del cliente seleccionado
-        function eliminarContrato() {
-            if (reservaSeleccionada) {
-                if (confirm('¿Estás seguro de que quieres eliminar este contrato?')) {
-                    window.location.href = 'EliminarContrato.php?id=' + reservaSeleccionada;
-                }
-            }
+    // ===================================================================
+// FUNCIONES DE CÁLCULO Y AJAX PARA NUEVO CONTRATO
+// ===================================================================
+
+/**
+ * Calcula la diferencia en días entre dos fechas (mínimo 1 día si las fechas son iguales).
+ */
+function diferenciaEnDias(fecha1, fecha2) {
+    const date1 = new Date(fecha1);
+    const date2 = new Date(fecha2);
+    
+    // Si las fechas no son válidas o la fecha fin es anterior a la inicio, retorna 0
+    if (isNaN(date1.getTime()) || isNaN(date2.getTime()) || date2 < date1) {
+        return 0;
+    }
+
+    const diffTime = Math.abs(date2 - date1);
+    // Calcula la diferencia en días. Usa Math.round para evitar problemas con cambios de hora/DST.
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
+    
+    // Retorna la diferencia, asegurando que sea al menos 1 día si se selecciona el mismo día.
+    return (diffDays > 0) ? diffDays : 1; 
+}
+
+/**
+ * Calcula el monto total del contrato: Precio * Días.
+ */
+function calcularTotalContratoNuevo() {
+    // IDs de los campos en el formulario del modal de Nuevo Contrato
+    const inputPrecio = document.getElementById('precioPorDiaNuevo');
+    const inputInicio = document.getElementById('fechaRetiroContratoNuevo'); 
+    const inputFin = document.getElementById('fechaDevolucionContratoNuevo'); 
+    const inputTotal = document.getElementById('montoTotalNuevo');
+
+    if (!inputPrecio || !inputInicio || !inputFin || !inputTotal) {
+        return; 
+    }
+
+    const precio = parseFloat(inputPrecio.value);
+    const fechaInicio = inputInicio.value;
+    const fechaFin = inputFin.value;
+
+    if (isNaN(precio) || precio <= 0 || !fechaInicio || !fechaFin) {
+        inputTotal.value = '0.00';
+        return;
+    }
+
+    const dias = diferenciaEnDias(fechaInicio, fechaFin);
+
+    if (dias > 0) {
+        const total = precio * dias;
+        inputTotal.value = total.toFixed(2);
+    } else {
+        inputTotal.value = '0.00';
+    }
+}
+
+
+/**
+ * Obtiene el precio sugerido por AJAX al cambiar el vehículo.
+ */
+function obtenerPrecioSugeridoContratoNuevo() {
+    // ID del select de vehículo (debe coincidir con el HTML modificado)
+    const selectVehiculo = document.getElementById('idVehiculoNuevo'); 
+    const inputPrecio = document.getElementById('precioPorDiaNuevo');
+    const idVehiculo = selectVehiculo.value;
+
+    if (!idVehiculo || idVehiculo === "") {
+        inputPrecio.value = '';
+        calcularTotalContratoNuevo(); 
+        return;
+    }
+
+    // Lógica AJAX a obtener_precio_grupo.php
+    const formData = new FormData();
+    formData.append('idVehiculo', idVehiculo);
+
+    fetch('obtener_precio_grupo.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error de red al obtener el precio: ' + response.statusText);
         }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Asignar el precio devuelto y forzar 2 decimales
+            inputPrecio.value = parseFloat(data.precio).toFixed(2);
+        } else {
+            console.error('Error del servidor:', data.message);
+            inputPrecio.value = ''; 
+        }
+        // Llamar al cálculo de total después de obtener (o fallar al obtener) el precio
+        calcularTotalContratoNuevo(); 
+    })
+    .catch(error => {
+        console.error('Error de la solicitud AJAX:', error);
+        inputPrecio.value = '';
+        alert('Ocurrió un error al obtener el precio sugerido para el contrato.');
+        calcularTotalContratoNuevo();
+    });
+}
     </script>
 
     <!-- Bootstrap JS -->

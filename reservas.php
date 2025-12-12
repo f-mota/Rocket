@@ -382,21 +382,43 @@ include('head.php');
                                     <input type="hidden" id="idCliente" name="idCliente" value="">
 
                                     <div class="mb-3">
-                                        <label for="documentoCliente" class="form-label">Documento del Cliente *</label>
+                                        <label for="documentoCliente" class="form-label">Buscar Cliente (por Documento o Apellido)</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="documentoCliente"
-                                                name="documentoCliente" required
-                                                onchange="autocompletarCliente(this.value)">
-                                            <button class="btn btn-outline-secondary" type="button"
-                                                data-bs-toggle="modal" data-bs-target="#buscarClienteModal">
-                                                <i class="fas fa-search"></i>
-                                            </button>
+                                                name="documentoCliente"
+                                                onkeyup="buscarClienteEnModal(this.value)"
+                                                placeholder="Escribe para buscar..."
+                                                autocomplete="off">
                                         </div>
+                                        <!-- Contenedor para mostrar los resultados de la búsqueda -->
+                                        <div id="cliente-search-results" class="list-group mt-1 position-absolute" style="z-index: 1056;"></div>
                                     </div>
+
+                                    <!-- Estilos para alinear y dar formato a los resultados de búsqueda de clientes -->
+                                    <style>
+                                        #cliente-search-results .list-group-item {
+                                            display: flex;
+                                            flex-direction: column;
+                                            justify-content: center;
+                                            line-height: 1.3; /* Ajusta el espaciado entre líneas */
+                                        }
+                                        #cliente-search-results .list-group-item strong {
+                                            /* Hereda la fuente y asegura la negrita */
+                                            font-family: inherit;
+                                            font-weight: 700;
+                                        }
+                                        #cliente-search-results .list-group-item small {
+                                            /* Hereda la fuente, ajusta tamaño y color */
+                                            font-family: inherit;
+                                            font-size: 0.85em;
+                                            color: #6c757d; /* Color gris secundario */
+                                            margin-top: 2px; /* Añade un pequeño margen superior para separar del nombre */
+                                        }
+                                    </style>
 
                                     <div class="mb-3">
                                         <label for="apellidoCliente" class="form-label">Apellido *</label>
-                                        <input type="text" class="form-control" id="apellidoCliente"
+                                        <input type="text" class="form-control bg-light" id="apellidoCliente"
                                             name="apellidoCliente" required>
                                     </div>
 
@@ -464,50 +486,6 @@ include('head.php');
                                     <button type="submit" class="btn btn-primary">Guardar</button>
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal fade" id="buscarClienteModal" tabindex="-1" aria-labelledby="buscarClienteModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="buscarClienteModalLabel">Buscar Cliente</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row g-3 mb-3">
-                                    <div class="col-md-6">
-                                        <label for="searchDoc" class="form-label">Buscar por Documento</label>
-                                        <input type="text" class="form-control" id="searchDoc"
-                                            onkeyup="buscarClientes()">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="searchApellido" class="form-label">Buscar por Apellido</label>
-                                        <input type="text" class="form-control" id="searchApellido"
-                                            onkeyup="buscarClientes()">
-                                    </div>
-                                </div>
-                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                    <table class="table table-striped table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Documento</th>
-                                                <th>Apellido</th>
-                                                <th>Nombre</th>
-                                                <th>Acción</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="resultadoBusquedaClientes">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -759,89 +737,59 @@ include('head.php');
         }
     }
 
-    // Lógica de Clientes para el Modal de Nueva Reserva (omito por simplicidad, se mantiene igual)
+    // --- NUEVA LÓGICA DE BÚSQUEDA DE CLIENTES (SIN MODAL ANIDADO) ---
 
-    function autocompletarCliente(documento) {
-        if (documento.trim() === '') {
-            document.getElementById('idCliente').value = '';
-            document.getElementById('apellidoCliente').value = '';
-            document.getElementById('nombreCliente').value = '';
+    /**
+     * Busca clientes en tiempo real y muestra los resultados en una lista desplegable.
+     */
+    function buscarClienteEnModal(query) {
+        const resultadosDiv = document.getElementById('cliente-search-results');
+        if (query.trim().length < 2) { // Empezar a buscar después de 2 caracteres
+            resultadosDiv.innerHTML = '';
             return;
         }
 
-        // Llamada AJAX al servidor para buscar cliente por DNI/Documento
-        fetch('funciones/Buscar_Cliente.php?documento=' + encodeURIComponent(documento))
+        // Usamos el mismo endpoint, pero ahora pasamos un parámetro genérico 'query'
+        fetch(`funciones/Buscar_Cliente.php?query=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(data => {
-                if (data.encontrado) {
-                    document.getElementById('idCliente').value = data.id;
-                    document.getElementById('apellidoCliente').value = data.apellido;
-                    document.getElementById('nombreCliente').value = data.nombre;
-                } else {
-                    // Limpiar campos para que el usuario ingrese el nuevo cliente
-                    document.getElementById('idCliente').value = '';
-                    document.getElementById('apellidoCliente').value = '';
-                    document.getElementById('nombreCliente').value = '';
-                }
-            })
-            .catch(error => console.error('Error al autocompletar cliente:', error));
-    }
-
-    function buscarClientes() {
-        const searchDoc = document.getElementById('searchDoc').value.trim();
-        const searchApellido = document.getElementById('searchApellido').value.trim();
-        const resultadosTbody = document.getElementById('resultadoBusquedaClientes');
-
-        if (searchDoc === '' && searchApellido === '') {
-            resultadosTbody.innerHTML =
-                '<tr><td colspan="4" class="text-center">Ingrese un Documento o Apellido para buscar.</td></tr>';
-            return;
-        }
-
-        // Llamada AJAX al servidor para buscar clientes
-        fetch(
-                `funciones/Buscar_Cliente.php?searchDoc=${encodeURIComponent(searchDoc)}&searchApellido=${encodeURIComponent(searchApellido)}`)
-            .then(response => response.json())
-            .then(data => {
-                resultadosTbody.innerHTML = '';
+                resultadosDiv.innerHTML = ''; // Limpiar resultados anteriores
                 if (data.length > 0) {
                     data.forEach(cliente => {
-                        const newRow = `
-                                <tr>
-                                    <td>${cliente.documento}</td>
-                                    <td>${cliente.apellido}</td>
-                                    <td>${cliente.nombre}</td>
-                                    <td><button type="button" class="btn btn-sm btn-success" onclick="seleccionarCliente('${cliente.id}', '${cliente.documento}', '${cliente.apellido}', '${cliente.nombre}')">Seleccionar</button></td>
-                                </tr>
-                            `;
-                        resultadosTbody.innerHTML += newRow;
+                        // Creamos un elemento 'a' por cada resultado
+                        const item = document.createElement('a');
+                        item.href = '#';
+                        item.classList.add('list-group-item', 'list-group-item-action');
+                        item.innerHTML = `<strong>${cliente.apellido}, ${cliente.nombre}</strong> <br><small>DNI: ${cliente.documento}</small>`;
+                        
+                        // Escapamos las comillas en los nombres/apellidos para evitar errores en el onclick
+                        const safeApellido = cliente.apellido.replace(/'/g, "\\'");
+                        const safeNombre = cliente.nombre.replace(/'/g, "\\'");
+
+                        item.onclick = (e) => {
+                            e.preventDefault();
+                            seleccionarCliente(cliente.id, cliente.documento, safeApellido, safeNombre);
+                        };
+                        resultadosDiv.appendChild(item);
                     });
                 } else {
-                    resultadosTbody.innerHTML =
-                        '<tr><td colspan="4" class="text-center">No se encontraron clientes.</td></tr>';
+                    resultadosDiv.innerHTML = '<span class="list-group-item disabled">No se encontraron clientes. Puede registrarlo.</span>';
                 }
             })
-            .catch(error => {
-                console.error('Error al buscar clientes:', error);
-                resultadosTbody.innerHTML =
-                    '<tr><td colspan="4" class="text-center text-danger">Error al buscar clientes.</td></tr>';
-            });
+            .catch(error => console.error('Error al buscar clientes:', error));
     }
 
+    /**
+     * Rellena los campos del formulario cuando se selecciona un cliente de la lista.
+     */
     function seleccionarCliente(id, documento, apellido, nombre) {
-        // Rellenar los campos del formulario principal
         document.getElementById('idCliente').value = id;
         document.getElementById('documentoCliente').value = documento;
         document.getElementById('apellidoCliente').value = apellido;
         document.getElementById('nombreCliente').value = nombre;
 
-        // Cerrar el modal de búsqueda
-        var buscarModal = bootstrap.Modal.getInstance(document.getElementById('buscarClienteModal'));
-        buscarModal.hide();
-
-        // Abrir el modal de nueva reserva
-        var reservaModal = new bootstrap.Modal(document.getElementById('nuevaReserva'));
-        reservaModal.show();
+        // Ocultar la lista de resultados
+        document.getElementById('cliente-search-results').innerHTML = '';
     }
 
     function obtenerPrecioSugerido() {
@@ -890,11 +838,6 @@ include('head.php');
 }
 
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-
 </body>
 
 </html>

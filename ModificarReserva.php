@@ -141,8 +141,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
 
     $idCliente = $reserva['IDCliente'];
     $numreserva = $reserva['NumeroReserva'];
-    $idVehiculo = $_POST['VehiculosDisponibles'];
-    $precioDiarioReserva = $reserva['PrecioDiario'];
+    $idVehiculo = $_POST['VehiculosDisponibles'];  
+    $precioDiarioReserva = $_POST['PrecioPorDia'];
 
     
     // Validaciones de fechas
@@ -212,7 +212,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
         $ModificacionReserva = "UPDATE `reservas-vehiculos` 
                                 SET fechaReserva = NOW(), 
                                     fechaInicioReserva = '$fecharetiro', 
-                                    FechaFinReserva = '$fechadevolucion', 
+                                    FechaFinReserva = '$fechadevolucion',
+                                    precioPorDiaReserva = '$precioDiarioReserva', 
                                     cantidadDiasReserva = '$diferenciaDias',
                                     totalReserva = '$montoTotal',
                                     idCliente = $idCliente, 
@@ -281,27 +282,27 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
         include('topNavBar.php'); 
         
         ?>
-        
-        <div class="p-5 mb-4 bg-white shadow-sm" 
-             style="margin-top: 150px; margin-bottom: 100px; margin-left: 1%; max-width: 98%; border: 1px solid #444444; border-radius: 14px;">
-            
+
+        <div class="p-5 mb-4 bg-white shadow-sm"
+            style="margin-top: 150px; margin-bottom: 100px; margin-left: 1%; max-width: 98%; border: 1px solid #444444; border-radius: 14px;">
+
             <?php 
 
             if ($mensajeError) { ?>
-                <div class="alert alert-danger mt-3"> 
-                    <?php 
+            <div class="alert alert-danger mt-3">
+                <?php 
                         echo "Error al intentar modificar el vehículo. <br><br>"; 
                         echo $mensajeError; 
-                    ?>        
-                </div>
+                    ?>
+            </div>
             <?php } 
             
             if (isset($_GET['mensaje'])) { ?>
-                <div class="alert alert-success mt-3"> 
-                    <?php 
+            <div class="alert alert-success mt-3">
+                <?php 
                         echo htmlspecialchars($_GET['mensaje']); 
-                    ?>        
-                </div>
+                    ?>
+            </div>
             <?php } 
 
             ?>
@@ -322,9 +323,10 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
                     $alerta = "success";
                     $mensajeAlerta = "Todos los campos son obligatorios para la modificación.";
                 }
-            ?> 
-            <div class="alert alert-<?php echo $alerta; ?> mt-5"> 
-                <br><h6 class='mb-4 text-secondary' ><?php echo $mensajeAlerta; ?></h6>
+            ?>
+            <div class="alert alert-<?php echo $alerta; ?> mt-5">
+                <br>
+                <h6 class='mb-4 text-secondary'><?php echo $mensajeAlerta; ?></h6>
             </div><br><br>
 
             <form method="POST" onsubmit="return validarFechasModificacion()">
@@ -332,35 +334,34 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
 
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="NombreCliente" 
+                    <input type="text" class="form-control" id="nombre" name="NombreCliente"
                         value="<?php echo htmlspecialchars(trim($reserva['NombreCliente'])); ?> " disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="apellido" class="form-label">Apellido</label>
-                    <input type="text" class="form-control" id="apellido" name="ApellidoCliente" 
+                    <input type="text" class="form-control" id="apellido" name="ApellidoCliente"
                         value="<?php echo htmlspecialchars(trim($reserva['ApellidoCliente'])); ?>" disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="documento" class="form-label">Documento</label>
-                    <input type="text" class="form-control" id="documento" name="DocumentoCliente" 
+                    <input type="text" class="form-control" id="documento" name="DocumentoCliente"
                         value="<?php echo htmlspecialchars(trim($reserva['DocumentoCliente'])); ?> " disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="numero" class="form-label">Número de Reserva</label>
-                    <input type="text" class="form-control" id="numero" name="NumeroReserva" 
+                    <input type="text" class="form-control" id="numero" name="NumeroReserva"
                         value="<?php echo htmlspecialchars(trim($reserva['NumeroReserva'])); ?> " disabled>
                 </div>
 
                 <div class="mb-3">
                     <label for="vehiculosdisponibles" class="form-label"> Vehículos disponibles </label>
-                    <select class="form-select" aria-label="Selector" id="vehiculosdisponibles" 
-                            name="VehiculosDisponibles" 
-                            <?php echo $disabledAttr; ?>
-                            <?php if (!$isDisabledGeneral) { echo "required"; } ?>
-                    >
+                    <select class="form-select" aria-label="Selector" id="vehiculosdisponibles"
+                        name="VehiculosDisponibles" <?php echo $disabledAttr; ?>
+                        <?php if (!$isDisabledGeneral) { echo "required"; } ?>
+                        onchange="obtenerPrecioSugeridoModificacion()">
                         <option value="" selected>Selecciona una opción</option>
 
                         <?php 
@@ -384,49 +385,54 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
 
                 <div class="mb-3">
                     <label for="fecharetiro" class="form-label">Fecha de Retiro</label>
-                    <input type="date" class="form-control" id="fecharetiro" name="FechaRetiro" 
-                        value="<?php echo htmlspecialchars($reserva['FechaRetiro']); ?>"  
-                        <?php echo $disabledAttr; ?>
-                        <?php if (!$isDisabledGeneral) { echo "required"; } ?>
-                        
-                    >
+                    <input type="date" class="form-control" id="fecharetiro" name="FechaRetiro"
+                        value="<?php echo htmlspecialchars($reserva['FechaRetiro']); ?>" <?php echo $disabledAttr; ?>
+                        <?php if (!$isDisabledGeneral) { echo "required"; } ?>>
                 </div>
 
                 <div class="mb-3">
                     <label for="fechadevolucion" class="form-label">Fecha de Devolución</label>
-                    <input type="date" class="form-control" id="fechadevolucion" name="FechaDevolucion" 
-                        value="<?php echo htmlspecialchars($reserva['FechaDevolucion']); ?>" 
-                        <?php echo $disabledAttr; ?>
-                        <?php if (!$isDisabledGeneral) { echo "required"; } ?>
-                        
-                    >
+                    <input type="date" class="form-control" id="fechadevolucion" name="FechaDevolucion"
+                        value="<?php echo htmlspecialchars($reserva['FechaDevolucion']); ?>"
+                        <?php echo $disabledAttr; ?> <?php if (!$isDisabledGeneral) { echo "required"; } ?>>
+                </div>
+
+                <div class="mb-3 col-md-4">
+                    <label for="inputPrecioPorDiaMod" class="form-label">Precio por Día (Modificable)</label>
+                    <input type="number" min="20" max="1000" step="0.01" class="form-control" id="inputPrecioPorDiaMod"
+                        name="PrecioPorDia" value="<?php echo $reserva['PrecioDiario']; ?>" required
+                        oninput="calcularTotalReservaModificacion()">
+                </div>
+
+                <div class="mb-3 col-md-4">
+                    <label for="inputTotalReservaMod" class="form-label">Monto Total</label>
+                    <input type="number" class="form-control" id="inputTotalReservaMod" name="MontoTotal" readonly
+                        placeholder="Calculado Automáticamente">
                 </div>
 
                 <div class="d-flex justify-content-start gap-2 mt-5">
-                    
+
                     <?php if (!$esCancelada): ?>
-                        
-                        <button type="submit" class="btn btn-primary" name="BotonModificarReserva" 
-                                value="modificandoReserva"
-                                <?php echo $disabledAttr; ?>
-                        >
-                            Guardar Cambios
-                        </button>
-                        
-                
-                        
+
+                    <button type="submit" class="btn btn-primary" name="BotonModificarReserva"
+                        value="modificandoReserva" <?php echo $disabledAttr; ?>>
+                        Guardar Cambios
+                    </button>
+
+
+
                     <?php else: ?>
-                        
-                        <button type="submit" class="btn btn-success" name="BotonReactivarReserva" 
-                                value="reactivandoReserva">
-                            Reactivar Reserva
-                        </button>
+
+                    <button type="submit" class="btn btn-success" name="BotonReactivarReserva"
+                        value="reactivandoReserva">
+                        Reactivar Reserva
+                    </button>
 
                     <?php endif; ?>
 
                     <a href="reservas.php" class="btn btn-secondary">Volver</a>
                 </div>
-                </form>
+            </form>
 
         </div>
 
@@ -437,46 +443,151 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
     </div>
 
     <script>
-        const MAX_DAYS = 30;
+    const MAX_DAYS = 30;
 
-        function validarFechasModificacion() {
-            const fechaRetiroInput = document.getElementById('fecharetiro');
-            const fechaDevolucionInput = document.getElementById('fechadevolucion');
-            
-            if (!fechaRetiroInput.value || !fechaDevolucionInput.value) {
-                alert('Ambas fechas son obligatorias.');
-                return false;
-            }
+    function validarFechasModificacion() {
+        const fechaRetiroInput = document.getElementById('fecharetiro');
+        const fechaDevolucionInput = document.getElementById('fechadevolucion');
 
-            const fechaRetiro = new Date(fechaRetiroInput.value);
-            const fechaDevolucion = new Date(fechaDevolucionInput.value);
-
-            if (fechaDevolucion <= fechaRetiro) {
-                alert('La fecha de devolución debe ser posterior a la fecha de retiro.');
-                return false;
-            }
-
-            const diffTime = Math.abs(fechaDevolucion - fechaRetiro);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays > MAX_DAYS) {
-                alert(`La duración máxima de la reserva es de ${MAX_DAYS} días. Su selección es de ${diffDays} días.`);
-                return false;
-            }
-
-            return true; // Envía el formulario si todo es correcto
+        if (!fechaRetiroInput.value || !fechaDevolucionInput.value) {
+            alert('Ambas fechas son obligatorias.');
+            return false;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const fechaRetiroInput = document.getElementById('fecharetiro');
-            const fechaDevolucionInput = document.getElementById('fechadevolucion');
+        const fechaRetiro = new Date(fechaRetiroInput.value);
+        const fechaDevolucion = new Date(fechaDevolucionInput.value);
 
-            if(fechaRetiroInput && fechaDevolucionInput) {
-                fechaRetiroInput.addEventListener('change', () => { fechaDevolucionInput.min = fechaRetiroInput.value; });
-            }
-        });
+        if (fechaDevolucion <= fechaRetiro) {
+            alert('La fecha de devolución debe ser posterior a la fecha de retiro.');
+            return false;
+        }
 
+        const diffTime = Math.abs(fechaDevolucion - fechaRetiro);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays > MAX_DAYS) {
+            alert(`La duración máxima de la reserva es de ${MAX_DAYS} días. Su selección es de ${diffDays} días.`);
+            return false;
+        }
+
+        return true; // Envía el formulario si todo es correcto
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const fechaRetiroInput = document.getElementById('fecharetiro');
+        const fechaDevolucionInput = document.getElementById('fechadevolucion');
+
+        if (fechaRetiroInput && fechaDevolucionInput) {
+            fechaRetiroInput.addEventListener('change', () => {
+                fechaDevolucionInput.min = fechaRetiroInput.value;
+            });
+        }
+    });
+
+    function diferenciaEnDias(fecha1, fecha2) {
+        const date1 = new Date(fecha1);
+        const date2 = new Date(fecha2);
+
+        if (isNaN(date1.getTime()) || isNaN(date2.getTime()) || date2 < date1) {
+            return 0;
+        }
+
+        const diffTime = Math.abs(date2 - date1);
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+        return diffDays;
+    }
+
+    /**
+     * 1. Calcula el monto total de la reserva: Precio * Días.
+     */
+    function calcularTotalReservaModificacion() {
+        // IDs de los campos en el formulario de ModificarReserva.php
+        const inputPrecio = document.getElementById('inputPrecioPorDiaMod');
+        const inputRetiro = document.getElementById('fecharetiro');
+        const inputDevolucion = document.getElementById('fechadevolucion');
+        const inputTotal = document.getElementById('inputTotalReservaMod');
+
+        if (!inputPrecio || !inputRetiro || !inputDevolucion || !inputTotal) {
+            return;
+        }
+
+        const precio = parseFloat(inputPrecio.value);
+        const fechaRetiro = inputRetiro.value;
+        const fechaDevolucion = inputDevolucion.value;
+
+        if (isNaN(precio) || precio <= 0 || !fechaRetiro || !fechaDevolucion) {
+            inputTotal.value = '0.00';
+            return;
+        }
+
+        const dias = diferenciaEnDias(fechaRetiro, fechaDevolucion);
+
+        if (dias > 0) {
+            const total = precio * dias;
+            inputTotal.value = total.toFixed(2);
+        } else {
+            inputTotal.value = '0.00';
+        }
+    }
+
+
+    /**
+     * 2. Obtiene el precio sugerido por AJAX al cambiar el vehículo.
+     */
+    function obtenerPrecioSugeridoModificacion() {
+        const selectVehiculo = document.getElementById('vehiculosdisponibles');
+        const inputPrecio = document.getElementById('inputPrecioPorDiaMod');
+        const idVehiculo = selectVehiculo.value;
+
+        if (!idVehiculo || idVehiculo === "") {
+            inputPrecio.value = '';
+            calcularTotalReservaModificacion();
+            return;
+        }
+
+        // Lógica AJAX (reutilizando obtener_precio_grupo.php)
+        const formData = new FormData();
+        formData.append('idVehiculo', idVehiculo);
+
+        fetch('obtener_precio_grupo.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error de red al obtener el precio: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    inputPrecio.value = parseFloat(data.precio).toFixed(2);
+                } else {
+                    console.error('Error del servidor:', data.message);
+                    inputPrecio.value = '';
+                }
+                calcularTotalReservaModificacion();
+            })
+            .catch(error => {
+                console.error('Error de la solicitud AJAX:', error);
+                inputPrecio.value = '';
+                alert('Ocurrió un error al obtener el precio sugerido para la modificación.');
+                calcularTotalReservaModificacion();
+            });
+    }
+
+
+    // ===================================================================
+    // INICIALIZACIÓN Y FUNCIONES ORIGINALES
+    // ===================================================================
+
+    // Inicializa el cálculo del total con los datos de la reserva actual al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(calcularTotalReservaModificacion, 100);
+    });
     </script>
 
 </body>
+
 </html>

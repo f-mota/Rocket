@@ -398,7 +398,7 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
                 </div>
 
                 <div class="mb-3 col-md-4">
-                    <label for="inputPrecioPorDiaMod" class="form-label">Precio por Día (Modificable)</label>
+                    <label for="inputPrecioPorDiaMod" class="form-label">Precio por Día</label>
                     <input type="number" min="20" max="1000" step="0.01" class="form-control" id="inputPrecioPorDiaMod"
                         name="PrecioPorDia" value="<?php echo $reserva['PrecioDiario']; ?>" required
                         oninput="calcularTotalReservaModificacion()">

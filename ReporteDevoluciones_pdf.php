@@ -1,205 +1,268 @@
 <?php
 session_start();
 
+// -------------------------------------------------------------------------
+// 1. INICIALIZACIÓN Y VALIDACIÓN DE DATOS
+// -------------------------------------------------------------------------
+
 require_once 'funciones/corroborar_usuario.php'; 
 Corroborar_Usuario(); 
 
+// Inicio del buffer de salida para capturar todo el HTML
 ob_start();
 
 require_once "conn/conexion.php";
 $conexion = ConexionBD();
 
-
 // Generación del listado de Devolucion
 require_once 'funciones/CRUD-Devolucion.php';
-$ListadoDevolucion = Listar_Devolucion($conexion);
+$ListadoDevolucion = Listar_Devolucion($conexion); 
 $CantidadDevolucion = count($ListadoDevolucion);
-
-include('head.php');
-
-?>
-
-<body class="bg-light" style="margin-top: 2%; margin-bottom: 0;">
-
-    <!-- Logo Header --> <!-- CUIDADO: Arroja error fatal si no tienen instalada la extensión "GD" de PHP en XAMPP. Para resolver el error, seguir instructivo: https://www.geeksforgeeks.org/how-to-install-php-gd-in-windows/ -->  
-    <div style="margin: 0 auto; padding: 0 0 20px 90%;">
-        <span style=""> 
-            <img src="http://<?php echo $_SERVER['HTTP_HOST']; ?>/Proyectos/Rocket/assets/img/logo-red.png" height="20" width="" alt="navbar brand" srcset="" /> 
-        </span>
-    </div>
-    <!-- End Logo Header -->
-
-    <div style="margin: 0 auto; max-width: 100%;">
-        <div class="" style="">
-            
-            <div class="p-5 mb-4 bg-white shadow-sm" 
-                 style="margin: 0; padding: 20px; ">
-
-                <h2 class="mb-4 text-secondary" style="padding-bottom: 10px;">
-                    <strong>Reporte: Listado de Devoluciones de clientes </strong>
-                </h2>
-                
-                <!-- Tabla con reporte de contratos -->
-                <table class="table table-striped table-hover" id="tablaDevolucion">
-                    <thead>
-                        <tr>
-                            <th style="margin: 0 auto; padding: 0 5px 0 0; color: #d45313; font-size: 22px;">
-                                <h3>#</h3>
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Nº Contrato.
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Fecha Dev.
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Hora Dev.
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Cliente
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Vehículo
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Oficina Dev.
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Estado del Vehículo
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Aclaraciones sobre el estado
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Infracciones
-                            </th>
-
-                            <th style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; border-radius: 7px; background-color: #a80a0a; color: white; font-size: 14px;">
-                                Costos por Infracciones
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <?php
-                        $contador = 1; 
-
-                        for ($i=0; $i < $CantidadDevolucion; $i++) { ?>   
-
-                            <tr class='devolucion' data-id='<?php echo $ListadoDevolucion[$i]['IdDevolucion']; ?>' 
-                                onclick="selectRow(this, '<?= $ListadoDevolucion[$i]['IdDevolucion'] ?>')">
-
-                                <td>
-                                    <span style='color: #c7240e; font-size: 17px; margin: 0 auto; padding: 0;'>
-                                        <h4> <?php echo $contador; ?> </h4>
-                                    </span>
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 14px; "> 
-                                    <?php echo $ListadoDevolucion[$i]['IdContrato']; ?>
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 14px;"> 
-                                    <?php echo $ListadoDevolucion[$i]['FechaDevolucion']; ?>
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 14px;"> 
-                                    <?php echo $ListadoDevolucion[$i]['HoraDevolucion']; ?>
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 14px;"> 
-                                    <?php echo "{$ListadoDevolucion[$i]['apellidoCliente']}, {$ListadoDevolucion[$i]['nombreCliente']} </br> DNI: {$ListadoDevolucion[$i]['dniCliente']}"; ?>
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 14px;"> 
-                                    <?php echo "Patente {$ListadoDevolucion[$i]['vehiculoMatricula']} </br> {$ListadoDevolucion[$i]['vehiculoModelo']}, {$ListadoDevolucion[$i]['vehiculoGrupo']}"; ?> 
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 14px;"> 
-                                    <?php echo "{$ListadoDevolucion[$i]['CiudadSucursal']}, {$ListadoDevolucion[$i]['DireccionSucursal']}"; ?>
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 12px;"> 
-                                    <?php echo $ListadoDevolucion[$i]['EstadoDevolucion']; ?>
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 12px;"> 
-                                    <?php echo $ListadoDevolucion[$i]['AclaracionesDevolucion']; ?>
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 12px;"> 
-                                    <?php echo $ListadoDevolucion[$i]['InfraccionesDevolucion']; ?> </td>
-                                </td>
-
-                                <td style="margin: 0 auto; padding: 0 5px 0 5px; border: 1px solid #000000; font-size: 12px;"> 
-                                    <?php echo "Costos por infracciones:</br> 
-                                    <b>{$ListadoDevolucion[$i]['CostosInfracciones']} US$</b>. </br></br> 
-                                    Cargo adicional:</br>
-                                    <b>{$ListadoDevolucion[$i]['MontoExtra']} US$</b>"; ?>
-                                </td>
-
-                            </tr>
-                            <?php $contador++; ?>
-                        <?php 
-                        } 
-                        ?>
-                    </tbody>
-                </table>                    
-
-            </div>
-        </div>
-    </div>
-
-
-<footer id="footer" class="footer" style="margin-top: 80px; background: #b54d0d; margin: #333333; border: #333333; ">
     
-    <div style="color: white; background: #b54d0d; margin: #333333; border: #333333; text-align: center; padding-top: 2%; padding-bottom: 2%; ">
-        <div class="copyright">
-        &copy; Copyright <strong><span>Rocket</span></strong>. All Rights Reserved
-        </div>
-        <div class="credits">
-        Developed by <span style="color: white;">Rocket Team</span>: <a href="https://www.linkedin.com/in/nicolas-servidio-del-monte/" style="color: black;" >NS</a> - <a href="https://www.linkedin.com/in/bruno-carossi-1b43b8178/" style="color: black;" >BC</a> - <a href="https://www.linkedin.com/in/facundo-mota-123380257/" style="color: black;" >FM</a>
-        </div>
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte General de Devoluciones</title>
+    
+    <style>
+        /* 1. Reset Básico y Tipografía */
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 2. Cabecera del Documento (Limpia y Informativa) */
+        .header-pdf {
+            width: 100%;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #a80a0a; /* Color corporativo */
+            overflow: hidden;
+        }
+        .header-pdf img {
+            float: right;
+            margin-left: 20px;
+        }
+        .header-pdf h1 {
+            color: #12374e;
+            font-size: 18pt;
+            margin: 0 0 5px 0;
+        }
+        .header-pdf p {
+            font-size: 10pt;
+            color: #555;
+            margin: 0;
+        }
+
+        /* 3. Estilo de Tabla Profesional (table-report) */
+        .table-report {
+            width: 100%;
+            border-collapse: collapse; 
+            margin-top: 15px;
+            border: 1px solid #ddd;
+        }
+        .table-report th, .table-report td {
+            border: 1px solid #ddd; 
+            padding: 6px 8px; 
+            text-align: left;
+            font-size: 9pt;
+            vertical-align: top;
+        }
+        
+        /* Estilo de Encabezados (TH) */
+        .table-report thead th {
+            background-color: #a80a0a; /* Tu color rojo oscuro */
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid #a80a0a;
+            font-size: 10pt;
+            text-align: center;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        /* Estilo de Filas (Zebra stripe) */
+        .table-report tbody tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+        
+        /* 4. Manejo de Paginación (CRUCIAL para Dompdf) */
+        .table-report thead {
+            display: table-header-group; /* Hace que el encabezado se repita en cada página */
+        }
+        .table-report tbody tr { 
+            page-break-inside: avoid; /* Evita cortar filas */
+        }
+        
+        /* Estilo para el número de fila y Monto */
+        .contador-col {
+            text-align: center;
+            font-weight: bold;
+            color: #a80a0a;
+        }
+        .detalle-col {
+            text-align: right;
+            font-weight: bold;
+            color: #12374e; /* Azul para el detalle */
+        }
+
+        /* 5. Pie de Página (Para el PDF) */
+        .pdf-footer {
+            width: 100%;
+            text-align: center;
+            position: fixed; 
+            bottom: 10px; /* Distancia desde el borde inferior */
+            left: 0;
+            right: 0;
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
+            font-size: 7.5pt;
+            color: #777;
+        }
+        .pdf-footer a {
+            color: #a80a0a;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body style="margin: 0 2% 0 2%;">
+    
+    <div class="header-pdf">
+        <img src="http://<?php echo $_SERVER['HTTP_HOST']; ?>/Proyectos/Rocket/assets/img/logo-red.png" height="40" alt="Logo" />
+        <h1>Reporte General de Devoluciones de Vehículos</h1>
+        <p>Generado el: <?php echo date("d/m/Y H:i:s"); ?></p>
+        <p>Total de Devoluciones en el Reporte: <strong><?php echo $CantidadDevolucion; ?></strong></p>
     </div>
-</footer><!-- End Footer -->
+
+    <?php if ($CantidadDevolucion > 0) { ?>
+        <table class="table-report">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 10%;">Nro. Contrato</th>
+                    <th style="width: 20%;">Cliente</th>
+                    <th style="width: 15%;">Vehículo</th>
+                    <th style="width: 15%;">Fecha Devolución</th>
+                    <th style="width: 15%;">Oficina</th>
+                    <th style="width: 20%;">Detalle Devolución</th> 
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $contador = 1; 
+                foreach ($ListadoDevolucion as $devolucion) { ?>   
+                    <tr>
+                        <td class="contador-col">
+                            <?php echo $contador; ?> 
+                        </td>
+                        <td> 
+                            <?php 
+                                // Clave: IdContrato
+                                echo htmlspecialchars($devolucion['IdContrato'] ?? 'N/A'); 
+                            ?>
+                        </td>
+                        <td> 
+                            <?php 
+                                // Claves: apellidoCliente, nombreCliente, dniCliente
+                                $nombreCompleto = ($devolucion['apellidoCliente'] ?? '') . ', ' . ($devolucion['nombreCliente'] ?? '');
+                                echo htmlspecialchars(trim($nombreCompleto)); ?> <br> 
+                            <span style="font-size: 0.9em; color: #777;">DNI: <?php echo htmlspecialchars($devolucion['dniCliente'] ?? 'N/A'); ?></span>
+                        </td>
+                        <td> 
+                            <?php 
+                                // Claves: vehiculoMatricula, vehiculoModelo, vehiculoGrupo
+                                $vehiculo = 'Patente ' . ($devolucion['vehiculoMatricula'] ?? 'N/A');
+                                echo htmlspecialchars($vehiculo); ?> <br> 
+                            <span style="font-size: 0.9em; color: #777;"><?php echo htmlspecialchars(($devolucion['vehiculoModelo'] ?? '') . ', ' . ($devolucion['vehiculoGrupo'] ?? '')); ?></span>
+                        </td>
+                        <td> 
+                            <?php 
+                                // CLAVE ASUMIDA: FechaDevolucion
+                                echo htmlspecialchars($devolucion['FechaDevolucion'] ?? 'N/A'); 
+                            ?>
+                        </td>
+                        <td> 
+                            <?php 
+                                // Claves: CiudadSucursal, DireccionSucursal (Asumida como Oficina de Devolución)
+                                echo htmlspecialchars($devolucion['CiudadSucursal'] ?? 'N/A'); ?><br>
+                            <span style="font-size: 0.9em; color: #777;"><?php echo htmlspecialchars($devolucion['DireccionSucursal'] ?? 'N/A'); ?></span>
+                        </td>
+                        <td class="detalle-col" style="text-align: right; padding: 4px;"> 
+                            
+                            <span style="font-size: 0.8em; color: #555; display: block; line-height: 1.2;">
+                                Km Final: <?php echo htmlspecialchars($devolucion['KilometrajeDevolucion'] ?? 'N/A'); ?>
+                            </span>
+                            <span style="font-size: 0.8em; color: #555; display: block; line-height: 1.2;">
+                                Combustible: <?php echo htmlspecialchars($devolucion['NivelCombustibleDevolucion'] ?? 'N/A'); ?>
+                            </span>
+                            <span style="font-size: 1em; color: #a80a0a; display: block; font-weight: bold; line-height: 1.2; border-top: 1px solid #ddd; padding-top: 2px; margin-top: 2px;">
+                                Penalidades: $ <?php echo htmlspecialchars($devolucion['MontoPenalidades'] ?? '0.00'); ?> USD
+                            </span>
+                        </td>
+                    </tr>
+                    <?php $contador++; ?>
+                <?php 
+                } 
+                ?>
+            </tbody>
+        </table>
+    <?php } else { ?>
+        <p style="text-align: center; color: #a80a0a; font-weight: bold; margin-top: 30px;">
+            No se encontraron registros de devoluciones para este reporte.
+        </p>
+    <?php } ?>
+
+    <div class="pdf-footer">
+        <p style="margin: 0 0 3px 0;">
+            &copy; <?php echo date("Y"); ?> Rocket Rent a Car. Todos los derechos reservados.
+        </p>
+        <p style="margin: 0;">
+            Desarrollado por: 
+            <a href="https://www.linkedin.com/in/nicolas-servidio-del-monte/">NS</a> |
+            <a href="https://www.linkedin.com/in/bruno-carossi-1b43b8178/">BC</a> |
+            <a href="https://www.linkedin.com/in/facundo-mota-123380257/">FM</a>
+        </p>
+    </div>
 
 </body>
 </html>
 
-<?php
-$html = ob_get_clean();
-// echo $html; // La variable $html ahora contiene la totalidad de la página. Imprimo en pantalla para que se continue viendo la página web
+<?php 
 
-// Creando un objeto de tipo Dompdf para trabajar con todas las funcionalidades de conversión del documento HTML a PDF
+// -------------------------------------------------------------------------
+// 7. FINALIZACIÓN Y GENERACIÓN DEL PDF (DOMPDF)
+// --------------------------------------------------------------------------
+
+$html = ob_get_clean(); // La variable $html ahora contiene la totalidad de la página.
+
 require_once 'administrador/dompdf/autoload.inc.php';
 use Dompdf\Dompdf;
-$dompdf = new Dompdf();  // Este objeto me permitirá trabajar con todas las funcionalidades de conversión de HTML a PDF
+$dompdf = new Dompdf();  
 
-// Activamos la opción que nos permite mostrar imágenes, por si la tabla llegara a contenerlas
-$options = $dompdf->getOptions();  // solo recupero la opción
-$options->set(array('isRemoteEnabled' => true));  // estoy activando con true esa opción, que es "isRemoteEnabled" 
-$dompdf->setOptions($options);  // y se lo estoy pasando nuevamente al objeto $dompdf, para que se pueda mostrar dicha imagen
+// Activamos la opción que nos permite mostrar imágenes remotas (logo)
+$options = $dompdf->getOptions();  
+$options->set(array('isRemoteEnabled' => true));  
+$dompdf->setOptions($options);  
 
-// Probemos:
 $dompdf->loadHtml($html);
 
-// genero el documento PDF:
-$dompdf->setPaper('A4', 'landscape');  // el formato entre paréntesis. Probar "letter" en lugar de los dos argumentos que se usan aquí
+// Generar el documento PDF:
+// 'A4' y 'landscape' para una mejor visualización de muchas columnas
+$dompdf->setPaper('A4', 'landscape');  
 
-// Hacemos el render, es decir todo lo que le asignamos al objeto $dompdf se renderiza, se hace visible
+// Hacemos el render
 $dompdf->render();
 
-// Pero, para que podamos ver el documento en el navegador y para que podamos descargarlo desde el navegador, necesitamos trabajar con "dompdf" y "stream" señalando el nombre del archivo:
+// Enviamos el documento al navegador
+$dompdf->stream("ReporteDevoluciones", array("Attachment" => false));
 
-$dompdf->stream("ReporteDevolucion", array("Attachment" => false)); // false es para que se abra directamente en el navegador. True es para que se descargue
-
+// Finaliza el script
+exit;
 ?>

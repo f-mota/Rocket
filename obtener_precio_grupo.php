@@ -1,5 +1,11 @@
 <?php
 // Asegurar que la respuesta sea JSON
+
+// INICIO DE SESIÓN Y VALIDACIÓN DE USUARIO
+session_start();
+require_once 'funciones/corroborar_usuario.php'; 
+Corroborar_Usuario();
+
 header('Content-Type: application/json');
 
 // Requerir la conexión a la base de datos (según tu estructura)

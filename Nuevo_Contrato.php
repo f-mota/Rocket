@@ -9,12 +9,41 @@ require_once 'conn/conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    // Conexión a la BD
+    $MiConexion = ConexionBD();
+
+    // Datos del formulario
     $idCliente = $_POST['idCliente'];
     $idVehiculo = $_POST['idVehiculo'];
     $fecharetiro = $_POST['fecharetiro'];
     $fechadevolucion = $_POST['fechadevolucion'];
     $estadocontrato = 1;
     $preciopordia = $_POST['precioporDia'];
+
+    // Si no hay idCliente, es un cliente nuevo
+    if (empty($idCliente)) {
+        $nombreCliente = mysqli_real_escape_string($MiConexion, $_POST['nombreCliente']);
+        $apellidoCliente = mysqli_real_escape_string($MiConexion, $_POST['apellidoCliente']);
+        $dniCliente = mysqli_real_escape_string($MiConexion, $_POST['documentoCliente']);
+
+        // Validar que los datos del nuevo cliente no estén vacíos
+        if (empty($nombreCliente) || empty($apellidoCliente) || empty($dniCliente)) {
+            $mensaje = "Para un nuevo cliente, el nombre, apellido y documento son obligatorios.";
+            echo "<script> alert('$mensaje'); window.history.back(); </script>";
+            exit();
+        }
+
+        // Insertar el nuevo cliente
+        $sqlNuevoCliente = "INSERT INTO clientes (nombreCliente, apellidoCliente, dniCliente, activo) VALUES ('$nombreCliente', '$apellidoCliente', '$dniCliente', 1)";
+        if (mysqli_query($MiConexion, $sqlNuevoCliente)) {
+            // Obtener el ID del cliente recién creado
+            $idCliente = mysqli_insert_id($MiConexion);
+        } else {
+            $mensaje = "Error al crear el nuevo cliente: " . mysqli_error($MiConexion);
+            echo "<script> alert('$mensaje'); window.history.back(); </script>";
+            exit();
+        }
+    }
 
 
     // Validaciones básicas
@@ -23,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($preciopordia) || !is_numeric($preciopordia) || $preciopordia <= 0) {
         $errores[] = "El precio por día es obligatorio.";
     }
-    if (empty($idCliente)) {
+    if (empty($idCliente) || !is_numeric($idCliente) || $idCliente <= 0) {
         $errores[] = "El cliente es obligatorio.";
     }
     if (empty($idVehiculo)) {
@@ -89,9 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Monto total:
     $montoTotal = $diferenciaDias * $preciopordia;
-
-    // Conexión y consulta
-    $MiConexion = ConexionBD();
 
     // Registro en el 'Detalle del Contrato'
     $SQL_DetalleContrato = "INSERT INTO `detalle-contratos` (precioPorDiaContrato,

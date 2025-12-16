@@ -87,7 +87,6 @@ function Listar_Contratos($conexion) {
             
             $idCon = $Listado[$i]['IdContrato'];
             $SQL_Reserva = "SELECT r.idReserva as rIdReserva,
-                                   r.numeroReserva as rNumReserva, 
                                    r.idContrato as rIdContrato 
                                 FROM `reservas-vehiculos` r 
                                 WHERE r.idContrato = $idCon; "; 
@@ -101,7 +100,7 @@ function Listar_Contratos($conexion) {
             } 
             else {
                 $Listado[$i]['IdReserva'] = $datosReserva['rIdReserva'];
-                $Listado[$i]['NumReserva'] = $datosReserva['rNumReserva'];
+                $Listado[$i]['NumReserva'] = $datosReserva['rIdReserva'];
             }
 
             $i++;
@@ -288,7 +287,6 @@ function Consulta_Contratos($numContrato, $matricula, $apellido, $nombre, $dni, 
 
         $idCon = $Listado[$i]['IdContrato'];
         $SQL_Reserva = "SELECT r.idReserva as rIdReserva,
-                               r.numeroReserva as rNumReserva, 
                                r.idContrato as rIdContrato 
                             FROM `reservas-vehiculos` r 
                             WHERE r.idContrato = $idCon; "; 
@@ -302,7 +300,7 @@ function Consulta_Contratos($numContrato, $matricula, $apellido, $nombre, $dni, 
         } 
         else {
             $Listado[$i]['IdReserva'] = $datosReserva['rIdReserva'];
-            $Listado[$i]['NumReserva'] = $datosReserva['rNumReserva'];
+            $Listado[$i]['NumReserva'] = $datosReserva['rIdReserva'];
         }
 
         $i++;

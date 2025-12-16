@@ -339,11 +339,11 @@ include('head.php');
                                 </td>
                                 <td
                                     title="Fecha de inicio del contrato. No corresponde necesariamente con la fecha de entrega del vehículo. Formato de fecha: YYYY/mm/dd">
-                                    <?php echo $ListadoContratos[$i]['FechaInicioContrato']; ?>
+                                    <?php echo date('d/m/Y', strtotime($ListadoContratos[$i]['FechaInicioContrato'])); ?>
                                 </td>
                                 <td
                                     title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
-                                    <?php echo $ListadoContratos[$i]['FechaFinContrato']; ?>
+                                    <?php echo date('d/m/Y', strtotime($ListadoContratos[$i]['FechaFinContrato'])); ?>
                                 </td>
                                 <td> <?php echo $ListadoContratos[$i]['apellidoCliente']; ?> </td>
                                 <td> <?php echo $ListadoContratos[$i]['nombreCliente']; ?> </td>
@@ -523,28 +523,39 @@ include('head.php');
                             <form action="Nuevo_Contrato.php" method="post">
                                 <div class="modal-body">
 
-                                    <div class="mb-3" style="position: relative;"> <label for="buscadorClienteNuevo"
-                                            class="form-label">Buscar Cliente (Escribe DNI o Apellido)</label>
+                                    <!-- Campo oculto para almacenar el ID del cliente seleccionado -->
+                                    <input type="hidden" id="idClienteNuevoContrato" name="idCliente" value="">
+
+                                    <div class="mb-3">
+                                        <label for="buscadorClienteContrato" class="form-label">Buscar Cliente (por DNI o Apellido)</label>
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="buscadorClienteNuevo"
-                                                placeholder="Empieza a escribir..." autocomplete="off">
-                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            <input type="text" class="form-control" id="buscadorClienteContrato"
+                                                onkeyup="buscarClienteEnModal(this.value, 'cliente-search-results-contrato')"
+                                                placeholder="Escribe para buscar..." autocomplete="off" required>
                                         </div>
-                                        <ul id="listaSugerencias" class="list-group"
-                                            style="position: absolute; z-index: 1000; width: 100%; display: none; box-shadow: 0px 4px 8px rgba(0,0,0,0.1);">
-                                        </ul>
-                                        <div id="resultadoBusquedaCliente" class="form-text">Escriba para buscar...
-                                        </div>
+                                        <!-- Contenedor para los resultados de búsqueda -->
+                                        <div id="cliente-search-results-contrato" class="list-group mt-1 position-absolute" style="z-index: 1056;"></div>
                                     </div>
 
-                                    <input type="hidden" id="idClienteNuevo" name="idCliente" value="" required>
+                                    <!-- Estilos para los resultados de búsqueda (igual que en reservas) -->
+                                    <style>
+                                        #cliente-search-results-contrato .list-group-item { display: flex; flex-direction: column; justify-content: center; line-height: 1.3; }
+                                        #cliente-search-results-contrato .list-group-item strong { font-family: inherit; font-weight: 700; }
+                                        #cliente-search-results-contrato .list-group-item small { font-family: inherit; font-size: 0.85em; color: #6c757d; margin-top: 2px; }
+                                    </style>
+
                                     <div class="mb-3">
-                                        <label class="form-label">Nombre</label>
-                                        <input type="text" class="form-control" id="nombreClienteNuevo" readonly>
+                                        <label for="apellidoClienteContrato" class="form-label">Apellido</label>
+                                        <input type="text" class="form-control bg-light" id="apellidoClienteContrato" name="apellidoCliente" readonly required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="nombreClienteContrato" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control bg-light" id="nombreClienteContrato" name="nombreCliente" readonly required>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">Apellido</label>
-                                        <input type="text" class="form-control" id="apellidoClienteNuevo" readonly>
+                                        <label for="documentoClienteContrato" class="form-label">Documento</label>
+                                        <input type="text" class="form-control bg-light" id="documentoClienteContrato" name="documentoCliente" readonly required>
                                     </div>
 
                                     <div class="mb-3">
@@ -658,6 +669,180 @@ include('head.php');
     </script>
 
     <script>
+    // --- LÓGICA DE BÚSQUEDA DE CLIENTES PARA NUEVO CONTRATO ---
+
+    /**
+     * Busca clientes en tiempo real y muestra los resultados en una lista desplegable.
+     * @param {string} query - El texto de búsqueda.
+     * @param {string} resultsDivId - El ID del div donde se mostrarán los resultados.
+     */
+    function buscarClienteEnModal(query, resultsDivId) {
+        const resultadosDiv = document.getElementById(resultsDivId);
+        if (query.trim().length < 2) { // Empezar a buscar después de 2 caracteres
+            resultadosDiv.innerHTML = '';
+            return;
+        }
+
+        // Usamos el endpoint existente para buscar clientes
+        fetch(`funciones/Buscar_Cliente.php?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                resultadosDiv.innerHTML = ''; // Limpiar resultados anteriores
+                if (data.length > 0) {
+                    data.forEach(cliente => {
+                        const item = document.createElement('a');
+                        item.href = '#';
+                        item.classList.add('list-group-item', 'list-group-item-action');
+                        item.innerHTML = `<strong>${cliente.apellido}, ${cliente.nombre}</strong> <br><small>DNI: ${cliente.documento}</small>`;
+                        
+                        // Escapamos las comillas para evitar errores en el onclick
+                        const safeApellido = cliente.apellido.replace(/'/g, "\\'");
+                        const safeNombre = cliente.nombre.replace(/'/g, "\\'");
+
+                        item.onclick = (e) => {
+                            e.preventDefault();
+                            seleccionarCliente(cliente.id, cliente.documento, safeApellido, safeNombre, resultsDivId);
+                        };
+                        resultadosDiv.appendChild(item);
+                    });
+                } else {
+                    resultadosDiv.innerHTML = '<span class="list-group-item disabled">No se encontraron clientes. Puede registrar uno nuevo.</span>';
+                    // Habilitar campos para nuevo cliente
+                    document.getElementById('idClienteNuevoContrato').value = ''; // Limpiar ID
+                    
+                    const apellidoInput = document.getElementById('apellidoClienteContrato');
+                    const nombreInput = document.getElementById('nombreClienteContrato');
+                    const docInput = document.getElementById('documentoClienteContrato');
+
+                    apellidoInput.readOnly = false;
+                    nombreInput.readOnly = false;
+                    docInput.readOnly = false;
+                    apellidoInput.classList.remove('bg-light');
+                    nombreInput.classList.remove('bg-light');
+                    docInput.classList.remove('bg-light');
+                }
+            })
+            .catch(error => console.error('Error al buscar clientes:', error));
+    }
+
+    /**
+     * Rellena los campos del formulario cuando se selecciona un cliente de la lista.
+     * @param {string} id - ID del cliente.
+     * @param {string} documento - Documento del cliente.
+     * @param {string} apellido - Apellido del cliente.
+     * @param {string} nombre - Nombre del cliente.
+     * @param {string} resultsDivId - El ID del div de resultados para limpiarlo.
+     */
+    function seleccionarCliente(id, documento, apellido, nombre, resultsDivId) {
+        // Rellenar los campos del formulario de Nuevo Contrato
+        document.getElementById('idClienteNuevoContrato').value = id;
+        document.getElementById('buscadorClienteContrato').value = `${apellido}, ${nombre}`; // Actualiza el campo de búsqueda
+        document.getElementById('documentoClienteContrato').value = documento;
+        document.getElementById('apellidoClienteContrato').value = apellido;
+        document.getElementById('nombreClienteContrato').value = nombre;
+
+        // Asegurarse de que los campos vuelvan a ser de solo lectura
+        const apellidoInput = document.getElementById('apellidoClienteContrato');
+        const nombreInput = document.getElementById('nombreClienteContrato');
+        const docInput = document.getElementById('documentoClienteContrato');
+        apellidoInput.readOnly = true;
+        nombreInput.readOnly = true;
+        docInput.readOnly = true;
+        apellidoInput.classList.add('bg-light');
+        nombreInput.classList.add('bg-light');
+        docInput.classList.add('bg-light');
+
+        // Ocultar la lista de resultados
+        document.getElementById(resultsDivId).innerHTML = '';
+    }
+    </script>
+
+    <script>
+    // ===================================================================
+    // FUNCIONES DE CÁLCULO Y AJAX PARA NUEVO CONTRATO
+    // ===================================================================
+
+    /**
+     * Calcula la diferencia en días entre dos fechas (mínimo 1 día si las fechas son iguales).
+     */
+    function diferenciaEnDias(fecha1, fecha2) {
+        const date1 = new Date(fecha1);
+        const date2 = new Date(fecha2);
+        
+        if (isNaN(date1.getTime()) || isNaN(date2.getTime()) || date2 < date1) {
+            return 0;
+        }
+
+        const diffTime = Math.abs(date2 - date1);
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
+        
+        return (diffDays > 0) ? diffDays : 1; 
+    }
+
+    /**
+     * Calcula el monto total del contrato: Precio * Días.
+     */
+    function calcularTotalContratoNuevo() {
+        const inputPrecio = document.getElementById('precioPorDiaNuevo');
+        const inputInicio = document.getElementById('fechaRetiroContratoNuevo'); 
+        const inputFin = document.getElementById('fechaDevolucionContratoNuevo'); 
+        const inputTotal = document.getElementById('montoTotalNuevo');
+
+        if (!inputPrecio || !inputInicio || !inputFin || !inputTotal) return;
+
+        const precio = parseFloat(inputPrecio.value);
+        const fechaInicio = inputInicio.value;
+        const fechaFin = inputFin.value;
+
+        if (isNaN(precio) || precio <= 0 || !fechaInicio || !fechaFin) {
+            inputTotal.value = '0.00';
+            return;
+        }
+
+        const dias = diferenciaEnDias(fechaInicio, fechaFin);
+        inputTotal.value = (dias > 0) ? (precio * dias).toFixed(2) : '0.00';
+    }
+
+    /**
+     * Obtiene el precio sugerido por AJAX al cambiar el vehículo.
+     */
+    function obtenerPrecioSugeridoContratoNuevo() {
+        const selectVehiculo = document.getElementById('idVehiculoNuevo'); 
+        const inputPrecio = document.getElementById('precioPorDiaNuevo');
+        const idVehiculo = selectVehiculo.value;
+
+        if (!idVehiculo) {
+            inputPrecio.value = '';
+            calcularTotalContratoNuevo(); 
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('idVehiculo', idVehiculo);
+
+        fetch('obtener_precio_grupo.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error de red al obtener el precio: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                inputPrecio.value = data.success ? parseFloat(data.precio).toFixed(2) : '';
+                calcularTotalContratoNuevo(); 
+            })
+            .catch(error => {
+                console.error('Error de la solicitud AJAX:', error);
+                alert('Ocurrió un error al obtener el precio sugerido para el contrato.');
+                calcularTotalContratoNuevo();
+            });
+    }
+    </script>
+
+    <script>
     // Desplazamiento vertical al listado luego de consulta
     function scrollToTable() {
         localStorage.setItem('scrollToTable', 'true'); // Guardar indicador antes de enviar
@@ -708,205 +893,110 @@ include('head.php');
     }
 
     // ===================================================================
-    // FUNCIONES DE CÁLCULO Y AJAX PARA NUEVO CONTRATO
-    // ===================================================================
-
-    /**
-     * Calcula la diferencia en días entre dos fechas (mínimo 1 día si las fechas son iguales).
-     */
-    function diferenciaEnDias(fecha1, fecha2) {
-        const date1 = new Date(fecha1);
-        const date2 = new Date(fecha2);
-
-        // Si las fechas no son válidas o la fecha fin es anterior a la inicio, retorna 0
-        if (isNaN(date1.getTime()) || isNaN(date2.getTime()) || date2 < date1) {
-            return 0;
-        }
-
-        const diffTime = Math.abs(date2 - date1);
-        // Calcula la diferencia en días. Usa Math.round para evitar problemas con cambios de hora/DST.
-        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-        // Retorna la diferencia, asegurando que sea al menos 1 día si se selecciona el mismo día.
-        return (diffDays > 0) ? diffDays : 1;
-    }
-
-    /**
-     * Calcula el monto total del contrato: Precio * Días.
-     */
-    function calcularTotalContratoNuevo() {
-        // IDs de los campos en el formulario del modal de Nuevo Contrato
-        const inputPrecio = document.getElementById('precioPorDiaNuevo');
-        const inputInicio = document.getElementById('fechaRetiroContratoNuevo');
-        const inputFin = document.getElementById('fechaDevolucionContratoNuevo');
-        const inputTotal = document.getElementById('montoTotalNuevo');
-
-        if (!inputPrecio || !inputInicio || !inputFin || !inputTotal) {
-            return;
-        }
-
-        const precio = parseFloat(inputPrecio.value);
-        const fechaInicio = inputInicio.value;
-        const fechaFin = inputFin.value;
-
-        if (isNaN(precio) || precio <= 0 || !fechaInicio || !fechaFin) {
-            inputTotal.value = '0.00';
-            return;
-        }
-
-        const dias = diferenciaEnDias(fechaInicio, fechaFin);
-
-        if (dias > 0) {
-            const total = precio * dias;
-            inputTotal.value = total.toFixed(2);
-        } else {
-            inputTotal.value = '0.00';
-        }
-    }
-
-
-    /**
-     * Obtiene el precio sugerido por AJAX al cambiar el vehículo.
-     */
-    function obtenerPrecioSugeridoContratoNuevo() {
-        // ID del select de vehículo (debe coincidir con el HTML modificado)
-        const selectVehiculo = document.getElementById('idVehiculoNuevo');
-        const inputPrecio = document.getElementById('precioPorDiaNuevo');
-        const idVehiculo = selectVehiculo.value;
-
-        if (!idVehiculo || idVehiculo === "") {
-            inputPrecio.value = '';
-            calcularTotalContratoNuevo();
-            return;
-        }
-
-        // Lógica AJAX a obtener_precio_grupo.php
-        const formData = new FormData();
-        formData.append('idVehiculo', idVehiculo);
-
-        fetch('obtener_precio_grupo.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error de red al obtener el precio: ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Asignar el precio devuelto y forzar 2 decimales
-                    inputPrecio.value = parseFloat(data.precio).toFixed(2);
-                } else {
-                    console.error('Error del servidor:', data.message);
-                    inputPrecio.value = '';
-                }
-                // Llamar al cálculo de total después de obtener (o fallar al obtener) el precio
-                calcularTotalContratoNuevo();
-            })
-            .catch(error => {
-                console.error('Error de la solicitud AJAX:', error);
-                inputPrecio.value = '';
-                alert('Ocurrió un error al obtener el precio sugerido para el contrato.');
-                calcularTotalContratoNuevo();
-            });
-    }
-
-    // ===================================================================
-// FUNCIONES DE BÚSQUEDA PREDICTIVA (AUTOCOMPLETAR)
+// FUNCIONES DE CÁLCULO Y AJAX PARA NUEVO CONTRATO
 // ===================================================================
 
-document.addEventListener('DOMContentLoaded', () => {
-    const inputBuscador = document.getElementById('buscadorClienteNuevo');
-    const listaSugerencias = document.getElementById('listaSugerencias');
-    // 🛑 Referencia al DIV del mensaje de estado 🛑
-    const divResultado = document.getElementById('resultadoBusquedaCliente'); 
-    const inputId = document.getElementById('idClienteNuevo');
-    const inputNombre = document.getElementById('nombreClienteNuevo');
-    const inputApellido = document.getElementById('apellidoClienteNuevo');
-
-    // Función auxiliar para actualizar el mensaje de estado
-    function actualizarMensaje(mensaje, color) {
-        if (divResultado) {
-            divResultado.textContent = mensaje;
-            divResultado.style.color = color;
-        }
-    }
+/**
+ * Calcula la diferencia en días entre dos fechas (mínimo 1 día si las fechas son iguales).
+ */
+function diferenciaEnDias(fecha1, fecha2) {
+    const date1 = new Date(fecha1);
+    const date2 = new Date(fecha2);
     
-    // Función para limpiar campos
-    function limpiarCamposCliente() {
-        inputId.value = '';
-        inputNombre.value = '';
-        inputApellido.value = '';
-        actualizarMensaje('Empieza a escribir el DNI o Apellido del cliente.', '#6c757d');
+    // Si las fechas no son válidas o la fecha fin es anterior a la inicio, retorna 0
+    if (isNaN(date1.getTime()) || isNaN(date2.getTime()) || date2 < date1) {
+        return 0;
     }
 
-
-    inputBuscador.addEventListener('input', function() {
-        const texto = this.value.trim();
-        listaSugerencias.innerHTML = ''; // Limpiar lista anterior
-        listaSugerencias.style.display = 'none';
-
-        if (texto.length < 2) { // Empezar a buscar a partir de 2 caracteres
-            limpiarCamposCliente();
-            return;
-        }
-
-        // Mostrar mensaje de búsqueda
-        actualizarMensaje('Buscando...', '#6c757d');
-
-        fetch(`funciones/Buscar_Cliente.php?query=${encodeURIComponent(texto)}`)
-            .then(response => response.json())
-            .then(data => {
-                listaSugerencias.innerHTML = ''; // Limpiar lista anterior
-                
-                if (data.length > 0) {
-                    data.forEach(cliente => {
-                        // Crear un elemento de lista para cada cliente encontrado
-                        const li = document.createElement('li');
-                        li.className = 'list-group-item list-group-item-action';
-                        li.style.cursor = 'pointer';
-                        li.innerHTML = `<strong>${cliente.nombre} ${cliente.apellido}</strong> <small class="text-muted">(DNI: ${cliente.documento})</small>`;
-                        
-                        // Evento al hacer clic en una sugerencia
-                        li.onclick = function() {
-                            inputBuscador.value = `${cliente.nombre} ${cliente.apellido}`;
-                            inputId.value = cliente.id;
-                            inputNombre.value = cliente.nombre;
-                            inputApellido.value = cliente.apellido;
-                            listaSugerencias.style.display = 'none'; // Ocultar lista
-                            actualizarMensaje('Cliente seleccionado con éxito.', 'green');
-                        };
-                        
-                        listaSugerencias.appendChild(li);
-                    });
-                    listaSugerencias.style.display = 'block';
-                    actualizarMensaje(`${data.length} coincidencias encontradas. Haga clic para seleccionar.`, '#0d6efd');
-                } else {
-                    // 🛑 CÓDIGO CLAVE PARA EL MENSAJE DE NO ENCONTRADO 🛑
-                    listaSugerencias.style.display = 'none';
-                    limpiarCamposCliente();
-                    actualizarMensaje('No se encontraron clientes. Puede registrarlo.', 'red'); 
-                }
-            })
-            .catch(error => {
-                console.error('Error en la solicitud AJAX:', error);
-                listaSugerencias.style.display = 'none';
-                actualizarMensaje('Ocurrió un error en la búsqueda.', 'red');
-            });
-    });
-
-    // Cerrar la lista si el usuario hace clic fuera del buscador
-    document.addEventListener('click', function(e) {
-        if (e.target !== inputBuscador) {
-            listaSugerencias.style.display = 'none';
-        }
-    });
+    const diffTime = Math.abs(date2 - date1);
+    // Calcula la diferencia en días. Usa Math.round para evitar problemas con cambios de hora/DST.
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
     
-    // NOTA: Se eliminan los listeners de 'btnBuscar' y 'keypress' que usaban la lógica antigua
-    // ya que la búsqueda ahora es totalmente predictiva y en tiempo real.
-});
+    // Retorna la diferencia, asegurando que sea al menos 1 día si se selecciona el mismo día.
+    return (diffDays > 0) ? diffDays : 1; 
+}
+
+/**
+ * Calcula el monto total del contrato: Precio * Días.
+ */
+function calcularTotalContratoNuevo() {
+    // IDs de los campos en el formulario del modal de Nuevo Contrato
+    const inputPrecio = document.getElementById('precioPorDiaNuevo');
+    const inputInicio = document.getElementById('fechaRetiroContratoNuevo'); 
+    const inputFin = document.getElementById('fechaDevolucionContratoNuevo'); 
+    const inputTotal = document.getElementById('montoTotalNuevo');
+
+    if (!inputPrecio || !inputInicio || !inputFin || !inputTotal) {
+        return; 
+    }
+
+    const precio = parseFloat(inputPrecio.value);
+    const fechaInicio = inputInicio.value;
+    const fechaFin = inputFin.value;
+
+    if (isNaN(precio) || precio <= 0 || !fechaInicio || !fechaFin) {
+        inputTotal.value = '0.00';
+        return;
+    }
+
+    const dias = diferenciaEnDias(fechaInicio, fechaFin);
+
+    if (dias > 0) {
+        const total = precio * dias;
+        inputTotal.value = total.toFixed(2);
+    } else {
+        inputTotal.value = '0.00';
+    }
+}
+
+
+/**
+ * Obtiene el precio sugerido por AJAX al cambiar el vehículo.
+ */
+function obtenerPrecioSugeridoContratoNuevo() {
+    // ID del select de vehículo (debe coincidir con el HTML modificado)
+    const selectVehiculo = document.getElementById('idVehiculoNuevo'); 
+    const inputPrecio = document.getElementById('precioPorDiaNuevo');
+    const idVehiculo = selectVehiculo.value;
+
+    if (!idVehiculo || idVehiculo === "") {
+        inputPrecio.value = '';
+        calcularTotalContratoNuevo(); 
+        return;
+    }
+
+    // Lógica AJAX a obtener_precio_grupo.php
+    const formData = new FormData();
+    formData.append('idVehiculo', idVehiculo);
+
+    fetch('obtener_precio_grupo.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error de red al obtener el precio: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Asignar el precio devuelto y forzar 2 decimales
+            inputPrecio.value = parseFloat(data.precio).toFixed(2);
+        } else {
+            console.error('Error del servidor:', data.message);
+            inputPrecio.value = ''; 
+        }
+        // Llamar al cálculo de total después de obtener (o fallar al obtener) el precio
+        calcularTotalContratoNuevo(); 
+    })
+    .catch(error => {
+        console.error('Error de la solicitud AJAX:', error);
+        inputPrecio.value = '';
+        alert('Ocurrió un error al obtener el precio sugerido para el contrato.');
+        calcularTotalContratoNuevo();
+    });
+}
     </script>
 
     <!-- Bootstrap JS -->

@@ -11,7 +11,6 @@ function Listar_Reservas($conexion, $estado = '1') {
     
     //1) genero la consulta que deseo (TABLA: reservas-vehiculos)
     $SQL = "SELECT r.idReserva as rIdReserva, 
-                   r.numeroReserva as rNumeroReserva, 
                    r.fechaReserva as rFechaReserva, 
                    r.fechaInicioReserva as rFechaInicioReserva, 
                    r.FechaFinReserva as rFechaFinReserva, 
@@ -42,7 +41,7 @@ function Listar_Reservas($conexion, $estado = '1') {
             JOIN modelos m ON v.idModelo = m.idModelo
             JOIN `grupos-vehiculos` g ON v.idGrupoVehiculo = g.idGrupo
             WHERE r.activo = {$filtro_activo} 
-            ORDER BY r.numeroReserva ASC";
+            ORDER BY r.idReserva ASC";
     
     //2) corroboro si fue exitosa la consulta
     $rs = mysqli_query($conexion, $SQL);
@@ -55,7 +54,6 @@ function Listar_Reservas($conexion, $estado = '1') {
     $i = 0;
     while ($data = mysqli_fetch_array($rs)) {
             $Listado[$i]['idReserva'] = $data['rIdReserva'];
-            $Listado[$i]['numeroReserva'] = $data['rNumeroReserva'];
             $Listado[$i]['fechaReserva'] = $data['rFechaReserva'];
             $Listado[$i]['fechaInicioReserva'] = $data['rFechaInicioReserva'];
             $Listado[$i]['fechaFinReserva'] = $data['rFechaFinReserva'];
@@ -105,7 +103,6 @@ function Consulta_Reservas($numero, $matricula, $apellido, $nombre, $documento, 
     
     // 1) Genero la consulta base con los nuevos campos (TABLA: reservas-vehiculos)
     $SQL = "SELECT r.idReserva as rIdReserva, 
-                   r.numeroReserva as rNumeroReserva, 
                    r.fechaReserva as rFechaReserva, 
                    r.fechaInicioReserva as rFechaInicioReserva, 
                    r.FechaFinReserva as rFechaFinReserva, 
@@ -139,7 +136,7 @@ function Consulta_Reservas($numero, $matricula, $apellido, $nombre, $documento, 
     
     // 2) Armo la cláusula WHERE con los filtros adicionales
     if (!empty($numero)) {
-        $SQL .= " AND r.numeroReserva LIKE '%{$numero}%' ";
+        $SQL .= " AND r.idReserva = '{$numero}' ";
     }
     if (!empty($matricula)) {
         $SQL .= " AND v.matricula LIKE '%{$matricula}%' ";
@@ -160,7 +157,7 @@ function Consulta_Reservas($numero, $matricula, $apellido, $nombre, $documento, 
         $SQL .= " AND r.fechaInicioReserva <= '{$retirohasta}' ";
     }
 
-    $SQL .= " ORDER BY r.numeroReserva ASC";
+    $SQL .= " ORDER BY r.idReserva ASC";
     
     //3) corroboro si fue exitosa la consulta
     $rs = mysqli_query($conexion, $SQL);
@@ -173,7 +170,6 @@ function Consulta_Reservas($numero, $matricula, $apellido, $nombre, $documento, 
     $i = 0;
     while ($data = mysqli_fetch_array($rs)) {
             $Listado[$i]['idReserva'] = $data['rIdReserva'];
-            $Listado[$i]['numeroReserva'] = $data['rNumeroReserva'];
             $Listado[$i]['fechaReserva'] = $data['rFechaReserva'];
             $Listado[$i]['fechaInicioReserva'] = $data['rFechaInicioReserva'];
             $Listado[$i]['fechaFinReserva'] = $data['rFechaFinReserva'];

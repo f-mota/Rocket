@@ -252,16 +252,13 @@ include('head.php');
                                 if (!$esActiva && !empty($comentario)) {
                                     $tooltip = "data-bs-toggle='tooltip' data-bs-placement='top' data-bs-html='true' title='**Motivo de Cancelación**:<br>{$comentario}'";
                                 }
-                                
-                                // *** LÓGICA MODIFICADA AQUÍ ***
-                                // Ahora siempre muestra el idReserva, sin el prefijo "ID: "
-                                $id_reserva_bd = $ListadoReservas[$i]['idReserva'];
-                                $display_reserva = $id_reserva_bd; 
-                                // *** FIN DE LÓGICA MODIFICADA ***
 
+                                // Definir la variable que se mostrará en la columna de número de reserva
+                                $display_reserva = $ListadoReservas[$i]['idReserva'];
+                                
                                 ?>
 
-                            <tr class='<?php echo $claseFila; ?>' data-id='<?php echo $id_reserva_bd; ?>'
+                            <tr class='<?php echo $claseFila; ?>' data-id='<?php echo $ListadoReservas[$i]['idReserva']; ?>'
                                 data-activo='<?php echo $activo; ?>'>
 
 
@@ -279,9 +276,9 @@ include('head.php');
 
                                 <td> <?php echo $ListadoReservas[$i]['vehiculoModelo']; ?> </td>
 
-                                <td> <?php echo $ListadoReservas[$i]['fechaInicioReserva']; ?> </td>
+                                <td> <?php echo date('d/m/Y', strtotime($ListadoReservas[$i]['fechaInicioReserva'])); ?> </td>
 
-                                <td> <?php echo $ListadoReservas[$i]['fechaFinReserva']; ?> </td>
+                                <td> <?php echo date('d/m/Y', strtotime($ListadoReservas[$i]['fechaFinReserva'])); ?> </td>
 
                                 <td>
                                     <span style="font-size: 12px;">

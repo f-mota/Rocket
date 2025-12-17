@@ -380,6 +380,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
 
                         </fieldset>
 
+                        <!-- Campo oculto para enviar el estado 'activo' actual del vehículo -->
+                        <input type="hidden" name="Activo" value="<?php echo htmlspecialchars($vehiculo['vActivo']); ?>">
+
                         <br>
                         <div class="d-flex justify-content-start gap-2">
                             <?php if (isset($vehiculo['vActivo']) && $vehiculo['vActivo'] == '0') : ?>

@@ -25,6 +25,9 @@ $precioPorDia = $_POST['PrecioPorDia'];
 $fechaRetiro = $_POST['fecharetiro'];
 $fechaDevolucion = $_POST['fechadevolucion'];
 
+// Estado inicial del contrato (1 = En preparación)
+$estadocontrato = 1;
+
 // Obtener idSucursal (AJUSTAR ESTA LÍNEA SEGÚN CÓMO MANEJES LA SUCURSAL DEL USUARIO LOGUEADO)
 // Asumimos que la sucursal del usuario logueado está en $_SESSION['idSucursal']
 $idSucursal = $_SESSION['idSucursal'] ?? 1; // Default a 1 si no se encuentra en sesión
@@ -99,36 +102,79 @@ try {
     $precioPorDiaDecimal = floatval($precioPorDia);
     $totalReserva = $precioPorDiaDecimal * $cantidadDias;
     
-    // 6. Inserción de la Reserva
-    // El nombre de la tabla se mantiene como `reservas-vehiculos` (corregido previamente)
-    $SQL_INSERT_RESERVA = "INSERT INTO `reservas-vehiculos` (
-        fechaInicioReserva, FechaFinReserva, precioPorDiaReserva, 
-        cantidadDiasReserva, totalReserva, idCliente, idVehiculo, 
-        idSucursal, activo
-    ) VALUES (
-        ?, ?, ?, 
-        ?, ?, ?, ?, 
-        ?, 1 
-    )"; // 'activo' = 1 (Activa)
-    
-    $stmt = $conexion->prepare($SQL_INSERT_RESERVA);
-    
-    // TIPOS: s=string, d=double/float, i=integer. Orden: s s d i d i i i
-    $stmt->bind_param(
-        "ssdisiii", 
-        $fechaRetiro, $fechaDevolucion, $precioPorDiaDecimal, 
-        $cantidadDias, $totalReserva, $idCliente, $idVehiculo, 
-        $idSucursal
-    );
-    
-    if ($stmt->execute()) {
-        $idReservaInsertada = $conexion->insert_id;
-        $stmt->close();
-        // REDIRECCIÓN DE ÉXITO CORREGIDA
-        header("Location: reservas.php?status=success&mensaje=" . rawurlencode("Reserva N° {$idReservaInsertada} creada exitosamente."));
-    } else {
-        throw new Exception("Error al guardar la reserva: " . $stmt->error);
+    // 6. Transacción completa: Reserva + DetalleContrato + Contrato + Update
+    mysqli_query($conexion, "START TRANSACTION;");
+
+    try {
+        // 1. Insertar Reserva (sin numeroReserva)
+        $SQL = "INSERT INTO `reservas-vehiculos` 
+                (fechaReserva, fechaInicioReserva, fechaFinReserva, 
+                precioPorDiaReserva, cantidadDiasReserva, totalReserva, 
+                idCliente, idSucursal, idVehiculo, activo) 
+                VALUES (NOW(), '$fechaRetiro', '$fechaDevolucion', 
+                        $precioPorDiaDecimal, $cantidadDias, $totalReserva, 
+                        $idCliente, $idSucursal, $idVehiculo, 1);";
+
+        if (!mysqli_query($conexion, $SQL)) {
+            throw new Exception("Error al agregar reserva: " . mysqli_error($conexion));
+        }
+
+        $idReservaRecuperada = mysqli_insert_id($conexion);
+
+        // 2. Insertar Detalle del Contrato
+        $SQL_DetalleContrato = "INSERT INTO `detalle-contratos` 
+                                (precioPorDiaContrato, cantidadDiasContrato, montoTotalContrato) 
+                                VALUES ($precioPorDiaDecimal, $cantidadDias, $totalReserva);";
+
+        if (!mysqli_query($conexion, $SQL_DetalleContrato)) {
+            throw new Exception("Error al agregar detalle del contrato: " . mysqli_error($conexion));
+        }
+
+        $IdDetalleContrato = mysqli_insert_id($conexion);
+
+        // 3. Insertar Contrato
+        $SQL_Contrato = "INSERT INTO `contratos-alquiler` 
+                        (fechaInicioContrato, fechaFinContrato, idCliente, idVehiculo, idDetalleContrato, idEstadoContrato) 
+                        VALUES ('$fechaRetiro', '$fechaDevolucion', $idCliente, $idVehiculo, $IdDetalleContrato, $estadocontrato);";
+
+        if (!mysqli_query($conexion, $SQL_Contrato)) {
+            throw new Exception("Error al insertar en contratos: " . mysqli_error($conexion));
+        }
+
+        $IdContratoRecuperado = mysqli_insert_id($conexion);
+
+        // 4. Actualizar Reserva con ID del Contrato
+        $SQL_Reserva = "UPDATE `reservas-vehiculos` 
+                        SET idContrato = $IdContratoRecuperado 
+                        WHERE idReserva = $idReservaRecuperada;";
+
+        if (!mysqli_query($conexion, $SQL_Reserva)) {
+            throw new Exception("Error al actualizar número de contrato en la tabla de reservas: " . mysqli_error($conexion));
+        }
+
+        // CONFIRMAR TRANSACCIÓN
+        mysqli_query($conexion, "COMMIT;");
+
+        // Redirección usando el ID de la reserva recién creada
+        $mensaje = "Reserva ID {$idReservaRecuperada} agregada exitosamente. El contrato que le corresponde se encuentra asociado y en preparación.";
+        echo "<script> 
+            alert('$mensaje');
+            window.location.href = 'reservas.php?NumeroReserva={$idReservaRecuperada}&MatriculaReserva=&ApellidoReserva=&NombreReserva=&DocReserva=&RetiroDesde=&RetiroHasta=&BotonFiltrar=FiltrandoReservas';
+        </script>";
+        exit();
+
+    } 
+    catch (Exception $e) {
+        // REVERTIR TRANSACCIÓN EN CASO DE ERROR
+        mysqli_query($conexion, "ROLLBACK;");
+        $mensaje = $e->getMessage();
+        echo "<script> 
+            alert('$mensaje');
+            window.location.href = 'reservas.php';
+        </script>";
+        exit();
     }
+
     
 } catch (Exception $e) {
     // Manejo de errores de la transacción

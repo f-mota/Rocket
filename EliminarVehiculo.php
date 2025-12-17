@@ -23,16 +23,15 @@ if (isset($_GET['id'])) {
 
     // Verificar si la eliminación fue exitosa
     if ($stmt->affected_rows > 0) {
-        // Redirigir al listado de vehículos con un mensaje de éxito
-        header('Location: OpVehiculos.php?mensaje=El vehículo ha sido marcado como INACTIVO y su disponibilidad fijada a NO arrendable.');
+        // Redirigir al listado de vehículos con el parámetro para mostrar el modal de éxito.
+        header('Location: OpVehiculos.php?eliminado=exito');
         exit();
     } else {
         // Si no se actualizó ningún registro, mostrar un mensaje de error
         header('Location: OpVehiculos.php?mensaje=Error al marcar el vehículo como INACTIVO. Puede que ya lo esté o el ID es incorrecto.');
         exit();
     }
-}
-else {
+} else {
     // Si no se pasa un ID, redirigir al listado de vehículos
     header('Location: OpVehiculos.php?mensaje=No se reconoce ningún ID.');
     exit();

@@ -84,6 +84,24 @@ else {
 // Por último se hace UPDATE de los datos luego de cliquear el botón "Guardar Cambios" (los elementos POST proceden del form debajo)
 $mensajeError = "";
 
+// Manejo de la reactivación del vehículo con el botón específico
+if (isset($_POST['BotonReactivar'])) {
+    $idVehiculoReactivar = $_GET['id'];
+
+    // Se cambia el estado a activo (1) y la disponibilidad a Sí ('S')
+    $sqlUpdateReactivar = "UPDATE vehiculos SET activo = '1', disponibilidad = 'S' WHERE idVehiculo = $idVehiculoReactivar";
+    $rsReactivar = mysqli_query($conexion, $sqlUpdateReactivar);
+
+    if ($rsReactivar) {
+        // Redirigir a OpVehiculos.php con el parámetro para mostrar el modal de reactivación exitosa.
+        header('Location: OpVehiculos.php?reactivado=exito');
+        exit();
+    } else {
+        $mensajeError = "Error al reactivar el vehículo: " . mysqli_error($conexion);
+        echo "<script>alert('$mensajeError');</script>";
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehiculo'])) {
 
     // Primero capturo todos los valores del formulario
@@ -120,13 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
         $aireAcondicionado = null;
     }
 
-    $direccionHidraulica = null;
-    if ($_POST['DireccionHidraulica'] == "S" || $_POST['DireccionHidraulica'] == "N") {
-        $direccionHidraulica = $_POST['DireccionHidraulica'];
-    } 
-    else {
-        $direccionHidraulica = null;
-    }
+    $direccionHidraulica = isset($_POST['DireccionHidraulica']) && in_array($_POST['DireccionHidraulica'], ['S', 'N']) ? $_POST['DireccionHidraulica'] : null;
     
     // Captura del estado 'activo'
     $activo = null;
@@ -134,18 +146,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
         $activo = $_POST['Activo'];
     }
 
-    $disponibilidad = null;
-    if ($_POST['Disponibilidad'] == "S" || $_POST['Disponibilidad'] == "N") {
-        $disponibilidad = $_POST['Disponibilidad'];
-    } 
-    else {
-        $disponibilidad = null;
-    }
+    $disponibilidad = isset($_POST['Disponibilidad']) && in_array($_POST['Disponibilidad'], ['S', 'N']) ? $_POST['Disponibilidad'] : null;
 
     // **********************************************
     // MODIFICACIÓN CRÍTICA: LÓGICA DE CONSISTENCIA
     // **********************************************
-    if ($activo === '0') {
+    // Si el estado 'activo' viene del formulario y es '0' (inactivo)
+    if (isset($_POST['Activo']) && $_POST['Activo'] === '0') {
         // Si el vehículo se marca como INACTIVO (0), su disponibilidad DEBE ser 'N'.
         $disponibilidad = 'N'; 
     }
@@ -179,11 +186,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
     $rs = mysqli_query($conexion, $SqlUpdate);
 
     if ($rs) {
-        $mensaje = "El vehículo de ID: {$idVehiculo} ha sido modificado exitosamente.";
-        echo "<script>
-              alert('$mensaje');
-              window.location.href = 'OpVehiculos.php';
-        </script>";
+        // Redirigir a OpVehiculos.php con el parámetro para mostrar el modal de modificación exitosa.
+        header('Location: OpVehiculos.php?modificado=exito');
         exit();
     } else {
         $mensajeError = "Error al modificar el vehículo: " . mysqli_error($conexion);
@@ -208,6 +212,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
                 <div class="card shadow-lg p-4">
                     <h2 class="card-title text-center mb-4">Modificar Vehículo #<?php echo $idVehiculo; ?></h2>
                     <form method="post" action="ModificarVehiculo.php?id=<?php echo $idVehiculo; ?>">
+
+                        <?php
+                        // Variable para deshabilitar campos si el vehículo está inactivo
+                        $disabled = (isset($vehiculo['vActivo']) && $vehiculo['vActivo'] == '0') ? 'disabled' : '';
+                        ?>
+
+                        <fieldset <?php echo $disabled; ?>>
 
                         <h5 class="mt-4 mb-3">Información General</h5>
                         <div class="row">
@@ -313,14 +324,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
                         <h5 class="mt-4 mb-3">Estado y Ubicación</h5>
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label for="activo" class="form-label">Estado Activo/Inactivo</label>
-                                <select class="form-select" aria-label="Selector" id="activo" name="Activo">
-                                    <option value="">Selecciona una opción</option>
-                                    <option value="1" <?php echo (isset($vehiculo['vActivo']) && $vehiculo['vActivo'] == '1') ? 'selected' : ''; ?>>Activo</option>
-                                    <option value="0" <?php echo (isset($vehiculo['vActivo']) && $vehiculo['vActivo'] == '0') ? 'selected' : ''; ?>>Inactivo</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-3">
                                 <label for="disponibilidad" class="form-label">Disponibilidad para arrendar </label>
                                 <select class="form-select" aria-label="Selector" id="disponibilidad" name="Disponibilidad" <?php echo (isset($vehiculo['vActivo']) && $vehiculo['vActivo'] == '0') ? 'disabled' : ''; ?>>
                                     <option value="">Selecciona una opción</option>
@@ -375,11 +378,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
                             </div>
                         </div>
 
+                        </fieldset>
+
                         <br>
                         <div class="d-flex justify-content-start gap-2">
-                            <button type="submit" class="btn btn-dark" name="BotonModificarVehiculo" value="modificandoVehiculo">
-                                Guardar Cambios
-                            </button>
+                            <?php if (isset($vehiculo['vActivo']) && $vehiculo['vActivo'] == '0') : ?>
+                                <button type="submit" name="BotonReactivar" class="btn btn-success">Reactivar Vehículo</button>
+                            <?php else : ?>
+                                <button type="submit" class="btn btn-dark" name="BotonModificarVehiculo" value="modificandoVehiculo">
+                                    Guardar Cambios
+                                </button>
+                            <?php endif; ?>
                             <a href="OpVehiculos.php" class="btn btn-secondary">
                                 Cancelar
                             </a>

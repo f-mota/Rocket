@@ -8,6 +8,15 @@ Corroborar_Usuario(); // No se puede ingresar a la página php a menos que se ha
 require_once "conn/conexion.php";
 $conexion = ConexionBD();
 
+// Variable para controlar el modal de eliminación exitosa
+$eliminacionExitosa = isset($_GET['eliminado']) && $_GET['eliminado'] == 'exito';
+
+// Variable para controlar el modal de reactivación exitosa
+$reactivacionExitosa = isset($_GET['reactivado']) && $_GET['reactivado'] == 'exito';
+
+// Variable para controlar el modal de modificación exitosa
+$modificacionExitosa = isset($_GET['modificado']) && $_GET['modificado'] == 'exito';
+
 // Incluyo las funciones necesarias para listado y consulta
 require_once 'funciones/vehiculos listado.php';
 require_once 'funciones/vehiculo consulta.php';
@@ -201,6 +210,9 @@ $CantidadGrupo = count($ListadoGrupo);
 $ListadoModelo = Listar_Modelo($conexion);
 $CantidadModelo = count($ListadoModelo);
 
+$ListadoCombustible = Listar_Combustible($conexion);
+$CantidadCombustible = count($ListadoCombustible);
+
 
 require_once "head.php";
 ?>
@@ -276,7 +288,20 @@ require_once "head.php";
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="grupo" class="form-label">Grupo</label>
-                            <input type="text" class="form-control" id="grupo" name="Grupo" value="<?php echo !empty($_POST['Grupo']) ? $_POST['Grupo'] : ''; ?>">
+                            <select class="form-select" id="grupo" name="Grupo">
+                                <option value="" selected></option>
+                                <?php
+                                if (!empty($ListadoGrupo)) {
+                                    foreach ($ListadoGrupo as $grupoItem) {
+                                        // El valor del option será el nombre del grupo para que el filtro siga funcionando como antes.
+                                        $selected = (isset($_POST['Grupo']) && $_POST['Grupo'] == $grupoItem['NombreGrupo']) ? 'selected' : '';
+                                        echo "<option value='" . htmlspecialchars($grupoItem['NombreGrupo']) . "' $selected>";
+                                        echo htmlspecialchars($grupoItem['NombreGrupo']);
+                                        echo "</option>";
+                                    }
+                                }
+                                ?>
+                            </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="modelo" class="form-label">Modelo</label>
@@ -291,7 +316,19 @@ require_once "head.php";
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="combustible" class="form-label">Combustible</label>
-                            <input type="text" class="form-control" id="combustible" name="Combustible" value="<?php echo !empty($_POST['Combustible']) ? $_POST['Combustible'] : ''; ?>">
+                            <select class="form-select" id="combustible" name="Combustible">
+                                <option value="" selected></option>
+                                <?php
+                                if (!empty($ListadoCombustible)) {
+                                    foreach ($ListadoCombustible as $combustibleItem) {
+                                        $selected = (isset($_POST['Combustible']) && $_POST['Combustible'] == $combustibleItem['TipoCombustible']) ? 'selected' : '';
+                                        echo "<option value='" . htmlspecialchars($combustibleItem['TipoCombustible']) . "' $selected>";
+                                        echo htmlspecialchars($combustibleItem['TipoCombustible']);
+                                        echo "</option>";
+                                    }
+                                }
+                                ?>
+                            </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="disponibilidad" class="form-label">Disponibilidad</label>
@@ -626,6 +663,61 @@ require_once "head.php";
         </div>
     </div>
 
+    <!-- Modal de Éxito por Eliminación -->
+    <div class="modal fade" id="exitoEliminacionModal" tabindex="-1" aria-labelledby="exitoEliminacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exitoEliminacionModalLabel">Operación Exitosa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Se eliminó el vehículo con éxito.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fin Modal de Éxito -->
+
+    <!-- Modal de Éxito por Reactivación -->
+    <div class="modal fade" id="exitoReactivacionModal" tabindex="-1" aria-labelledby="exitoReactivacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exitoReactivacionModalLabel">Operación Exitosa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Se reactivó el vehículo con éxito.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Éxito por Modificación -->
+    <div class="modal fade" id="exitoModificacionModal" tabindex="-1" aria-labelledby="exitoModificacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exitoModificacionModalLabel">Operación Exitosa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Se modificó el vehículo con éxito.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div>
         <?php require_once "foot.php"; ?>
     </div>
@@ -667,6 +759,40 @@ require_once "head.php";
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            <?php if ($eliminacionExitosa): ?>
+                var exitoModal = new bootstrap.Modal(document.getElementById('exitoEliminacionModal'));
+                exitoModal.show();
+                // Limpia el parámetro 'eliminado' de la URL para que el modal no reaparezca si se recarga la página.
+                if (window.history.replaceState) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('eliminado');
+                    window.history.replaceState({path: url.href}, '', url.href);
+                }
+            <?php endif; ?>
+
+            <?php if ($reactivacionExitosa): ?>
+                var exitoReactivacionModal = new bootstrap.Modal(document.getElementById('exitoReactivacionModal'));
+                exitoReactivacionModal.show();
+                // Limpia el parámetro 'reactivado' de la URL para que el modal no reaparezca si se recarga la página.
+                if (window.history.replaceState) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('reactivado');
+                    window.history.replaceState({path: url.href}, '', url.href);
+                }
+            <?php endif; ?>
+
+            <?php if ($modificacionExitosa): ?>
+                var exitoModificacionModal = new bootstrap.Modal(document.getElementById('exitoModificacionModal'));
+                exitoModificacionModal.show();
+                // Limpia el parámetro 'modificado' de la URL para que el modal no reaparezca si se recarga la página.
+                if (window.history.replaceState) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('modificado');
+                    window.history.replaceState({path: url.href}, '', url.href);
+                }
+            <?php endif; ?>
+
+
             if (localStorage.getItem('scrollToTable') === 'true') {
                 setTimeout(() => {
                     document.getElementById('tablaVehiculosContenedor').scrollIntoView({

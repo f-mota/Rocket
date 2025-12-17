@@ -95,6 +95,45 @@ if (isset($_GET['id'])) {
     require_once 'funciones/Select_Tablas.php';
     $vehiculosDisponibles = Listar_Vehiculos_Disponibles($conexion);
     $cantidadVehiculos = count($vehiculosDisponibles);
+
+    // Necesitamos además traer el vehículo no disponible que ya fue reservado por el cliente, para incluirlo en el listado
+    // Verificar si el vehículo reservado ya está en el listado de disponibles
+    $vehiculoReservadoId = (int)$reserva['IDVehiculo'];
+    $estaIncluido = false;
+
+    foreach ($vehiculosDisponibles as $v) {
+        if ((int)$v['IdVehiculo'] === $vehiculoReservadoId) {
+            $estaIncluido = true;
+            break;
+        }
+    }
+
+    // Si no está incluido (porque está marcado como No disponible), lo traemos aparte
+    if (!$estaIncluido) {
+        $SQLvehiculoReservado = "SELECT v.idVehiculo as IdVehiculo,
+                                        v.matricula as matricula,
+                                        v.disponibilidad,
+                                        m.nombreModelo as modelo,
+                                        g.nombreGrupo as grupo
+                                FROM vehiculos v
+                                JOIN modelos m ON v.idModelo = m.idModelo
+                                JOIN `grupos-vehiculos` g ON v.idGrupoVehiculo = g.idGrupo
+                                WHERE v.idVehiculo = $vehiculoReservadoId";
+
+        $rsVehiculo = mysqli_query($conexion, $SQLvehiculoReservado);
+        if ($rsVehiculo && $data = mysqli_fetch_array($rsVehiculo)) {
+            // Agregar el vehículo reservado (no disponible) al listado de disponibles, es un append sobre el array previamente creado
+            $vehiculosDisponibles[] = [
+                'IdVehiculo' => $data['IdVehiculo'],
+                'matricula'  => $data['matricula'],
+                'modelo'     => $data['modelo'],
+                'grupo'      => $data['grupo'],
+                'disponibilidad' => $data['disponibilidad']
+            ];
+            $cantidadVehiculos++;
+        }
+    }
+
 } 
 
 else {

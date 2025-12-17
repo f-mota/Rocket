@@ -80,7 +80,47 @@ if (isset($_GET['id'])) {
 
     $estadosContrato = Listar_EstadosContrato($conexion);
     $cantidadEstados = count($estadosContrato);
-} else {
+
+    // Necesitamos además traer el vehículo no disponible que ya fue seleccionado por el cliente, para incluirlo en el listado
+    // Verificar si el vehículo del contrato ya está en el listado de disponibles
+    $vehiculoContratoId = (int)$contrato['cIdVehiculo'];
+    $estaIncluido = false;
+
+    foreach ($vehiculosDisponibles as $v) {
+        if ((int)$v['IdVehiculo'] === $vehiculoContratoId) {
+            $estaIncluido = true;
+            break;
+        }
+    }
+
+    // Si no está incluido (porque está marcado como No disponible), lo traemos aparte
+    if (!$estaIncluido) {
+        $SQLvehiculoContrato = "SELECT v.idVehiculo as IdVehiculo,
+                                        v.matricula as matricula,
+                                        v.disponibilidad,
+                                        m.nombreModelo as modelo,
+                                        g.nombreGrupo as grupo
+                                FROM vehiculos v
+                                JOIN modelos m ON v.idModelo = m.idModelo
+                                JOIN `grupos-vehiculos` g ON v.idGrupoVehiculo = g.idGrupo
+                                WHERE v.idVehiculo = $vehiculoContratoId";
+
+        $rsVehiculo = mysqli_query($conexion, $SQLvehiculoContrato);
+        if ($rsVehiculo && $data = mysqli_fetch_array($rsVehiculo)) {
+            // Agregar el vehículo ya seleccionado (y no disponible) al listado de disponibles, es un append sobre el array previamente creado            
+            $vehiculosDisponibles[] = [
+                'IdVehiculo' => $data['IdVehiculo'],
+                'matricula'  => $data['matricula'],
+                'modelo'     => $data['modelo'],
+                'grupo'      => $data['grupo'],
+                'disponibilidad' => $data['disponibilidad']
+            ];
+            $cantidadVehiculos++;
+        }
+    }
+} 
+
+else {
     // Si no se pasa un ID, se redirige al listado de contratos
     header("Location: contratosAlquiler.php?mensaje=No se encontró el contrato seleccionado. ");
     exit();

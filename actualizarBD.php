@@ -13,6 +13,7 @@ function exportar_base_de_datos($conexion, $ruta_archivo) {
         $sql_content .= "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n";
         $sql_content .= "START TRANSACTION;\n";
         $sql_content .= "SET time_zone = \"+00:00\";\n\n";
+        $sql_content .= "SET foreign_key_checks = 0;\n\n";
 
         $result_tablas = $conexion->query("SHOW TABLES");
         if (!$result_tablas) throw new Exception("Error al obtener las tablas: " . $conexion->error);
@@ -55,6 +56,7 @@ function exportar_base_de_datos($conexion, $ruta_archivo) {
         }
         $result_tablas->free();
 
+        $sql_content .= "\nSET foreign_key_checks = 1;\n";
         $sql_content .= "COMMIT;\n";
 
         if (file_put_contents($ruta_archivo, $sql_content) === false) {
@@ -78,12 +80,40 @@ function actualizar_base_de_datos($conexion, $ruta_archivo) {
         return "<p style='color: red;'><strong>Error:</strong> No se pudo leer el contenido del archivo SQL.</p>";
     }
 
+    // Obtener el nombre de la base de datos actual
+    $db_name_query = $conexion->query("SELECT DATABASE()");
+    if (!$db_name_query) {
+        return "<p style='color: red;'><strong>Error:</strong> No se pudo obtener el nombre de la base de datos.</p>";
+    }
+    $db_name = $db_name_query->fetch_row()[0];
+    $db_name_query->free();
+
+    // Limpiar la base de datos (borrar todas las tablas) antes de importar
+    try {
+        $conexion->query('SET foreign_key_checks = 0');
+        $result = $conexion->query("SELECT table_name FROM information_schema.tables WHERE table_schema = '{$db_name}'");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $conexion->query('DROP TABLE IF EXISTS `' . $row['table_name'] . '`');
+            }
+            $result->free();
+        }
+    } catch (Exception $e) {
+        // Asegurarse de reactivar los checks incluso si hay un error
+        $conexion->query('SET foreign_key_checks = 1');
+        return "<p style='color: red;'><strong>Error al limpiar la base de datos:</strong> " . $e->getMessage() . "</p>";
+    }
+    // No usamos finally porque necesitamos que se ejecute antes de multi_query
+
     // Desactivar temporalmente el reporte de excepciones para manejarlo manualmente
     mysqli_report(MYSQLI_REPORT_OFF);
 
     if (!mysqli_multi_query($conexion, $sql_content)) {
         return "<p style='color: red;'><strong>Error al iniciar la ejecución de consultas:</strong> " . htmlspecialchars(mysqli_error($conexion)) . "</p>";
     }
+
+    // Reactivar los foreign key checks después de la importación
+    $conexion->query('SET foreign_key_checks = 1');
 
     // Recorrer todos los resultados para limpiar el buffer y detectar errores
     do {

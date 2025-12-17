@@ -392,7 +392,7 @@ $disabledAttr = $isDisabledGeneral ? 'disabled' : '';
                 <div class="mb-3">
                     <label for="numero" class="form-label">Número de Reserva</label>
                     <input type="text" class="form-control" id="numero" name="NumeroReserva"
-                        value="<?php echo htmlspecialchars(trim($reserva['NumeroReserva'])); ?> " disabled>
+                        value="<?php echo htmlspecialchars(trim($idReserva)); ?> " disabled>
                 </div>
 
                 <div class="mb-3">

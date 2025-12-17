@@ -28,9 +28,11 @@ $fechaDevolucion = $_POST['fechadevolucion'];
 // Estado inicial del contrato (1 = En preparación)
 $estadocontrato = 1;
 
-// Obtener idSucursal (AJUSTAR ESTA LÍNEA SEGÚN CÓMO MANEJES LA SUCURSAL DEL USUARIO LOGUEADO)
-// Asumimos que la sucursal del usuario logueado está en $_SESSION['idSucursal']
-$idSucursal = $_SESSION['idSucursal'] ?? 1; // Default a 1 si no se encuentra en sesión
+// Obtener idSucursal desde la tabla vehiculos según el vehículo elegido
+$SQL_IdSucursal = "SELECT idSucursal FROM vehiculos WHERE idVehiculo = $idVehiculo";
+$rsSucursal = mysqli_query($conexion, $SQL_IdSucursal);
+$dataSucursal = mysqli_fetch_array($rsSucursal);
+$idSucursal = $dataSucursal['idSucursal'];
 
 // 3. Validación de Fechas (Back-end)
 $hoy = date('Y-m-d');

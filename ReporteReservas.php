@@ -59,7 +59,7 @@ include('head.php');
 
                                 <td><span style='color: #d19513;'><h4> <?php echo $contador; ?> </h4></span></td>
 
-                                <td> <?php echo $ListadoReservas[$i]['numeroReserva']; ?> </td>
+                                <td> <?php echo $ListadoReservas[$i]['idReserva']; ?> </td>
 
                                 <td> <?php echo $ListadoReservas[$i]['apellidoCliente']; ?> </td>
 

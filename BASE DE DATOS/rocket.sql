@@ -1,9 +1,11 @@
 -- Rocket Rent a Car - Backup
--- Generation Time: 2025-12-17 00:16:39
+-- Generation Time: 2025-12-18 01:36:11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+SET foreign_key_checks = 0;
 
 -- --------------------------------------------------------
 -- Table structure for table `accesorios-vehiculos`
@@ -1384,4 +1386,6 @@ CREATE TABLE `verificaciones-vehiculos` (
   CONSTRAINT `verificaciones-vehiculos_ibfk_1` FOREIGN KEY (`idVehiculo`) REFERENCES `vehiculos` (`idVehiculo`) ON DELETE SET NULL ON UPDATE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
+
+SET foreign_key_checks = 1;
 COMMIT;

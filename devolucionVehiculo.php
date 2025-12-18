@@ -71,9 +71,9 @@ include('head.php');
 <body style="margin: 0 auto;">
 
     <style>
-        .form-control:focus {
-            border-color: rgb(14, 94, 199);
-        }
+    .form-control:focus {
+        border-color: rgb(14, 94, 199);
+    }
     </style>
 
     <div class="wrapper" style="margin-bottom: 100px; min-height: 100%;">
@@ -93,50 +93,54 @@ include('head.php');
 
             <!-- Algunos efectos moderno para el form de consultas ;) -->
             <style>
-
-                @keyframes fadeInUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(30px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
                 }
 
-                .filtro-consultas {
-                    transition: all 0.4s ease-in-out; 
-                    border-radius: 15px; 
-                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); 
-                    animation: fadeInUp 0.8s ease-in-out; /* Hace que el cuadro "aparezca suavemente" */
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
                 }
+            }
 
-                .filtro-consultas:hover {
-                    transform: translateY(-5px); 
-                    box-shadow: 0px 10px 20px rgba(198, 167, 31, 0.5);
-                }
+            .filtro-consultas {
+                transition: all 0.4s ease-in-out;
+                border-radius: 15px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                animation: fadeInUp 0.8s ease-in-out;
+                /* Hace que el cuadro "aparezca suavemente" */
+            }
 
-                .form-control {
-                    transition: all 0.3s ease-in-out;
-                    border: 1px solid;
-                }
+            .filtro-consultas:hover {
+                transform: translateY(-5px);
+                box-shadow: 0px 10px 20px rgba(198, 167, 31, 0.5);
+            }
 
-                .form-control:focus {
-                    border: 2px solid rgb(160, 4, 4); /* Resalta con dorado */
-                    box-shadow: rgba(152, 10, 10, 0.81);
-                }
+            .form-control {
+                transition: all 0.3s ease-in-out;
+                border: 1px solid;
+            }
 
-                .btn-filtrar {
-                    transition: transform 0.3s ease-in-out;
-                }
+            .form-control:focus {
+                border: 2px solid rgb(160, 4, 4);
+                /* Resalta con dorado */
+                box-shadow: rgba(152, 10, 10, 0.81);
+            }
 
-                .btn-filtrar:hover {
-                    transform: scale(1.1); /* Botón se agranda ligeramente */
-                }
+            .btn-filtrar {
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .btn-filtrar:hover {
+                transform: scale(1.1);
+                /* Botón se agranda ligeramente */
+            }
             </style>
 
-            <div class="filtro-consultas" style="margin-top: 20px; margin-bottom: 50px; padding: 35px; max-width: 97%; background-color: white; border: 1px solid rgb(14, 94, 199); border-radius: 14px;">
+            <div class="filtro-consultas"
+                style="margin-top: 20px; margin-bottom: 50px; padding: 35px; max-width: 97%; background-color: white; border: 1px solid rgb(14, 94, 199); border-radius: 14px;">
                 <div style='color:rgb(14, 94, 199); margin-bottom: 30px;'>
                     <h3 class="fw-bold"> Devolucion de vehículos </h3>
                 </div>
@@ -198,10 +202,12 @@ include('head.php');
                     <div class="w-100"></div> <!-- salto de linea -->
                     <div class="d-flex flex-wrap justify-content-between align-items-end mt-3">
                         <div class="d-flex flex-wrap gap-2">
-                            <button type="submit" style="background-color: rgb(14, 94, 199); color: white;" class="btn btn-filtrar" name="BotonFiltrar" value="FiltrandoDevolucion">
+                            <button type="submit" style="background-color: rgb(14, 94, 199); color: white;"
+                                class="btn btn-filtrar" name="BotonFiltrar" value="FiltrandoDevolucion">
                                 <i class="fas fa-filter"></i> Filtrar
                             </button>
-                            <button type="submit" class="btn btn-warning btn-filtrar" name="BotonLimpiarFiltros" value="LimpiandoFiltros">
+                            <button type="submit" class="btn btn-warning btn-filtrar" name="BotonLimpiarFiltros"
+                                value="LimpiandoFiltros">
                                 <i class="fas fa-ban"></i> Limpiar Filtros
                             </button>
                         </div>
@@ -223,10 +229,12 @@ include('head.php');
                                     <h3>#</h3>
                                 </th>
                                 <th>Contrato</th>
-                                <th title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
+                                <th
+                                    title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
                                     Finalización Contrato
                                 </th>
-                                <th title="Fecha efectiva de devolución del vehículo por parte del cliente. Formato de fecha: YYYY/mm/dd">
+                                <th
+                                    title="Fecha efectiva de devolución del vehículo por parte del cliente. Formato de fecha: YYYY/mm/dd">
                                     Fecha Devolución
                                 </th>
                                 <th>Hora Devolución</th>
@@ -246,37 +254,39 @@ include('head.php');
 
                             for ($i = 0; $i < $CantidadDevolucion; $i++) { ?>
 
-                                <tr class='Devolucion' data-id='<?php echo $ListadoDevolucion[$i]['IdDevolucion']; ?>'
-                                    onclick="selectRow(this, '<?= $ListadoDevolucion[$i]['IdDevolucion'] ?>')">
+                            <tr class='Devolucion' data-id='<?php echo $ListadoDevolucion[$i]['IdDevolucion']; ?>'
+                                onclick="selectRow(this, '<?= $ListadoDevolucion[$i]['IdDevolucion'] ?>')">
 
-                                    <td><span style='color: rgb(14, 94, 199);'>
-                                            <h4> <?php echo $contador; ?> </h4>
-                                        </span></td>
-                                    <td> <?php echo $ListadoDevolucion[$i]['IdContrato']; ?> </td>
+                                <td><span style='color: rgb(14, 94, 199);'>
+                                        <h4> <?php echo $contador; ?> </h4>
+                                    </span></td>
+                                <td> <?php echo $ListadoDevolucion[$i]['IdContrato']; ?> </td>
 
-                                    <td title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
-                                        <?php echo $ListadoDevolucion[$i]['FechaFinContrato']; ?>
-                                    </td>
-                                    <td title="Fecha efectiva de devolución del vehículo por parte del cliente. Formato de fecha: YYYY/mm/dd">
-                                        <?php echo $ListadoDevolucion[$i]['FechaDevolucion']; ?>
-                                    </td>
+                                <td
+                                    title="Fecha de finalización del contrato. No corresponde necesariamente con la fecha de devolución del vehículo. Formato de fecha: YYYY/mm/dd">
+                                    <?php echo $ListadoDevolucion[$i]['FechaFinContrato']; ?>
+                                </td>
+                                <td
+                                    title="Fecha efectiva de devolución del vehículo por parte del cliente. Formato de fecha: YYYY/mm/dd">
+                                    <?php echo $ListadoDevolucion[$i]['FechaDevolucion']; ?>
+                                </td>
 
-                                    <td> <?php echo $ListadoDevolucion[$i]['HoraDevolucion']; ?> </td>
-                                    <td> <?php echo "{$ListadoDevolucion[$i]['apellidoCliente']}, {$ListadoDevolucion[$i]['nombreCliente']} </br> DNI: {$ListadoDevolucion[$i]['dniCliente']}"; ?>
-                                    </td>
-                                    <td> <?php echo "Patente {$ListadoDevolucion[$i]['vehiculoMatricula']} </br> {$ListadoDevolucion[$i]['vehiculoModelo']}, {$ListadoDevolucion[$i]['vehiculoGrupo']}"; ?>
-                                    </td>
-                                    <td> <?php echo "{$ListadoDevolucion[$i]['CiudadSucursal']}, {$ListadoDevolucion[$i]['DireccionSucursal']}"; ?>
-                                    </td>
-                                    <td title="Estado del vehículo al momento de la devolución">
-                                        <?php echo $ListadoDevolucion[$i]['EstadoDevolucion']; ?> </td>
-                                    <td title="Aclaraciones sobre el estado del vehículo al momento de la devolución">
-                                        <?php echo $ListadoDevolucion[$i]['AclaracionesDevolucion']; ?> </td>
+                                <td> <?php echo $ListadoDevolucion[$i]['HoraDevolucion']; ?> </td>
+                                <td> <?php echo "{$ListadoDevolucion[$i]['apellidoCliente']}, {$ListadoDevolucion[$i]['nombreCliente']} </br> DNI: {$ListadoDevolucion[$i]['dniCliente']}"; ?>
+                                </td>
+                                <td> <?php echo "Patente {$ListadoDevolucion[$i]['vehiculoMatricula']} </br> {$ListadoDevolucion[$i]['vehiculoModelo']}, {$ListadoDevolucion[$i]['vehiculoGrupo']}"; ?>
+                                </td>
+                                <td> <?php echo "{$ListadoDevolucion[$i]['CiudadSucursal']}, {$ListadoDevolucion[$i]['DireccionSucursal']}"; ?>
+                                </td>
+                                <td title="Estado del vehículo al momento de la devolución">
+                                    <?php echo $ListadoDevolucion[$i]['EstadoDevolucion']; ?> </td>
+                                <td title="Aclaraciones sobre el estado del vehículo al momento de la devolución">
+                                    <?php echo $ListadoDevolucion[$i]['AclaracionesDevolucion']; ?> </td>
 
-                                    <td title="Infracciones cometidas por el cliente">
-                                        <?php echo $ListadoDevolucion[$i]['InfraccionesDevolucion']; ?> <br><br>
-                                        <b>Costos asociados:</b> <br>
-                                        <?php
+                                <td title="Infracciones cometidas por el cliente">
+                                    <?php echo $ListadoDevolucion[$i]['InfraccionesDevolucion']; ?> <br><br>
+                                    <b>Costos asociados:</b> <br>
+                                    <?php
                                         if (is_null($ListadoDevolucion[$i]['CostosInfracciones']) || $ListadoDevolucion[$i]['CostosInfracciones'] == 0) {
                                             echo "Sin costos";
                                         } else {
@@ -285,10 +295,10 @@ include('head.php');
                                             echo " USD";
                                         }
                                         ?>
-                                    </td>
+                                </td>
 
-                                    <td title="Monto extra a cobrar por infracciones">
-                                        <?php
+                                <td title="Monto extra a cobrar por infracciones">
+                                    <?php
                                         if (is_null($ListadoDevolucion[$i]['MontoExtra']) || $ListadoDevolucion[$i]['MontoExtra'] == 0) {
                                             echo "Sin costos";
                                         } else {
@@ -297,9 +307,9 @@ include('head.php');
                                             echo " USD";
                                         }
                                         ?>
-                                    </td>
-                                </tr>
-                                <?php $contador++; ?>
+                                </td>
+                            </tr>
+                            <?php $contador++; ?>
                             <?php
                             }
                             ?>
@@ -311,14 +321,17 @@ include('head.php');
                 <br><br>
                 <!-- Recuadro con cantidad total de registros encontrados -->
                 <style>
-                    .no-btn-effect {
-                        pointer-events: none; /* Evita que se comporte como un botón */
-                        box-shadow: none !important; 
-                        cursor: default !important; /* Hace que el cursor no cambie */
-                        border: none; 
-                    }
+                .no-btn-effect {
+                    pointer-events: none;
+                    /* Evita que se comporte como un botón */
+                    box-shadow: none !important;
+                    cursor: default !important;
+                    /* Hace que el cursor no cambie */
+                    border: none;
+                }
                 </style>
-                <p class="btn no-btn-effect" style="background-color: rgb(153, 6, 6); color: #ffffff; margin-left: 25px;">
+                <p class="btn no-btn-effect"
+                    style="background-color: rgb(153, 6, 6); color: #ffffff; margin-left: 25px;">
                     Total de registros encontrados: <?php echo $CantidadDevolucion; ?>
                 </p>
 
@@ -352,21 +365,21 @@ include('head.php');
                 </div>
 
                 <style>
-                    .hoverImage {
-                        position: relative;
-                        align-self: stretch;
-                        height: 650px;
-                        flex-shrink: 0;
-                        object-fit: cover;
-                        border-radius: 10px;
-                        max-width: 100%;
-                    }
+                .hoverImage {
+                    position: relative;
+                    align-self: stretch;
+                    height: 650px;
+                    flex-shrink: 0;
+                    object-fit: cover;
+                    border-radius: 10px;
+                    max-width: 100%;
+                }
 
-                    .centrar {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                    }
+                .centrar {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
                 </style>
 
                 <div style="margin: auto; max-width: 95%; padding: 10px 0 40px 0;">
@@ -392,27 +405,27 @@ include('head.php');
                         </a>
 
                         <style>
-                            .btn-inversion {
-                                padding-left: 30px;
-                                padding-right: 30px;
-                                background-color: #262626;
-                                color: #e04709;
-                                font-weight: 500;
-                                border: 1px solid #d64004;
-                                border-radius: 20px;
+                        .btn-inversion {
+                            padding-left: 30px;
+                            padding-right: 30px;
+                            background-color: #262626;
+                            color: #e04709;
+                            font-weight: 500;
+                            border: 1px solid #d64004;
+                            border-radius: 20px;
 
-                                transition: all 0.5s ease-in-out;
-                                -webkit-transition: all 0.5s ease-in-out;
-                                -moz-transition: all 0.5s ease-in-out;
-                                -o-transition: all 0.5s ease-in-out;
-                            }
+                            transition: all 0.5s ease-in-out;
+                            -webkit-transition: all 0.5s ease-in-out;
+                            -moz-transition: all 0.5s ease-in-out;
+                            -o-transition: all 0.5s ease-in-out;
+                        }
 
-                            .btn-inversion:hover {
-                                background-color: #a80a0a;
-                                color: white;
-                                font-weight: 100;
-                                border: 1px solid #a80a0a;
-                            }
+                        .btn-inversion:hover {
+                            background-color: #a80a0a;
+                            color: white;
+                            font-weight: 100;
+                            border: 1px solid #a80a0a;
+                        }
                         </style>
 
                         <div class="container d-flex justify-content-center" style="margin: 70px 0 50px 0;">
@@ -449,7 +462,8 @@ include('head.php');
                                 <div class="modal-body">
 
                                     <div class="mb-3">
-                                        <label for="selectorDevolucion" class="form-label" title="<?php echo $CantidadContratos ?> contratos encontrados (activos y renovados)">
+                                        <label for="selectorDevolucion" class="form-label"
+                                            title="<?php echo $CantidadContratos ?> contratos encontrados (activos y renovados)">
                                             Contrato
                                         </label>
                                         <select class="form-select" id="selectorDevolucion" name="idContrato" required>
@@ -474,15 +488,18 @@ include('head.php');
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="fechafincontrato" class="form-label">Fecha de Finalización del contrato</label>
+                                        <label for="fechafincontrato" class="form-label">Fecha de Finalización del
+                                            contrato</label>
                                         <input type="text" class="form-control" id="fechafincontrato"
-                                            name="fechaFinContrato" value="La fecha registrada en el contrato aparecerá aquí"
-                                            title="La fecha registrada en el contrato puede no coincidir con fecha real de devolución. Formato de fecha en pantalla: mm/dd/YYYY" 
+                                            name="fechaFinContrato"
+                                            value="La fecha registrada en el contrato aparecerá aquí"
+                                            title="La fecha registrada en el contrato puede no coincidir con fecha real de devolución. Formato de fecha en pantalla: mm/dd/YYYY"
                                             readonly>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="fechadevolucion" class="form-label">Fecha de Devolución efectiva</label>
+                                        <label for="fechadevolucion" class="form-label">Fecha de Devolución
+                                            efectiva</label>
                                         <input type="date" class="form-control" id="fechadevolucion"
                                             name="fechadevolucion" title="Formato de fecha: YYYY/mm/dd" required>
                                     </div>
@@ -490,7 +507,47 @@ include('head.php');
                                     <div class="mb-3">
                                         <label for="horadevolucion" class="form-label">Hora de Devolución</label>
                                         <input type="time" class="form-control" id="horadevolucion"
-                                            name="horadevolucion" title="Por favor complete también este campo" required>
+                                            name="horadevolucion" title="Por favor complete también este campo"
+                                            required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="estadovehiculo" class="form-label">Estado del vehículo durante la
+                                            Devolución</label>
+                                        <select class="form-select" id="estadovehiculo" name="estadoDevolucion">
+                                            <option value="" selected>Selecciona una opción (Opcional)</option>
+                                            <option value="Excelente">Excelente</option>
+                                            <option value="Bueno">Bueno</option>
+                                            <option value="Regular">Regular</option>
+                                            <option value="Dañado">Dañado</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="aclaraciones" class="form-label">Aclaraciones sobre el estado del
+                                            vehículo</label>
+                                        <textarea class="form-control" id="aclaraciones" name="aclaracionesDevolucion"
+                                            rows="2" placeholder="Notas sobre el estado físico..."></textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="infracciones" class="form-label">Infracciones asociadas a la
+                                            Devolución</label>
+                                        <textarea class="form-control" id="infracciones" name="infraccionesDevolucion"
+                                            rows="2" placeholder="Detalle de multas o infracciones..."></textarea>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="costoinfracciones" class="form-label">Costos de
+                                                infracciones</label>
+                                            <input type="number" step="0.01" class="form-control" id="costoinfracciones"
+                                                name="costosInfracciones" value="0.00">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="montoextra" class="form-label">Monto adicional</label>
+                                            <input type="number" step="0.01" class="form-control" id="montoextra"
+                                                name="montoExtra" value="0.00">
+                                        </div>
                                     </div>
                                 </div>
 
@@ -522,7 +579,8 @@ include('head.php');
 
                                     <div class="mb-3">
                                         <label for="idCliente" class="form-label">Seleccionar cliente</label>
-                                        <select class="form-select" aria-label="Selector" id="selectorCliente" name="idCliente"
+                                        <select class="form-select" aria-label="Selector" id="selectorCliente"
+                                            name="idCliente"
                                             title="<?php echo $CantidadClientes ?> clientes encontrados" required>
                                             <option value="" selected>Selecciona una opción</option>
 
@@ -571,86 +629,88 @@ include('head.php');
     </div>
 
     <script>
-        // Efecto sobre la imagen del reporte
-        window.onload = function() {
+    // Efecto sobre la imagen del reporte
+    window.onload = function() {
 
-            const imageElement = document.querySelector('.hoverImage');
+        const imageElement = document.querySelector('.hoverImage');
 
-            if (imageElement) {
-                const handleMouseMove = (e) => {
-                    let rect = imageElement.getBoundingClientRect();
-                    let x = e.clientX - rect.left;
-                    let y = e.clientY - rect.top;
+        if (imageElement) {
+            const handleMouseMove = (e) => {
+                let rect = imageElement.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                let y = e.clientY - rect.top;
 
-                    let dx = (x - rect.width / 2) / (rect.width / 2);
-                    let dy = (y - rect.height / 2) / (rect.height / 2);
+                let dx = (x - rect.width / 2) / (rect.width / 2);
+                let dy = (y - rect.height / 2) / (rect.height / 2);
 
-                    imageElement.style.transform =
-                        `perspective(500px) rotateY(${dx * 5}deg) rotateX(${-dy * 5}deg)`;
-                };
+                imageElement.style.transform =
+                    `perspective(500px) rotateY(${dx * 5}deg) rotateX(${-dy * 5}deg)`;
+            };
 
-                const handleMouseLeave = () => {
-                    imageElement.style.transform = "";
-                };
+            const handleMouseLeave = () => {
+                imageElement.style.transform = "";
+            };
 
-                imageElement.addEventListener('mousemove', handleMouseMove);
-                imageElement.addEventListener('mouseleave', handleMouseLeave);
-            }
+            imageElement.addEventListener('mousemove', handleMouseMove);
+            imageElement.addEventListener('mouseleave', handleMouseLeave);
         }
+    }
     </script>
 
     <script>
+    // Desplazamiento vertical al listado luego de consulta
+    function scrollToTable() {
+        localStorage.setItem('scrollToTable', 'true'); // Guardar indicador antes de enviar
+    }
 
-        // Desplazamiento vertical al listado luego de consulta
-        function scrollToTable() {
-            localStorage.setItem('scrollToTable', 'true'); // Guardar indicador antes de enviar
+    document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('scrollToTable') === 'true') {
+            setTimeout(() => {
+                document.getElementById('tablaDevolucionesContenedor').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                localStorage.removeItem('scrollToTable'); // Limpiar indicador después del scroll
+            }, 500);
         }
+    });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('scrollToTable') === 'true') {
-                setTimeout(() => {
-                    document.getElementById('tablaDevolucionesContenedor').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    localStorage.removeItem('scrollToTable'); // Limpiar indicador después del scroll
-                }, 500); 
-            }
+    let DevolucionSeleccionada = null;
+
+    // Selección de fila en la Tabla de Devolucion al hacer clic en la misma
+    document.querySelectorAll('#tablaDevolucion .Devolucion').forEach(row => {
+        row.addEventListener('click', () => {
+            // Desmarcar cualquier fila previamente seleccionada
+            document.querySelectorAll('.Devolucion').forEach(row => row.classList.remove(
+                'table-active'));
+            // Marcar la fila seleccionada
+            row.classList.add('table-active');
+            DevolucionSeleccionada = row.dataset.id;
+
+            // Habilitar los botones
+            document.getElementById('btnModificar').disabled = false;
+            //                document.getElementById('btnEliminar').disabled = false;
         });
+    });
 
-        let DevolucionSeleccionada = null;
-
-        // Selección de fila en la Tabla de Devolucion al hacer clic en la misma
-        document.querySelectorAll('#tablaDevolucion .Devolucion').forEach(row => {
-            row.addEventListener('click', () => {
-                // Desmarcar cualquier fila previamente seleccionada
-                document.querySelectorAll('.Devolucion').forEach(row => row.classList.remove(
-                    'table-active'));
-                // Marcar la fila seleccionada
-                row.classList.add('table-active');
-                DevolucionSeleccionada = row.dataset.id;
-
-                // Habilitar los botones
-                document.getElementById('btnModificar').disabled = false;
-                //                document.getElementById('btnEliminar').disabled = false;
-            });
-        });
-
-        // Función para redirigir a modificarDevolucion.php con el ID de la Devolucion seleccionado
-        function modificarDevolucion() {
-            if (DevolucionSeleccionada) {
-                window.location.href = 'modificarDevolucion.php?id=' + DevolucionSeleccionada;
-            }
+    // Función para redirigir a modificarDevolucion.php con el ID de la Devolucion seleccionado
+    function modificarDevolucion() {
+        if (DevolucionSeleccionada) {
+            window.location.href = 'modificarDevolucion.php?id=' + DevolucionSeleccionada;
         }
+    }
     </script>
 
     <!-- Funcion para buscador en dropdown -->
     <script>
-        $(document).ready(function() {
-            // Inicializar Select2 dentro del modal
-            $('#selectorDevolucion').select2({
-                dropdownParent: $('#nuevoRegistroModal'),
-                width: '100%',
-                minimumResultsForSearch: 0 // ⚠️ Forzar siempre el buscador aunque haya pocos elementos (forzar que siempre aparezca el buscador)
-            });
+    $(document).ready(function() {
+        // Inicializar Select2 dentro del modal
+        $('#selectorDevolucion').select2({
+            dropdownParent: $('#nuevoRegistroModal'),
+            width: '100%',
+            minimumResultsForSearch: 0 // ⚠️ Forzar siempre el buscador aunque haya pocos elementos (forzar que siempre aparezca el buscador)
         });
+    });
     </script>
 
     <script>
@@ -662,7 +722,9 @@ include('head.php');
                 $.ajax({
                     type: 'POST',
                     url: 'obtenerFechaFinContrato.php',
-                    data: { idContrato: idContrato },
+                    data: {
+                        idContrato: idContrato
+                    },
                     success: function(response) {
                         if (response) {
                             // Seteamos el valor que ya viene formateado d-m-Y desde el PHP
@@ -680,10 +742,11 @@ include('head.php');
         // 2. Validación al enviar el formulario (Nueva Devolución)
         $('form[action="Nueva_Devolucion.php"]').on('submit', function(e) {
             var finTexto = $('#fechafincontrato').val(); // Formato d-m-Y
-            var devTexto = $('#fechadevolucion').val();   // Formato YYYY-MM-DD (input date)
+            var devTexto = $('#fechadevolucion').val(); // Formato YYYY-MM-DD (input date)
 
-            if (finTexto && devTexto && finTexto !== "La fecha registrada en el contrato aparecerá aquí") {
-                
+            if (finTexto && devTexto && finTexto !==
+                "La fecha registrada en el contrato aparecerá aquí") {
+
                 // Convertimos Fin (DD-MM-AAAA) a número comparable (AAAAMMDD)
                 var pF = finTexto.split('-');
                 var nFin = parseInt(pF[2] + pF[1] + pF[0]);
@@ -696,13 +759,14 @@ include('head.php');
                 // Si son iguales, nDevolucion < nFin es FALSO y permite guardar.
                 if (nDevolucion < nFin) {
                     e.preventDefault();
-                    alert("¡Atención!\n\nLa fecha de devolución efectiva no puede ser anterior a la fecha de finalización del contrato (" + finTexto + ").");
+                    alert("¡Atención!\n\nLa fecha de devolución efectiva no puede ser anterior a la fecha de finalización del contrato (" +
+                        finTexto + ").");
                     $('#fechadevolucion').focus();
                 }
             }
         });
     });
-</script>
+    </script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

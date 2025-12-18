@@ -13,6 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fechadevolucion = $_POST['fechadevolucion'];
     $horadevolucion = $_POST['horadevolucion'];
 
+    // --- NUEVOS CAMPOS ---
+    $estadoDevolucion = $_POST['estadoDevolucion'];
+    $aclaracionesDevolucion = $_POST['aclaracionesDevolucion'];
+    $infraccionesDevolucion = $_POST['infraccionesDevolucion'];
+    $costosInfracciones = $_POST['costosInfracciones'];
+    $montoExtra = $_POST['montoExtra'];
+
 
     // Validaciones básicas
     $errores = [];
@@ -59,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $IdCliente = $IdCliente['IdCliente'];
 
-    // Ahora sí, registro la devolucion del vehículo
+    // Ahora sí, registro la devolucion del vehículo con las variables nuevas
     $SQL_DevolucionVehiculo = "INSERT INTO `devoluciones-vehiculos` (fechaDevolucion,
                                                                     horaDevolucion, 
                                                                     idCliente,
@@ -74,11 +81,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     '$horadevolucion', 
                                     $IdCliente,
                                     $idContrato,
-                                    'Sin cambios',
-                                    'Sin aclaraciones',
-                                    'Ninguna',
-                                    '0',
-                                    '0', 
+                                    '$estadoDevolucion',
+                                    '$aclaracionesDevolucion',
+                                    '$infraccionesDevolucion',
+                                    '$costosInfracciones',
+                                    '$montoExtra', 
                                     'N'); ";
 
     

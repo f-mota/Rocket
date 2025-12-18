@@ -21,7 +21,7 @@ if ($_POST['idContrato']) {
         $fechaInicioContrato = $fila['fechaInicioContrato'];
 
         // Convertir formato por si es necesario
-        $fechaFormateada = date('m-d-Y', strtotime($fechaInicioContrato));
+        $fechaFormateada = date('d-m-Y', strtotime($fechaInicioContrato));
 
         echo $fechaFormateada; // Devuelve la fecha al AJAX del modal en "entregaVehiculo.php"
     } 

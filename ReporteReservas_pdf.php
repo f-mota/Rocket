@@ -166,7 +166,7 @@ $CantidadReservas = count($ListadoReservas);
                             <?php echo $contador; ?> 
                         </td>
                         <td> 
-                            <?php echo htmlspecialchars($reserva['numeroReserva']); ?>
+                            <?php echo htmlspecialchars($reserva['idReserva']); ?>
                         </td>
                         <td> 
                             <?php echo htmlspecialchars("{$reserva['apellidoCliente']}, {$reserva['nombreCliente']}"); ?> <br> 

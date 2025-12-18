@@ -483,7 +483,7 @@ include('head.php');
                                         <label for="fechainiciocontrato" class="form-label">Fecha de Inicio del contrato</label>
                                         <input type="text" class="form-control" id="fechainiciocontrato"
                                             name="fechaInicioContrato" value="La fecha registrada en el contrato aparecerá aquí"
-                                            title="La fecha registrada en el contrato puede no coincidir con fecha real de entrega. Formato de fecha en pantalla: mm/dd/YYYY" 
+                                            title="La fecha registrada en el contrato puede no coincidir con fecha real de entrega. Formato de fecha en pantalla: dd/mm/YYYY" 
                                             readonly>
                                     </div>
 
@@ -659,32 +659,51 @@ include('head.php');
         });
     </script>
 
-    <!-- Capturar fecha de inicio del contrato para el modal de registro de una nueva entrega (con AJAX) -->
     <script>
-        $(document).ready(function() {
-            $('#selectorEntrega').on('change', function() {
-                var idContrato = $(this).val();
-                if (idContrato) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'obtenerFechaInicioContrato.php',
-                        data: {
-                            idContrato: idContrato
-                        },
-                        success: function(response) {
-                            if (response) {
-                                $('#fechainiciocontrato').val(response);
-                            } else {
-                                $('#fechainiciocontrato').val('');
-                            }
+    $(document).ready(function() {
+        // 1. Carga la fecha en DD-MM-AAAA
+        $('#selectorEntrega').on('change', function() {
+            var idContrato = $(this).val();
+            if (idContrato) {
+                $.ajax({
+                    type: 'POST',
+                    url: 'obtenerFechaInicioContrato.php',
+                    data: { idContrato: idContrato },
+                    success: function(response) {
+                        if (response) {
+                            $('#fechainiciocontrato').val(response); // Ya viene como DD-MM-AAAA desde el PHP
                         }
-                    });
-                } else {
-                    $('#fechainiciocontrato').val('');
-                }
-            });
+                    }
+                });
+            }
         });
-    </script>
+
+        // 2. Validación al Guardar (Permite mismo día, bloquea anteriores)
+        $('form[action="Nueva_Entrega.php"]').on('submit', function(e) {
+            var inicioTexto = $('#fechainiciocontrato').val(); // Viene como DD-MM-AAAA
+            var entregaTexto = $('#fechaentrega').val();      // Viene como YYYY-MM-DD (input date)
+
+            if (inicioTexto && entregaTexto && inicioTexto !== "La fecha registrada en el contrato aparecerá aquí") {
+                
+                // Convertimos Inicio (DD-MM-AAAA) a número comparable (AAAAMMDD)
+                var pI = inicioTexto.split('-');
+                var nInicio = parseInt(pI[2] + pI[1] + pI[0]);
+
+                // Convertimos Entrega (YYYY-MM-DD) a número comparable (AAAAMMDD)
+                var pE = entregaTexto.split('-');
+                var nEntrega = parseInt(pE[0] + pE[1] + pE[2]);
+
+                // COMPARA: Si la entrega es MENOR al inicio, rebota.
+                // Si son IGUALES (ej: 20241010 < 20241010), da FALSO y te deja guardar.
+                if (nEntrega < nInicio) {
+                    e.preventDefault();
+                    alert("¡Atención!\n\nLa fecha de entrega efectiva no puede ser anterior al inicio del contrato (" + inicioTexto + ").");
+                    $('#fechaentrega').focus();
+                }
+            }
+        });
+    });
+</script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

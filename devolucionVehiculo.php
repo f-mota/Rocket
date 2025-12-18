@@ -653,32 +653,56 @@ include('head.php');
         });
     </script>
 
-    <!-- Capturar fecha de finalización del contrato para el modal de registro de una nueva devolución (con AJAX) -->
     <script>
-        $(document).ready(function() {
-            $('#selectorDevolucion').on('change', function() {
-                var idContrato = $(this).val();
-                if (idContrato) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'obtenerFechaFinContrato.php',
-                        data: {
-                            idContrato: idContrato
-                        },
-                        success: function(response) {
-                            if (response) {
-                                $('#fechafincontrato').val(response);
-                            } else {
-                                $('#fechafincontrato').val('');
-                            }
+    $(document).ready(function() {
+        // 1. Capturar fecha de fin de contrato y mostrarla en el input
+        $('#selectorDevolucion').on('change', function() {
+            var idContrato = $(this).val();
+            if (idContrato) {
+                $.ajax({
+                    type: 'POST',
+                    url: 'obtenerFechaFinContrato.php',
+                    data: { idContrato: idContrato },
+                    success: function(response) {
+                        if (response) {
+                            // Seteamos el valor que ya viene formateado d-m-Y desde el PHP
+                            $('#fechafincontrato').val(response);
+                        } else {
+                            $('#fechafincontrato').val('');
                         }
-                    });
-                } else {
-                    $('#fechafincontrato').val('');
-                }
-            });
+                    }
+                });
+            } else {
+                $('#fechafincontrato').val('');
+            }
         });
-    </script>
+
+        // 2. Validación al enviar el formulario (Nueva Devolución)
+        $('form[action="Nueva_Devolucion.php"]').on('submit', function(e) {
+            var finTexto = $('#fechafincontrato').val(); // Formato d-m-Y
+            var devTexto = $('#fechadevolucion').val();   // Formato YYYY-MM-DD (input date)
+
+            if (finTexto && devTexto && finTexto !== "La fecha registrada en el contrato aparecerá aquí") {
+                
+                // Convertimos Fin (DD-MM-AAAA) a número comparable (AAAAMMDD)
+                var pF = finTexto.split('-');
+                var nFin = parseInt(pF[2] + pF[1] + pF[0]);
+
+                // Convertimos Devolución (YYYY-MM-DD) a número comparable (AAAAMMDD)
+                var pD = devTexto.split('-');
+                var nDevolucion = parseInt(pD[0] + pD[1] + pD[2]);
+
+                // COMPARA: Si la devolución es numéricamente MENOR al fin, bloquea.
+                // Si son iguales, nDevolucion < nFin es FALSO y permite guardar.
+                if (nDevolucion < nFin) {
+                    e.preventDefault();
+                    alert("¡Atención!\n\nLa fecha de devolución efectiva no puede ser anterior a la fecha de finalización del contrato (" + finTexto + ").");
+                    $('#fechadevolucion').focus();
+                }
+            }
+        });
+    });
+</script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

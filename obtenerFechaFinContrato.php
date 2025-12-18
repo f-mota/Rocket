@@ -26,7 +26,7 @@ if ($_POST['idContrato']) {
         $fechaFinContrato = $fila['fechaFinContrato'];
 
         // Convertir formato por si es necesario
-        $fechaFormateada = date('m-d-Y', strtotime($fechaFinContrato));
+        $fechaFormateada = date('d-m-Y', strtotime($fechaFinContrato));
 
         echo $fechaFormateada; // Devuelve la fecha al AJAX del modal en "devolucionVehiculo.php"
     } 

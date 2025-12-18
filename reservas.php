@@ -360,7 +360,7 @@ include('head.php');
                             Cancelar
                         </button>
 
-                        <a href="ReporteReservas.php"> <button class="btn btn-primary">
+                        <a href="ReporteReservas.php" target="_blank"> <button class="btn btn-primary">
                                 Imprimir
                             </button></a>
                     </div>

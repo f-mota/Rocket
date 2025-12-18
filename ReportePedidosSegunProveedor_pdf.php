@@ -110,7 +110,7 @@ include('head.php');
 
     <table class="header-main">
         <tr>
-            <td><img src="http://<?php echo $_SERVER['HTTP_HOST']; ?>/proyectos/rocket/assets/img/logo-red.png" class="logo-img"></td>
+            <td><img src="http://<?php echo $_SERVER['HTTP_HOST']; ?>/rocket/assets/img/logo-red.png" class="logo-img"></td>
             <td class="report-title">
                 <h1>Reporte por Proveedor</h1>
                 <span style="font-size: 9pt;">Historial Detallado de Pedidos</span>

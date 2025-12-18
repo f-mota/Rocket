@@ -33,6 +33,11 @@ require_once 'funciones/CRUD-Reservas.php';
 $ListadoReservas = Listar_Reservas($conexion, $estadoReserva); 
 $CantidadReservas = count($ListadoReservas);
 
+// Si viene NumeroReserva en la URL, filtrar directamente esa reserva
+if (isset($_GET['NumeroReserva']) && !empty($_GET['NumeroReserva'])) {
+    $ListadoReservas = Consulta_Reservas($_GET['NumeroReserva'], '', '', '', '', '', '', $conexion, $estadoReserva);
+    $CantidadReservas = count($ListadoReservas);
+}
 
 // Consulta por medio de formulario de Filtro
 if (!empty($_GET['BotonFiltrar'])) {
@@ -581,7 +586,12 @@ include('head.php');
 
             modalTitle.textContent = titleText;
             modalTitle.classList.add(titleClass);
-            modalBody.textContent = decodeURIComponent(mensaje);
+
+            const numeroReserva = urlParams.get('NumeroReserva');
+
+            // Mostrar mensaje + número de reserva si existe
+            modalBody.innerHTML = decodeURIComponent(mensaje) +
+                (numeroReserva ? `<br><strong>Número de Reserva:</strong> ${numeroReserva}` : '');
 
             const myModal = new bootstrap.Modal(modalElement);
             myModal.show();

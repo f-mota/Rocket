@@ -273,16 +273,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarReserva
 
             $mensajeError = "No se pudo acceder a la base de datos. Error al intentar modificar la reserva";
             //si surge un error, finalizo la ejecucion del script con un mensaje 
-            header("Location: reservas.php?mensaje=" . urlencode($mensajeError));
-            exit();
+            header("Location: reservas.php?status=error&mensaje=" . urlencode($mensajeError) . "&NumeroReserva=" . urlencode($idReserva));
             $stmt->close();
+            exit();
         }
         else {
 
             // Redirigir después de la actualización
             $mensajeExito = "Reserva modificada exitosamente.";
             // Redirigir con mensaje de éxito para que lo muestre el modal
-            header("Location: reservas.php?status=success&mensaje=" . urlencode($mensajeExito));
+            header("Location: reservas.php?status=success&mensaje=" . urlencode($mensajeExito) . "&NumeroReserva=" . urlencode($idReserva));
             $stmt->close();
             exit();
         }

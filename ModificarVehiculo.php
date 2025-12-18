@@ -113,7 +113,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
     $numeroMotor = isset($_POST['NumeroMotor']) ? $_POST['NumeroMotor'] : $vehiculo['vNumeroMotor'];
     $numeroChasis = isset($_POST['NumeroChasis']) ? $_POST['NumeroChasis'] : $vehiculo['vNumeroChasis'];
     $puertas = isset($_POST['Puertas']) ? $_POST['Puertas'] : $vehiculo['vNumeroPuertas'];
+
+    // Validación del número de puertas
+    if (!is_numeric($puertas) || $puertas < 1 || $puertas > 6) {
+        $mensajeError = "El número de puertas debe ser un valor entre 1 y 6.";
+        echo "<script>alert('$mensajeError'); window.location.href = 'ModificarVehiculo.php?id=$idVehiculo';</script>";
+        exit();
+    }
+
     $asientos = isset($_POST['Asientos']) ? $_POST['Asientos'] : $vehiculo['vNumeroAsientos'];
+
+    // Validación del número de asientos
+    if (!is_numeric($asientos) || $asientos < 1 || $asientos > 9) {
+        $mensajeError = "El número de asientos debe ser un valor entre 1 y 9.";
+        echo "<script>alert('$mensajeError'); window.location.href = 'ModificarVehiculo.php?id=$idVehiculo';</script>";
+        exit();
+    }
+
     $kilometraje = isset($_POST['Kilometraje']) ? $_POST['Kilometraje'] : $vehiculo['vKilometraje'];
     $estadoVehiculo = isset($_POST['EstadoVehiculo']) ? $_POST['EstadoVehiculo'] : $vehiculo['vEstadoFisico'];
     $idModelo = isset($_POST['IdModelo']) ? $_POST['IdModelo'] : $vehiculo['vIdModelo'];
@@ -259,11 +275,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label for="puertas" class="form-label">Puertas</label>
-                                <input type="number" class="form-control" id="puertas" name="Puertas" value="<?php echo htmlspecialchars($vehiculo['vNumeroPuertas']); ?>" min="1">
+                                <input type="number" class="form-control" id="puertas" name="Puertas" value="<?php echo htmlspecialchars($vehiculo['vNumeroPuertas']); ?>" min="1" max="6">
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="asientos" class="form-label">Asientos</label>
-                                <input type="number" class="form-control" id="asientos" name="Asientos" value="<?php echo htmlspecialchars($vehiculo['vNumeroAsientos']); ?>" min="1">
+                                <input type="number" class="form-control" id="asientos" name="Asientos" value="<?php echo htmlspecialchars($vehiculo['vNumeroAsientos']); ?>" min="1" max="9">
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="kilometraje" class="form-label">Kilometraje</label>

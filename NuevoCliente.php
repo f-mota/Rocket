@@ -65,9 +65,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Conexión y consulta
+    // Conexión y consultas
     $MiConexion = ConexionBD();
 
+    // Validar que el documento sea único
+    $checkQuery = "SELECT COUNT(*) as total FROM clientes WHERE dniCliente = ?";
+    $checkStmt = $MiConexion->prepare($checkQuery);
+    $checkStmt->bind_param("i", $documento);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+    $row = $checkResult->fetch_assoc();
+
+    if ($row['total'] > 0) {
+        $mensaje = "El documento {$documento} ya está registrado en la base de datos.";
+        echo "<script>
+            alert('$mensaje');
+            window.location.href = 'clientes.php';
+        </script>";
+        $checkStmt->close();
+        $MiConexion->close();
+        exit();
+    }
+    $checkStmt->close();
+
+    // Si el DNI es único, se inserta el nuevo cliente
     $query = "INSERT INTO clientes (dniCliente, nombreCliente, apellidoCliente, mailCliente, telefonoCliente, direccionCliente) 
               VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $MiConexion->prepare($query);

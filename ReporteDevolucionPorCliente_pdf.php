@@ -25,11 +25,9 @@ $CantidadDevolucion = count($ListadoDevolucion);
 // Obtener datos del cliente (si hay devoluciones)
 $datosCliente = [];
 if ($CantidadDevolucion > 0) {
-    // Asumimos que los datos del cliente están en el primer registro
     $datosCliente = $ListadoDevolucion[0]; 
 }
 
-// Usamos el operador de coalescencia nula para proteger contra índices inexistentes
 $nombreCliente = htmlspecialchars($datosCliente['nombreCliente'] ?? 'N/A');
 $apellidoCliente = htmlspecialchars($datosCliente['apellidoCliente'] ?? 'N/A');
 $dniCliente = htmlspecialchars($datosCliente['dniCliente'] ?? 'N/A');
@@ -42,7 +40,7 @@ $dniCliente = htmlspecialchars($datosCliente['dniCliente'] ?? 'N/A');
     <title>Reporte de Devoluciones por Cliente</title>
     
     <style>
-        /* 1. Reset Básico y Tipografía */
+        /* ESTILO COPIADO EXACTAMENTE DE REPORTE CONTRATOS */
         body {
             font-family: Arial, sans-serif;
             font-size: 10pt;
@@ -51,240 +49,175 @@ $dniCliente = htmlspecialchars($datosCliente['dniCliente'] ?? 'N/A');
             padding: 0;
         }
 
-        /* 2. Cabecera del Documento (Limpia y Informativa) */
         .header-pdf {
             width: 100%;
             margin-bottom: 25px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #a80a0a; /* Color corporativo */
-            overflow: hidden;
+            border-bottom: 2px solid #a80a0a;
         }
-        .header-pdf img {
-            float: right;
-            margin-left: 20px;
+        .header-pdf table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .header-pdf .logo {
+            width: 150px;
+        }
+        .header-pdf .titulo-reporte {
+            text-align: right;
+            color: #a80a0a;
         }
         .header-pdf h1 {
-            color: #12374e;
-            font-size: 18pt;
-            margin: 0 0 5px 0;
-        }
-        .header-pdf p {
-            font-size: 10pt;
-            color: #555;
             margin: 0;
+            font-size: 18pt;
+            text-transform: uppercase;
         }
-        .cliente-info {
-            border: 1px solid #ddd;
+
+        .info-meta {
+            width: 100%;
+            margin-bottom: 20px;
+            font-size: 9pt;
+            color: #444;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .table th {
+            background-color: #a80a0a;
+            color: white;
+            text-transform: uppercase;
+            font-size: 9pt;
             padding: 10px;
-            margin-bottom: 15px;
+            border: 1px solid #860808;
+            text-align: center;
+        }
+        .table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+            font-size: 9pt;
+        }
+        .table tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        .cliente-info strong {
-            color: #a80a0a;
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-bold { font-weight: bold; }
+        
+        .precio {
+            color: #c7240e;
+            font-weight: bold;
         }
 
-        /* 3. Estilo de Tabla Profesional (table-report) */
-        .table-report {
-            width: 100%;
-            border-collapse: collapse; 
-            margin-top: 15px;
-            border: 1px solid #ddd;
-        }
-        .table-report th, .table-report td {
-            border: 1px solid #ddd; 
-            padding: 6px 8px; 
-            text-align: left;
-            font-size: 9pt;
-            vertical-align: top;
-        }
-        
-        /* Estilo de Encabezados (TH) */
-        .table-report thead th {
-            background-color: #a80a0a; /* Tu color rojo oscuro */
-            color: white;
-            font-weight: bold;
-            text-transform: uppercase;
-            border: 1px solid #a80a0a;
-            font-size: 10pt;
-            text-align: center;
-            padding-top: 8px;
-            padding-bottom: 8px;
-        }
-
-        /* Estilo de Filas (Zebra stripe) */
-        .table-report tbody tr:nth-child(even) {
-            background-color: #f5f5f5;
-        }
-        
-        /* 4. Manejo de Paginación (CRUCIAL para Dompdf) */
-        .table-report thead {
-            display: table-header-group; /* Hace que el encabezado se repita en cada página */
-        }
-        .table-report tbody tr { 
-            page-break-inside: avoid; /* Evita cortar filas */
-        }
-        
-        /* Estilo para el número de fila y Monto */
-        .contador-col {
-            text-align: center;
-            font-weight: bold;
-            color: #12374e;
-        }
-        .detalle-col {
-            text-align: right;
-            font-weight: bold;
-            color: #a80a0a; /* Rojo para el detalle */
-        }
-
-        /* 5. Pie de Página (Para el PDF) */
         .pdf-footer {
-            width: 100%;
-            text-align: center;
-            position: fixed; 
-            bottom: 10px; /* Distancia desde el borde inferior */
+            position: fixed;
+            bottom: -30px;
             left: 0;
             right: 0;
-            padding: 10px 0;
-            border-top: 1px solid #ddd;
-            font-size: 7.5pt;
+            height: 50px;
+            text-align: center;
+            font-size: 8pt;
             color: #777;
-        }
-        .pdf-footer a {
-            color: #a80a0a;
-            text-decoration: none;
+            border-top: 1px solid #eee;
+            padding-top: 5px;
         }
     </style>
 </head>
+<body>
 
-<body style="margin: 0 2% 0 2%;">
-    
     <div class="header-pdf">
-        <img src="http://<?php echo $_SERVER['HTTP_HOST']; ?>/Proyectos/Rocket/assets/img/logo-red.png" height="40" alt="Logo" />
-        <h1>Reporte de Devoluciones por Cliente</h1>
-        <p>Generado el: <?php echo date("d/m/Y H:i:s"); ?></p>
-        <p>Total de Devoluciones del Cliente: <strong><?php echo $CantidadDevolucion; ?></strong></p>
-    </div>
-
-    <div class="cliente-info">
-        <p style="margin: 0;">
-            **Cliente:** **<?php echo $apellidoCliente; ?>, <?php echo $nombreCliente; ?>** (DNI: **<?php echo $dniCliente; ?>**)
-        </p>
-    </div>
-
-    <?php if ($CantidadDevolucion > 0) { ?>
-        <table class="table-report">
-            <thead>
-                <tr>
-                    <th style="width: 5%;">#</th>
-                    <th style="width: 10%;">Nro. Contrato</th>
-                    <th style="width: 25%;">Vehículo (Matrícula)</th>
-                    <th style="width: 15%;">Fecha Devolución</th>
-                    <th style="width: 15%;">Oficina</th>
-                    <th style="width: 30%;">Detalle Devolución</th> 
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $contador = 1; 
-                foreach ($ListadoDevolucion as $devolucion) { ?>   
-                    <tr>
-                        <td class="contador-col">
-                            <?php echo $contador; ?> 
-                        </td>
-                        <td> 
-                            <?php 
-                                // Clave: IdContrato
-                                echo htmlspecialchars($devolucion['IdContrato'] ?? 'N/A'); 
-                            ?>
-                        </td>
-                        <td> 
-                            <?php 
-                                // Claves: vehiculoMatricula, vehiculoModelo, vehiculoGrupo
-                                $vehiculo = 'Patente ' . ($devolucion['vehiculoMatricula'] ?? 'N/A');
-                                echo htmlspecialchars($vehiculo); ?> <br> 
-                            <span style="font-size: 0.9em; color: #777;"><?php echo htmlspecialchars(($devolucion['vehiculoModelo'] ?? '') . ', ' . ($devolucion['vehiculoGrupo'] ?? '')); ?></span>
-                        </td>
-                        <td> 
-                            <?php 
-                                // CLAVE ASUMIDA: FechaDevolucion
-                                echo htmlspecialchars($devolucion['FechaDevolucion'] ?? 'N/A'); 
-                            ?>
-                        </td>
-                        <td> 
-                            <?php 
-                                // Claves: CiudadSucursal, DireccionSucursal (Asumida como Oficina de Devolución)
-                                echo htmlspecialchars($devolucion['CiudadSucursal'] ?? 'N/A'); ?><br>
-                            <span style="font-size: 0.9em; color: #777;"><?php echo htmlspecialchars($devolucion['DireccionSucursal'] ?? 'N/A'); ?></span>
-                        </td>
-                        <td class="detalle-col" style="text-align: right; padding: 4px;"> 
-                            
-                            <span style="font-size: 0.8em; color: #555; display: block; line-height: 1.2;">
-                                **Km Final:** <?php echo htmlspecialchars($devolucion['KilometrajeDevolucion'] ?? 'N/A'); ?>
-                            </span>
-                            <span style="font-size: 0.8em; color: #555; display: block; line-height: 1.2;">
-                                **Combustible:** <?php echo htmlspecialchars($devolucion['NivelCombustibleDevolucion'] ?? 'N/A'); ?>
-                            </span>
-                            <span style="font-size: 1em; color: #a80a0a; display: block; font-weight: bold; line-height: 1.2; border-top: 1px solid #ddd; padding-top: 2px; margin-top: 2px;">
-                                **Penalidades:** $ <?php echo htmlspecialchars($devolucion['MontoPenalidades'] ?? '0.00'); ?> USD
-                            </span>
-                        </td>
-                    </tr>
-                    <?php $contador++; ?>
-                <?php 
-                } 
-                ?>
-            </tbody>
+        <table>
+            <tr>
+                <td class="logo">
+                    <img src="http://<?php echo $_SERVER['HTTP_HOST']; ?>/rocket/img/logo_rojo.png" alt="Logo" style="width: 140px;">
+                </td>
+                <td class="titulo-reporte">
+                    <h1>Reporte por Cliente</h1>
+                    <p style="margin: 5px 0 0 0; font-weight: bold;">Historial de Devoluciones de Vehículos</p>
+                </td>
+            </tr>
         </table>
-    <?php } else { ?>
-        <p style="text-align: center; color: #a80a0a; font-weight: bold; margin-top: 30px;">
-            El cliente <?php echo $apellidoCliente; ?>, <?php echo $nombreCliente; ?> no tiene registros de devoluciones en el sistema.
-        </p>
-    <?php } ?>
+    </div>
+
+    <table class="info-meta">
+        <tr>
+            <td><strong>Cliente:</strong> <?php echo $apellidoCliente . ", " . $nombreCliente; ?></td>
+            <td class="text-right"><strong>DNI:</strong> <?php echo $dniCliente; ?></td>
+        </tr>
+        <tr>
+            <td><strong>Fecha de emisión:</strong> <?php echo date("d/m/Y H:i"); ?></td>
+            <td class="text-right"><strong>Registros:</strong> <?php echo $CantidadDevolucion; ?></td>
+        </tr>
+    </table>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Contrato</th>
+                <th>Fecha Dev.</th>
+                <th>Hora Dev.</th>
+                <th>Vehículo</th>
+                <th>Estado del Vehículo</th>
+                <th>Costos por Infracciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php 
+            $contador = 1;
+            foreach ($ListadoDevolucion as $devolucion): 
+            ?>
+                <tr>
+                    <td class="text-center font-bold" style="color: #a80a0a;"><?php echo $contador++; ?></td>
+                    <td class="text-center font-bold"><?php echo $devolucion['IdContrato']; ?></td>
+                    <td class="text-center"><?php echo $devolucion['FechaDevolucion']; ?></td>
+                    <td class="text-center"><?php echo $devolucion['HoraDevolucion']; ?></td>
+                    <td>
+                        <strong><?php echo $devolucion['vehiculoMatricula']; ?></strong><br>
+                        <?php echo $devolucion['vehiculoModelo']; ?>
+                    </td>
+                    <td>
+                        <strong><?php echo $devolucion['EstadoDevolucion']; ?></strong><br>
+                        <small><?php echo $devolucion['AclaracionesDevolucion']; ?></small>
+                    </td>
+                    <td>
+                        <div style="font-size: 8pt;">
+                            <?php echo $devolucion['InfraccionesDevolucion']; ?>
+                        </div><br>
+                        <span class="precio">Infracciones: <?php echo $devolucion['CostosInfracciones']; ?> US$</span><br>
+                        <span class="precio">Adicional: <?php echo $devolucion['MontoExtra']; ?> US$</span>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 
     <div class="pdf-footer">
         <p style="margin: 0 0 3px 0;">
             &copy; <?php echo date("Y"); ?> Rocket Rent a Car. Todos los derechos reservados.
         </p>
-        <p style="margin: 0;">
-            Desarrollado por: 
-            <a href="https://www.linkedin.com/in/nicolas-servidio-del-monte/">NS</a> |
-            <a href="https://www.linkedin.com/in/bruno-carossi-1b43b8178/">BC</a> |
-            <a href="https://www.linkedin.com/in/facundo-mota-123380257/">FM</a>
-        </p>
+        <p style="margin: 0;">NS | BC | FM - Reporte de Control Interno</p>
     </div>
 
 </body>
 </html>
-
 <?php 
-
-// -------------------------------------------------------------------------
-// 7. FINALIZACIÓN Y GENERACIÓN DEL PDF (DOMPDF)
-// --------------------------------------------------------------------------
-
-$html = ob_get_clean(); // La variable $html ahora contiene la totalidad de la página.
+$html = ob_get_clean();
 
 require_once 'administrador/dompdf/autoload.inc.php';
 use Dompdf\Dompdf;
 $dompdf = new Dompdf();  
 
-// Activamos la opción que nos permite mostrar imágenes remotas (logo)
 $options = $dompdf->getOptions();  
 $options->set(array('isRemoteEnabled' => true));  
 $dompdf->setOptions($options);  
 
 $dompdf->loadHtml($html);
-
-// Generar el documento PDF:
-// 'A4' y 'landscape' para una mejor visualización de muchas columnas
-$dompdf->setPaper('A4', 'landscape');  
-
-// Hacemos el render
+$dompdf->setPaper('A4', 'landscape'); 
 $dompdf->render();
 
-// Enviamos el documento al navegador
-$dompdf->stream("Reporte-Devolucion-por-Cliente", array("Attachment" => false));
-
-// Finaliza el script
-exit;
+$dompdf->stream("Reporte_Devoluciones_Cliente.pdf", array("Attachment" => false));
 ?>

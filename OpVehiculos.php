@@ -17,6 +17,9 @@ $reactivacionExitosa = isset($_GET['reactivado']) && $_GET['reactivado'] == 'exi
 // Variable para controlar el modal de modificación exitosa
 $modificacionExitosa = isset($_GET['modificado']) && $_GET['modificado'] == 'exito';
 
+// Variable para controlar el modal de registro exitoso
+$registroExitoso = isset($_GET['registrado']) && $_GET['registrado'] == 'exito';
+
 // Incluyo las funciones necesarias para listado y consulta
 require_once 'funciones/vehiculos listado.php';
 require_once 'funciones/vehiculo consulta.php';
@@ -49,8 +52,41 @@ $preciohasta = isset($_POST['PrecioHasta']) ? $_POST['PrecioHasta'] : '';
 $sucursalesDisponibles = Listar_Sucursal($conexion);
 
 
+// Si venimos de un nuevo registro exitoso y se pasó la matrícula del vehículo registrado
+if ($registroExitoso && isset($_GET['MatriculaVehiculo']) && !empty($_GET['MatriculaVehiculo'])) {
+    $matriculaFiltro = mysqli_real_escape_string($conexion, $_GET['MatriculaVehiculo']);
+    $activo_filtro = '1'; // normalmente queremos mostrar solo activos
+
+    // Consulta directa del vehículo por matrícula
+    $ListadoVehiculos = Consulta_Vehiculo(
+        $matriculaFiltro,   // matrícula
+        '',                 // modelo
+        '',                 // grupo
+        '',                 // color
+        '',                 // combustible
+        '',                 // disponibilidad
+        '',                 // idSucursalFiltro
+        '',                 // direccionsucursal (ignorado)
+        '',                 // telsucursal (ignorado)
+        '',                 // puertas
+        '',                 // asientos
+        '',                 // automático
+        '',                 // aire acondicionado
+        '',                 // dirección hidráulica
+        '',                 // fabricación desde
+        '',                 // fabricación hasta
+        '',                 // adquisición desde
+        '',                 // adquisición hasta
+        '',                 // precio desde
+        '',                 // precio hasta
+        $activo_filtro,     // activo
+        $conexion           // conexión
+    );
+    $CantidadVehiculos = count($ListadoVehiculos);
+}
+
 // Si venimos de una modificación exitosa y se pasó la matrícula del vehículo modificado
-if ($modificacionExitosa && isset($_GET['MatriculaVehiculo']) && !empty($_GET['MatriculaVehiculo'])) {
+else if ($modificacionExitosa && isset($_GET['MatriculaVehiculo']) && !empty($_GET['MatriculaVehiculo'])) {
     $matriculaFiltro = mysqli_real_escape_string($conexion, $_GET['MatriculaVehiculo']);
     $activo_filtro = '1'; // normalmente queremos mostrar solo activos
 
@@ -229,11 +265,7 @@ if (!empty($_POST['BotonRegistrarVehiculo'])) {
 
     $idVehiculo = Registrar_Vehiculo($matri, $model, $grup, $dispo, $activoREG, $conexion);
 
-    $mensaje = "Se registró exitosamente el vehículo de ID: {$idVehiculo} y matrícula: {$matri}.";
-    echo "<script>
-          alert('$mensaje');
-          window.location.href = 'OpVehiculos.php';
-    </script>";
+    header("Location: OpVehiculos.php?registrado=exito&MatriculaVehiculo={$matri}");
     exit();
 }
 
@@ -640,7 +672,7 @@ require_once "head.php";
                         </div>
                         <div class="mb-3">
                             <label for="modelo" class="form-label">Modelo</label>
-                            <select class="form-select" aria-label="Selector" id="selector" name="ModeloREG" required>
+                            <select class="form-select" aria-label="Selector" id="modelo" name="ModeloREG" required>
                                 <option value="" selected>Selecciona una opción</option>
 
                                 <?php
@@ -662,7 +694,7 @@ require_once "head.php";
 
                         <div class="mb-3">
                             <label for="grupo" class="form-label">Grupo</label>
-                            <select class="form-select" aria-label="Selector" id="selector" name="GrupoREG" required>
+                            <select class="form-select" aria-label="Selector" id="grupo" name="GrupoREG" required>
                                 <option value="" selected>Selecciona una opción</option>
 
                                 <?php
@@ -755,6 +787,25 @@ require_once "head.php";
         </div>
     </div>
 
+    <!-- Modal de Éxito por Registro -->
+    <div class="modal fade" id="exitoRegistroModal" tabindex="-1" aria-labelledby="exitoRegistroModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exitoRegistroModalLabel">Operación Exitosa</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+            Se registró el vehículo con éxito.<br>
+            Matrícula: <?php echo htmlspecialchars($_GET['MatriculaVehiculo'] ?? ''); ?>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
     <div>
         <?php require_once "foot.php"; ?>
     </div>
@@ -807,6 +858,7 @@ require_once "head.php";
                 }
             <?php endif; ?>
 
+            // Modal de notificación para informar Reactivación Exitosa
             <?php if ($reactivacionExitosa): ?>
                 var exitoReactivacionModal = new bootstrap.Modal(document.getElementById('exitoReactivacionModal'));
                 exitoReactivacionModal.show();
@@ -818,6 +870,7 @@ require_once "head.php";
                 }
             <?php endif; ?>
 
+            // Modal de notificación para informar Modificación Exitosa
             <?php if ($modificacionExitosa): ?>
                 var exitoModificacionModal = new bootstrap.Modal(document.getElementById('exitoModificacionModal'));
                 exitoModificacionModal.show();
@@ -829,6 +882,16 @@ require_once "head.php";
                 }
             <?php endif; ?>
 
+            // Modal de notificación para informar Registro Exitoso
+            <?php if ($registroExitoso): ?>
+                var exitoRegistroModal = new bootstrap.Modal(document.getElementById('exitoRegistroModal'));
+                exitoRegistroModal.show();
+                if (window.history.replaceState) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('registrado');
+                    window.history.replaceState({path: url.href}, '', url.href);
+                }
+            <?php endif; ?>
 
             if (localStorage.getItem('scrollToTable') === 'true') {
                 setTimeout(() => {

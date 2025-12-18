@@ -289,11 +289,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label for="puertas" class="form-label">Puertas</label>
-                                <input type="number" class="form-control" id="puertas" name="Puertas" value="<?php echo htmlspecialchars($vehiculo['vNumeroPuertas']); ?>" min="1" max="6">
+                                <input type="number" class="form-control" id="puertas" name="Puertas" value="<?php echo htmlspecialchars($vehiculo['vNumeroPuertas']); ?>" min="1" max="6" required>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="asientos" class="form-label">Asientos</label>
-                                <input type="number" class="form-control" id="asientos" name="Asientos" value="<?php echo htmlspecialchars($vehiculo['vNumeroAsientos']); ?>" min="1" max="9">
+                                <input type="number" class="form-control" id="asientos" name="Asientos" value="<?php echo htmlspecialchars($vehiculo['vNumeroAsientos']); ?>" min="1" max="9" required>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="kilometraje" class="form-label">Kilometraje</label>

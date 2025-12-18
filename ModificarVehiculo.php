@@ -110,6 +110,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
     $fechaCompra = isset($_POST['FechaCompra']) ? $_POST['FechaCompra'] : $vehiculo['vFechaCompra'];
     $precioCompra = isset($_POST['PrecioCompra']) ? $_POST['PrecioCompra'] : $vehiculo['vPrecioCompra'];
     $anio = isset($_POST['Anio']) ? $_POST['Anio'] : $vehiculo['vAnio'];
+
+    // Validación: fecha de compra no puede ser anterior al año de fabricación
+    if (!empty($fechaCompra) && !empty($anio) && is_numeric($anio)) {
+        // Construimos el mínimo permitido: 1 de enero del año de fabricación
+        $limiteInferior = DateTime::createFromFormat('Y-m-d', $anio . '-01-01');
+        $compraDT = DateTime::createFromFormat('Y-m-d', $fechaCompra);
+
+        if ($limiteInferior && $compraDT && $compraDT < $limiteInferior) {
+            $mensajeError = "La fecha de compra ($fechaCompra) no puede ser anterior al año de fabricación ($anio).";
+            echo "<script>alert('$mensajeError'); window.location.href = 'ModificarVehiculo.php?id=$idVehiculo';</script>";
+            exit();
+        }
+    }
+
     $numeroMotor = isset($_POST['NumeroMotor']) ? $_POST['NumeroMotor'] : $vehiculo['vNumeroMotor'];
     $numeroChasis = isset($_POST['NumeroChasis']) ? $_POST['NumeroChasis'] : $vehiculo['vNumeroChasis'];
     $puertas = isset($_POST['Puertas']) ? $_POST['Puertas'] : $vehiculo['vNumeroPuertas'];
@@ -202,8 +216,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
     $rs = mysqli_query($conexion, $SqlUpdate);
 
     if ($rs) {
-        // Redirigir a OpVehiculos.php con el parámetro para mostrar el modal de modificación exitosa.
-        header('Location: OpVehiculos.php?modificado=exito');
+        // Redirigir a OpVehiculos.php consultando automáticamente el vehículo modificado por matrícula
+        header("Location: OpVehiculos.php?modificado=exito&MatriculaVehiculo=" . urlencode($matricula));
         exit();
     } else {
         $mensajeError = "Error al modificar el vehículo: " . mysqli_error($conexion);
@@ -444,6 +458,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
         });
     </script>
     
+    
+    <script>
+    // script para validación de fecha de compra vs año de fabricación
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const fechaCompraInput = document.getElementById('fechaCompra');
+        const anioInput = document.getElementById('anio');
+
+        form.addEventListener('submit', function (e) {
+            const fechaCompra = fechaCompraInput.value;      // formato YYYY-MM-DD
+            const anioFab = parseInt(anioInput.value, 10);
+
+            if (!isNaN(anioFab) && fechaCompra) {
+                const limiteInferior = new Date(anioFab, 0, 1);     // 1 de enero del año de fabricación
+                const compra = new Date(fechaCompra);
+
+                if (compra < limiteInferior) {
+                    e.preventDefault();
+                    alert('La fecha de compra no puede ser anterior al año de fabricación.');
+                    fechaCompraInput.focus();
+                }
+            }
+        });
+    });
+    </script>
 
 </body>
 </html>

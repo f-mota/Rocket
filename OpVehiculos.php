@@ -48,8 +48,42 @@ $preciohasta = isset($_POST['PrecioHasta']) ? $_POST['PrecioHasta'] : '';
 // Obtener listado de sucursales para el SELECT del filtro
 $sucursalesDisponibles = Listar_Sucursal($conexion);
 
+
+// Si venimos de una modificación exitosa y se pasó la matrícula del vehículo modificado
+if ($modificacionExitosa && isset($_GET['MatriculaVehiculo']) && !empty($_GET['MatriculaVehiculo'])) {
+    $matriculaFiltro = mysqli_real_escape_string($conexion, $_GET['MatriculaVehiculo']);
+    $activo_filtro = '1'; // normalmente queremos mostrar solo activos
+
+    // Consulta directa del vehículo por matrícula
+    $ListadoVehiculos = Consulta_Vehiculo(
+        $matriculaFiltro,   // matrícula
+        '',                 // modelo
+        '',                 // grupo
+        '',                 // color
+        '',                 // combustible
+        '',                 // disponibilidad
+        '',                 // idSucursalFiltro
+        '',                 // direccionsucursal (ignorado)
+        '',                 // telsucursal (ignorado)
+        '',                 // puertas
+        '',                 // asientos
+        '',                 // automático
+        '',                 // aire acondicionado
+        '',                 // dirección hidráulica
+        '',                 // fabricación desde
+        '',                 // fabricación hasta
+        '',                 // adquisición desde
+        '',                 // adquisición hasta
+        '',                 // precio desde
+        '',                 // precio hasta
+        $activo_filtro,     // activo
+        $conexion           // conexión
+    );
+    $CantidadVehiculos = count($ListadoVehiculos);
+}
+
 // Lógica principal de consulta y filtrado
-if (!empty($_POST['BotonFiltro'])) {
+else if (!empty($_POST['BotonFiltro'])) {
 
     Procesar_Consulta();
 
@@ -82,39 +116,9 @@ if (!empty($_POST['BotonFiltro'])) {
         $conexion
     );
     $CantidadVehiculos = count($ListadoVehiculos);
-} else {
+} 
 
-    // Si no hay filtro aplicado (carga inicial o desfiltrar no presionado), se muestra el listado por defecto: solo vehículos ACTIVOS (activo = '1')
-    $activo_filtro = '1';
-    // MODIFICADO: Se pasan parámetros de sucursal vacíos
-    $ListadoVehiculos = Consulta_Vehiculo(
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '', // Tres strings vacíos para sucursal (ID, Dir, Tel)
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        $activo_filtro,
-        $conexion
-    );
-    $CantidadVehiculos = count($ListadoVehiculos);
-}
-
-if (!empty($_POST['BotonDesfiltrar'])) {
+else if (!empty($_POST['BotonDesfiltrar'])) {
 
     // Desfiltrar vuelve a la vista por defecto: solo activos (activo = '1')
     $activo_filtro = '1';
@@ -166,6 +170,38 @@ if (!empty($_POST['BotonDesfiltrar'])) {
     $_POST['PrecioDesde'] = "";
     $_POST['PrecioHasta'] = "";
     $_POST['MostrarInactivos'] = ""; // Limpiar el checkbox
+}
+
+else {
+
+    // Si no hay filtro aplicado (carga inicial o desfiltrar no presionado), se muestra el listado por defecto: solo vehículos ACTIVOS (activo = '1')
+    $activo_filtro = '1';
+    // MODIFICADO: Se pasan parámetros de sucursal vacíos
+    $ListadoVehiculos = Consulta_Vehiculo(
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '', // Tres strings vacíos para sucursal (ID, Dir, Tel)
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        $activo_filtro,
+        $conexion
+    );
+    $CantidadVehiculos = count($ListadoVehiculos);
 }
 
 
@@ -709,7 +745,8 @@ require_once "head.php";
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Se modificó el vehículo con éxito.
+                    Se modificó el vehículo con éxito. <br>
+                    Matrícula: <?php echo htmlspecialchars($_GET['MatriculaVehiculo'] ?? ''); ?>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>

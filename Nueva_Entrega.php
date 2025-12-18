@@ -26,10 +26,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errores[] .= "Registrá la hora de entrega al cliente.";
     }
 
+    // Validación adicional: la fecha de entrega no puede superar en más de 30 días la fecha de inicio del contrato
+    if (!empty($idContrato) && !empty($fechaentrega)) {
+        $MiConexion = ConexionBD();
+        $SQL_FechaInicio = "SELECT fechaInicioContrato FROM `contratos-alquiler` WHERE idContrato = $idContrato;";
+        $rsInicio = mysqli_query($MiConexion, $SQL_FechaInicio);
+        if ($rsInicio && $dataInicio = mysqli_fetch_array($rsInicio)) {
+            $fechaInicioContrato = $dataInicio['fechaInicioContrato'];
+
+            $dtInicio = new DateTime($fechaInicioContrato);
+            $dtEntrega = new DateTime($fechaentrega);
+
+            $intervalo = $dtInicio->diff($dtEntrega);
+            if ($intervalo->days > 30) {
+                $errores[] = "La fecha de entrega efectiva no puede superar en más de 30 días la fecha de inicio del contrato.";
+            }
+        }
+    }
+
     // Si hay errores, redirigir con el mensaje de error
     if (!empty($errores)) {
         $mensaje = implode(' ', $errores);
-        header("Location: entregaVehiculo.php?mensaje=" . urlencode($mensaje));
+
+        header("Location: entregaVehiculo.php?status=error&mensaje=" . urlencode($mensaje)
+            . "&NumeroContrato=" . urlencode($idContrato)
+            . "&MatriculaContrato=&ApellidoContrato=&NombreContrato=&DocContrato=&EstadoContrato=&EntregaDesde=&EntregaHasta=&BotonFiltrar=FiltrandoEntregas");
         exit();
     }
 
@@ -73,7 +94,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$rs) {
         $mensaje = "Error al registrar la entrega a cliente";
-        header("Location: entregaVehiculo.php?mensaje=" . urlencode($mensaje));
+
+        header("Location: entregaVehiculo.php?status=error&mensaje=" . urlencode($mensaje)
+            . "&NumeroContrato=" . urlencode($idContrato)
+            . "&MatriculaContrato=&ApellidoContrato=&NombreContrato=&DocContrato=&EstadoContrato=&EntregaDesde=&EntregaHasta=&BotonFiltrar=FiltrandoEntregas");
         exit();
     }
 
@@ -93,18 +117,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             //si surge un error, finalizo la ejecucion del script con un mensaje
             $mensaje = "Error al intentar modificar el estado del contrato a Activo.";
-            header("Location: entregaVehiculo.php?mensaje=" . urlencode($mensaje));
+            header("Location: entregaVehiculo.php?status=error&mensaje=" . urlencode($mensaje) . "&IdContrato=" . urlencode($idContrato));
             exit();
         }
         else {
 
             // Redirigir con un mensaje
             $mensaje.="El estado del contrato pasó a Activo. Número identificador del contrato: {$idContrato}. ";
-            echo "<script> 
-                alert('$mensaje');
-                window.location.href = 'entregaVehiculo.php?NumeroContrato={$idContrato}&MatriculaContrato=&ApellidoContrato=&NombreContrato=&DocContrato=&EstadoContrato=&EntregaDesde=&EntregaHasta=&BotonFiltrar=FiltrandoEntregas';
-            </script>";
-            exit(); 
+
+            header("Location: entregaVehiculo.php?status=success&mensaje=" . urlencode($mensaje)
+                . "&NumeroContrato=" . urlencode($idContrato)
+                . "&MatriculaContrato=&ApellidoContrato=&NombreContrato=&DocContrato=&EstadoContrato=&EntregaDesde=&EntregaHasta=&BotonFiltrar=FiltrandoEntregas");
+            exit();
         }
     }
 

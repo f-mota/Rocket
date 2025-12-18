@@ -177,10 +177,10 @@ $CantidadReservas = count($ListadoReservas);
                             <span style="font-size: 0.9em; color: #777;"><?php echo htmlspecialchars("{$reserva['vehiculoModelo']}, {$reserva['vehiculoGrupo']}"); ?></span>
                         </td>
                         <td> 
-                            <?php echo htmlspecialchars($reserva['fechaInicioReserva']); ?>
+                            <?php echo date('d/m/Y', strtotime($reserva['fechaInicioReserva'])); ?>
                         </td>
                         <td> 
-                            <?php echo htmlspecialchars($reserva['fechaFinReserva']); ?>
+                            <?php echo date('d/m/Y', strtotime($reserva['fechaFinReserva'])); ?>
                         </td>
                         <td class="monto-col"> 
                             <?php echo "$ {$reserva['precioPorDiaReserva']} USD/día <br>"; ?>

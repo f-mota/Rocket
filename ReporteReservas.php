@@ -73,9 +73,9 @@ include('head.php');
 
                                 <td> <?php echo $ListadoReservas[$i]['vehiculoModelo']; ?> </td>
 
-                                <td> <?php echo $ListadoReservas[$i]['fechaInicioReserva']; ?> </td>
+                                <td> <?php echo date('d/m/Y', strtotime($ListadoReservas[$i]['fechaInicioReserva'])); ?> </td>
 
-                                <td> <?php echo $ListadoReservas[$i]['fechaFinReserva']; ?> </td>
+                                <td> <?php echo date('d/m/Y', strtotime($ListadoReservas[$i]['fechaFinReserva'])); ?> </td>
 
                                 <td> 
                                     <span style="font-size: 12px; color: purple;"> 
@@ -114,7 +114,7 @@ include('head.php');
         </div>
     </div>
 
-    <div style="">
+    <div>
         <?php require_once "foot.php"; ?>
     </div>
 

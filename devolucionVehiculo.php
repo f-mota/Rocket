@@ -757,9 +757,9 @@ include('head.php');
 
                 // COMPARA: Si la devolución es numéricamente MENOR al fin, bloquea.
                 // Si son iguales, nDevolucion < nFin es FALSO y permite guardar.
-                if (nDevolucion < nFin) {
+                if (nDevolucion > nFin) {
                     e.preventDefault();
-                    alert("¡Atención!\n\nLa fecha de devolución efectiva no puede ser anterior a la fecha de finalización del contrato (" +
+                    alert("¡Atención!\n\nLa fecha de devolución efectiva no puede ser posterior a la fecha de finalización del contrato (" +
                         finTexto + ").");
                     $('#fechadevolucion').focus();
                 }

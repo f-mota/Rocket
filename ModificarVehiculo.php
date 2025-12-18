@@ -460,21 +460,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || !empty($_POST['BotonModificarVehicul
     
     
     <script>
-    // script para validación de fecha de compra vs año de fabricación
-
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('form');
         const fechaCompraInput = document.getElementById('fechaCompra');
         const anioInput = document.getElementById('anio');
-
+    
         form.addEventListener('submit', function (e) {
             const fechaCompra = fechaCompraInput.value;      // formato YYYY-MM-DD
             const anioFab = parseInt(anioInput.value, 10);
-
+            const hoy = new Date();
+            const anioActual = hoy.getFullYear();
+            hoy.setHours(0, 0, 0, 0); // Normalizar para comparar solo la fecha
+    
+            // Validación: Año de fabricación no puede ser superior al actual
+            if (!isNaN(anioFab) && anioFab > anioActual) {
+                e.preventDefault();
+                alert('El año de fabricación no puede ser superior al año actual.');
+                anioInput.focus();
+                return; // Detener para no mostrar múltiples alertas
+            }
+    
+            // Validación: Fecha de compra no puede ser futura
+            if (fechaCompra) {
+                const compraDT = new Date(fechaCompra);
+                if (compraDT > hoy) {
+                    e.preventDefault();
+                    alert('La fecha de compra no puede ser posterior a la fecha de hoy.');
+                    fechaCompraInput.focus();
+                    return; // Detener
+                }
+            }
+    
+            // Validación: Fecha de compra no puede ser anterior al año de fabricación
             if (!isNaN(anioFab) && fechaCompra) {
                 const limiteInferior = new Date(anioFab, 0, 1);     // 1 de enero del año de fabricación
                 const compra = new Date(fechaCompra);
-
+    
                 if (compra < limiteInferior) {
                     e.preventDefault();
                     alert('La fecha de compra no puede ser anterior al año de fabricación.');

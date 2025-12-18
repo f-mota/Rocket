@@ -108,7 +108,7 @@ include('head.php');
                 </button></a>
             </span>
 
-            <a href="ReporteReservas_pdf.php"> <button class="btn btn-warning" >
+            <a href="ReporteReservas_pdf.php" target="_blank"> <button class="btn btn-warning" >
                 Imprimir
             </button></a>
         </div>
